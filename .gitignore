@@ -1,0 +1,12 @@
+# Telegram export data
+data
+
+# Byte-compiled / optimized / DLL files
+__pycache__
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+env
+venv
