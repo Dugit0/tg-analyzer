@@ -30,9 +30,17 @@ class MainWindow(QMainWindow):
         data_file_layout.addWidget(select_data_button)
 
         self.chat_choice_box = QComboBox(self)
+        
+        date_range_layout = QHBoxLayout()
+        from_date, to_date = QDateEdit(), QDateEdit()
+        from_date.setCalendarPopup(True)
+        to_date.setCalendarPopup(True)
+        date_range_layout.addWidget(from_date)
+        date_range_layout.addWidget(to_date)
 
         layout.addLayout(data_file_layout)
         layout.addWidget(self.chat_choice_box)
+        layout.addLayout(date_range_layout)
 
         container = QWidget()
         container.setLayout(layout)
