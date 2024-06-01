@@ -62,7 +62,10 @@ class MainWindow(QMainWindow):
         self.show()
 
     def select_data_dir(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Select data", "", "JSON Files (*.json)")
+        path, _ = QFileDialog.getOpenFileName(self,
+                                              "Select data",
+                                              "",
+                                              "JSON Files (*.json)")
         if path:
             self.data_path = path
             self.data_path_label.setText(path)
