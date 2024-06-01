@@ -2,6 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtPrintSupport import *
+import datetime
 import os
 import sys
 
@@ -32,7 +33,14 @@ class MainWindow(QMainWindow):
         self.chat_choice_box = QComboBox(self)
         
         date_range_layout = QHBoxLayout()
-        from_date, to_date = QDateEdit(), QDateEdit()
+        today_date = datetime.date.today()
+        assert today_date.year - 5 > 0
+        from_date = QDateEdit(QDate(today_date.year - 5,
+                                    today_date.month,
+                                    today_date.day))
+        to_date = QDateEdit(QDate(today_date.year,
+                                  today_date.month,
+                                  today_date.day))
         from_date.setCalendarPopup(True)
         to_date.setCalendarPopup(True)
         date_range_layout.addWidget(from_date)
