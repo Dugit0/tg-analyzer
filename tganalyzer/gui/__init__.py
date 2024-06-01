@@ -45,10 +45,15 @@ class MainWindow(QMainWindow):
         to_date.setCalendarPopup(True)
         date_range_layout.addWidget(from_date)
         date_range_layout.addWidget(to_date)
+        create_report_button = QPushButton("create_report_button", self)
+        create_report_button.clicked.connect(self.create_report)
+
 
         layout.addLayout(data_file_layout)
         layout.addWidget(self.chat_choice_box)
         layout.addLayout(date_range_layout)
+        layout.addStretch(1)
+        layout.addWidget(create_report_button)
 
         container = QWidget()
         container.setLayout(layout)
@@ -63,6 +68,9 @@ class MainWindow(QMainWindow):
             self.data_path_label.setText(path)
             self.chat_choice_box.addItems(get_all_chats())
         return
+
+    def create_report(self):
+        pass
 
 
 if __name__ == '__main__':
