@@ -60,6 +60,35 @@ class MainWindow(QMainWindow):
         chat_choice_area.setWidgetResizable(True)
         chat_choice_area.setWidget(chat_choice_wiget)
 
+        filter_button_layout = QHBoxLayout()
+        all_chats_button = QPushButton("all_chats_button", self)
+        only_private_button = QPushButton("only_private_button", self)
+        only_public_button = QPushButton("only_public_button", self)
+        filter_button_layout.addWidget(all_chats_button)
+        filter_button_layout.addWidget(only_private_button)
+        filter_button_layout.addWidget(only_public_button)
+        # TODO Button connect
+
+        choice_button_layout = QHBoxLayout()
+        choice_all_button = QPushButton("choice_all", self)
+        choice_nothing_button = QPushButton("choice_nothing", self)
+        choice_button_layout.addWidget(choice_all_button)
+        choice_button_layout.addWidget(choice_nothing_button)
+        # TODO Button connect
+
+        complex_choice_layot = QHBoxLayout()
+        complex_choice_button = QPushButton("complex_choice_button", self)
+        complex_choice_label = QLabel()
+        complex_choice_label.setText("complex_choice_label")
+        complex_choice_spin = QSpinBox()
+        complex_choice_spin.setRange(0, 1_000_000_000)
+        complex_choice_spin.setSingleStep(100)
+        complex_choice_spin.setValue(100)
+        complex_choice_layot.addWidget(complex_choice_button)
+        complex_choice_layot.addWidget(complex_choice_label)
+        complex_choice_layot.addWidget(complex_choice_spin)
+        # TODO Button connect
+
         date_range_layout = QHBoxLayout()
         today_date = datetime.date.today()
         assert today_date.year - 5 > 0
@@ -92,6 +121,9 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(data_file_layout)
         layout.addWidget(chat_choice_area, 1)
+        layout.addLayout(filter_button_layout)
+        layout.addLayout(choice_button_layout)
+        layout.addLayout(complex_choice_layot)
         layout.addLayout(date_range_layout)
         layout.addWidget(features_area, 1)
         # layout.addStretch(1)
