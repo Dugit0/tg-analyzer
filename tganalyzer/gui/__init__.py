@@ -115,10 +115,13 @@ class MainWindow(QMainWindow):
         features_wiget.setLayout(self.features_layout)
         for feature_name in self.feature_names:
             checkbox = QCheckBox(feature_name, self)
+            checkbox.setCheckState(Qt.CheckState.Checked)
             self.feature_checkboxes.append(checkbox)
             self.features_layout.addWidget(checkbox)
-        features_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        features_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        features_area.setVerticalScrollBarPolicy(
+                Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        features_area.setHorizontalScrollBarPolicy(
+                Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         features_area.setWidgetResizable(True)
         features_area.setWidget(features_wiget)
 
