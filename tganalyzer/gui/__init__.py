@@ -42,14 +42,17 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setGeometry(300, 100, 400, 600)
 
+        # Variables for application logic
         self.data_path = ""
         self.chats = []
         self.feature_names = [f"Feature {i:02d}" for i in range(11)]
         self.chat_checkboxes = []
         self.feature_checkboxes = []
 
+        # Main layout
         layout = QVBoxLayout()
 
+        # Horizontal layout with path to json file and button for choice it
         data_file_layout = QHBoxLayout()
         select_data_button = QPushButton("select_data_button", self)
         select_data_button.clicked.connect(self.select_data_dir)
@@ -57,15 +60,19 @@ class MainWindow(QMainWindow):
         data_file_layout.addWidget(self.data_path_label, 3)
         data_file_layout.addWidget(select_data_button, 1)
 
+        # Scroll area for chats
         chat_choice_area = QScrollArea(self)
         chat_choice_wiget = QWidget()
         self.chats_layout = QVBoxLayout()
         chat_choice_wiget.setLayout(self.chats_layout)
-        chat_choice_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        chat_choice_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        chat_choice_area.setVerticalScrollBarPolicy(
+                Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        chat_choice_area.setHorizontalScrollBarPolicy(
+                Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         chat_choice_area.setWidgetResizable(True)
         chat_choice_area.setWidget(chat_choice_wiget)
 
+        # Buttons that show all/only private/only public chats
         filter_button_layout = QHBoxLayout()
         all_chats_button = QPushButton("all_chats_button", self)
         only_private_button = QPushButton("only_private_button", self)
@@ -75,6 +82,7 @@ class MainWindow(QMainWindow):
         filter_button_layout.addWidget(only_public_button)
         # TODO Button connect
 
+        # Buttons that choice all/don't choice any chats
         choice_button_layout = QHBoxLayout()
         choice_all_button = QPushButton("choice_all", self)
         choice_nothing_button = QPushButton("choice_nothing", self)
@@ -82,6 +90,7 @@ class MainWindow(QMainWindow):
         choice_button_layout.addWidget(choice_nothing_button)
         # TODO Button connect
 
+        # Button and spin that choice chats with more than N messages
         complex_choice_layot = QHBoxLayout()
         complex_choice_button = QPushButton("complex_choice_button", self)
         complex_choice_label = QLabel()
@@ -95,6 +104,7 @@ class MainWindow(QMainWindow):
         complex_choice_layot.addWidget(complex_choice_spin)
         # TODO Button connect
 
+        # Layout with date range
         date_range_layout = QHBoxLayout()
         today_date = datetime.date.today()
         assert today_date.year - 5 > 0
@@ -109,6 +119,7 @@ class MainWindow(QMainWindow):
         date_range_layout.addWidget(from_date)
         date_range_layout.addWidget(to_date)
 
+        # Scroll area for features
         features_area = QScrollArea(self)
         features_wiget = QWidget()
         self.features_layout = QVBoxLayout()
@@ -125,9 +136,11 @@ class MainWindow(QMainWindow):
         features_area.setWidgetResizable(True)
         features_area.setWidget(features_wiget)
 
+        # Button that create a report
         create_report_button = QPushButton("create_report_button", self)
         create_report_button.clicked.connect(self.create_report)
 
+        # Adding wigets and layouts to main layout
         layout.addLayout(data_file_layout)
         layout.addWidget(chat_choice_area, 1)
         layout.addLayout(filter_button_layout)
@@ -138,6 +151,7 @@ class MainWindow(QMainWindow):
         # layout.addStretch(1)
         layout.addWidget(create_report_button)
 
+        # Create central wiget
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
