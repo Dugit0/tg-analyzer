@@ -1,9 +1,9 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtPrintSupport import *
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
+from PyQt5.QtWidgets import QScrollArea, QSpinBox
+from PyQt5.QtCore import Qt, QDate
 import datetime
-import os
 import sys
 import random
 
@@ -202,9 +202,6 @@ class MainWindow(QMainWindow):
 
     def show_only_public_chats(self):
         self.show_chat_with_filter(lambda chat: chat.type == "public")
-
-    # def choice_chat_with_filter(self, key):
-            # print(checkbox.text())
 
     def choice_all_chat(self):
         for checkbox in self.chat_checkboxes:
