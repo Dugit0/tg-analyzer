@@ -23,7 +23,7 @@ def get_all_chats():
     """TMP FUNC! Will be removed."""
     global SIDE_EFFECT
     res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i) for t in ['private', 'public']
-           for i in range(100, 1001, 100)]
+           for i in range(100, 1001, 50)]
     SIDE_EFFECT += 1
     # random.shuffle(res)
     # very_long_name = "very " * 20 + "long name"
@@ -75,32 +75,35 @@ class MainWindow(QMainWindow):
         all_chats_button = QPushButton("all_chats_button", self)
         only_private_button = QPushButton("only_private_button", self)
         only_public_button = QPushButton("only_public_button", self)
+        all_chats_button.clicked.connect(self.show_all_chats)
+        only_private_button.clicked.connect(self.show_only_private_chats)
+        only_public_button.clicked.connect(self.show_only_public_chats)
         filter_button_layout.addWidget(all_chats_button)
         filter_button_layout.addWidget(only_private_button)
         filter_button_layout.addWidget(only_public_button)
-        # TODO Button connect
 
         # Buttons that choice all/don't choice any chats
         choice_button_layout = QHBoxLayout()
         choice_all_button = QPushButton("choice_all", self)
         choice_nothing_button = QPushButton("choice_nothing", self)
+        choice_all_button.clicked.connect(self.choice_all_chat)
+        choice_nothing_button.clicked.connect(self.choice_nothing_chat)
         choice_button_layout.addWidget(choice_all_button)
         choice_button_layout.addWidget(choice_nothing_button)
-        # TODO Button connect
 
         # Button and spin that choice chats with more than N messages
         complex_choice_layot = QHBoxLayout()
         complex_choice_button = QPushButton("complex_choice_button", self)
         complex_choice_label = QLabel()
         complex_choice_label.setText("complex_choice_label")
-        complex_choice_spin = QSpinBox()
-        complex_choice_spin.setRange(0, 1_000_000_000)
-        complex_choice_spin.setSingleStep(100)
-        complex_choice_spin.setValue(100)
+        self.complex_choice_spin = QSpinBox()
+        self.complex_choice_spin.setRange(0, 1_000_000_000)
+        self.complex_choice_spin.setSingleStep(100)
+        self.complex_choice_spin.setValue(100)
+        complex_choice_button.clicked.connect(self.complex_chat_choice)
         complex_choice_layot.addWidget(complex_choice_button)
         complex_choice_layot.addWidget(complex_choice_label)
-        complex_choice_layot.addWidget(complex_choice_spin)
-        # TODO Button connect
+        complex_choice_layot.addWidget(self.complex_choice_spin)
 
         # Layout with date range
         date_range_layout = QHBoxLayout()
@@ -156,7 +159,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("tg-analyzer")
         self.show()
 
-    def delete_all_chats(self):
+    def clear_chat_area(self):
         if (count := self.chats_layout.count()):
             for i in range(count - 1, -1, -1):
                 self.chats_layout.removeItem(self.chats_layout.itemAt(i))
@@ -164,23 +167,61 @@ class MainWindow(QMainWindow):
             for i in range(len(self.chat_checkboxes) - 1, -1, -1):
                 self.chat_checkboxes[i].deleteLater()
                 del self.chat_checkboxes[i]
-        if self.chats:
-            for i in range(len(self.chats) - 1, -1, -1):
-                del self.chats[i]
 
     def select_data_dir(self):
         path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
                                               "JSON Files (*.json)")
         if path:
-            self.delete_all_chats()
+            self.clear_chat_area()
+            if self.chats:
+                for i in range(len(self.chats) - 1, -1, -1):
+                    del self.chats[i]
             self.data_path = path
             self.data_path_label.setText(path)
             self.chats = get_all_chats()
             for chat in self.chats:
                 checkbox = QCheckBox(chat.name, self)
+                # TODO name is not id
                 self.chat_checkboxes.append(checkbox)
                 self.chats_layout.addWidget(checkbox)
 
+    def show_chat_with_filter(self, key):
+        self.clear_chat_area()
+        for chat in self.chats:
+            if key(chat):
+                checkbox = QCheckBox(chat.name, self)
+                # TODO name is not id
+                self.chat_checkboxes.append(checkbox)
+                self.chats_layout.addWidget(checkbox)
+
+    def show_all_chats(self):
+        self.show_chat_with_filter(lambda chat: True)
+
+    def show_only_private_chats(self):
+        self.show_chat_with_filter(lambda chat: chat.type == "private")
+
+    def show_only_public_chats(self):
+        self.show_chat_with_filter(lambda chat: chat.type == "public")
+
+    # def choice_chat_with_filter(self, key):
+            # print(checkbox.text())
+
+    def choice_all_chat(self):
+        for checkbox in self.chat_checkboxes:
+            checkbox.setCheckState(Qt.CheckState.Checked)
+
+    def choice_nothing_chat(self):
+        for checkbox in self.chat_checkboxes:
+            checkbox.setCheckState(Qt.CheckState.Unchecked)
+
+    def complex_chat_choice(self):
+        n = self.complex_choice_spin.value()
+        # TODO name is not id
+        chat_names = {chat.name for chat in self.chats
+                      if len(chat.messages) > n}
+        for checkbox in self.chat_checkboxes:
+            if checkbox.text() in chat_names:
+                checkbox.setCheckState(Qt.CheckState.Checked)
 
     def create_report(self):
         pass
