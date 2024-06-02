@@ -9,7 +9,7 @@ import random
 
 random.seed(42)
 
-SIDE_EFFECT = 1
+SIDE_EFFECT = 0
 
 
 class Chat:
@@ -22,11 +22,9 @@ class Chat:
 def get_all_chats():
     """TMP FUNC! Will be removed."""
     global SIDE_EFFECT
-    prefix = ""
-    if SIDE_EFFECT > 1:
-        prefix = "new_"
-    res = [Chat(f"{prefix}{t}_{i:03d}", t, i) for t in ['private', 'public']
+    res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i) for t in ['private', 'public']
            for i in range(100, 1001, 100)]
+    SIDE_EFFECT += 1
     # random.shuffle(res)
     # very_long_name = "very " * 20 + "long name"
     # res.append(very_long_name)
@@ -54,9 +52,9 @@ class MainWindow(QMainWindow):
 
         # Horizontal layout with path to json file and button for choice it
         data_file_layout = QHBoxLayout()
+        self.data_path_label = QLabel()
         select_data_button = QPushButton("select_data_button", self)
         select_data_button.clicked.connect(self.select_data_dir)
-        self.data_path_label = QLabel()
         data_file_layout.addWidget(self.data_path_label, 3)
         data_file_layout.addWidget(select_data_button, 1)
 
@@ -158,12 +156,23 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("tg-analyzer")
         self.show()
 
+    def delete_all_chats(self):
+        if (count := self.chats_layout.count()):
+            for i in range(count - 1, -1, -1):
+                self.chats_layout.removeItem(self.chats_layout.itemAt(i))
+        if self.chat_checkboxes:
+            for i in range(len(self.chat_checkboxes) - 1, -1, -1):
+                self.chat_checkboxes[i].deleteLater()
+                del self.chat_checkboxes[i]
+        if self.chats:
+            for i in range(len(self.chats) - 1, -1, -1):
+                del self.chats[i]
+
     def select_data_dir(self):
-        path, _ = QFileDialog.getOpenFileName(self,
-                                              "Select data",
-                                              "",
+        path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
                                               "JSON Files (*.json)")
         if path:
+            self.delete_all_chats()
             self.data_path = path
             self.data_path_label.setText(path)
             self.chats = get_all_chats()
@@ -171,8 +180,7 @@ class MainWindow(QMainWindow):
                 checkbox = QCheckBox(chat.name, self)
                 self.chat_checkboxes.append(checkbox)
                 self.chats_layout.addWidget(checkbox)
-            # self.chat_choice_box.addItems(get_all_chats())
-        return
+
 
     def create_report(self):
         pass
