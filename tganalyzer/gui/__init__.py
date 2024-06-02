@@ -5,28 +5,34 @@ from PyQt5.QtPrintSupport import *
 import datetime
 import os
 import sys
+import random
+
+random.seed(42)
 
 SIDE_EFFECT = 1
+
+
+class Chat:
+    def __init__(self, chat_name, chat_type, messages_len):
+        self.name = chat_name
+        self.type = chat_type
+        self.messages = [0] * messages_len
 
 
 def get_all_chats():
     """TMP FUNC! Will be removed."""
     global SIDE_EFFECT
-    if SIDE_EFFECT == 1:
-        res = []
-        very_long_name = "very " * 20 + "long name"
-        res.append(very_long_name)
-        for i in range(20):
-            res.append(f"chat{i:03d}")
-        SIDE_EFFECT += 1
-        return res
-    else:
-        res = []
-        very_long_name = "very " * 20 + "long name"
-        res.append(very_long_name)
-        for i in range(20):
-            res.append(f"new_chat{i:03d}")
-        return res
+    prefix = ""
+    if SIDE_EFFECT > 1:
+        prefix = "new_"
+    res = [Chat(f"{prefix}{t}_{i:03d}", t, i) for t in ['private', 'public']
+           for i in range(100, 1001, 100)]
+    # random.shuffle(res)
+    # very_long_name = "very " * 20 + "long name"
+    # res.append(very_long_name)
+    # for i in range(20):
+    #     res.append(f"new_chat{i:03d}")
+    return res
 
 
 class MainWindow(QMainWindow):
@@ -37,7 +43,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(300, 100, 400, 600)
 
         self.data_path = ""
-        self.chat_names = []
+        self.chats = []
         self.feature_names = [f"Feature {i:02d}" for i in range(11)]
         self.chat_checkboxes = []
         self.feature_checkboxes = []
@@ -143,9 +149,9 @@ class MainWindow(QMainWindow):
         if path:
             self.data_path = path
             self.data_path_label.setText(path)
-            self.chat_names = get_all_chats()
-            for chat_name in self.chat_names:
-                checkbox = QCheckBox(chat_name, self)
+            self.chats = get_all_chats()
+            for chat in self.chats:
+                checkbox = QCheckBox(chat.name, self)
                 self.chat_checkboxes.append(checkbox)
                 self.chats_layout.addWidget(checkbox)
             # self.chat_choice_box.addItems(get_all_chats())
