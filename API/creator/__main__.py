@@ -1,6 +1,4 @@
-"""
-Main API.
-"""
+"""Main API."""
 import sys
 from . import start_api
 
