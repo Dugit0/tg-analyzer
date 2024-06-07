@@ -1,10 +1,11 @@
-"""Special module for creating class of messages."""
+"""Специальный модуль для создания массива чатов."""
 import json
+from datetime import datetime
 
 
-# Constants and arrays
+# Константы и массивы
 
-DATA_PATH = "/home/artiomka/Desktop/tg-data/result.json"
+ZERO = '.000000+00:00'   # для перевода времени в datetime
 required_fields_message = ['date',
                            'date_unixtime',
                            'from',
@@ -66,7 +67,7 @@ optional_fields_service = ['boosts',
                            'title',
                            'width']
 
-# extra functions
+# Доп функции
 
 
 def game_finder(login, message):
@@ -78,24 +79,23 @@ def game_finder(login, message):
             return line[1: line.find(".")]
 
 
-# main module classes
+# Основные классы
 
 
 class Extraction():
     '''
-    This class is extracting information from json file.
+    Этот класс достает информацию из json файла.
     '''
-    def data_ex(self, data_path=DATA_PATH):
+    def __init__(self, data_path):
         """
-        Extract data from json.
+        Достает информацию из json.
         """
         with open(data_path) as f:
             self.data = json.load(f)
-        return self.data
 
     def chats_ex(self):
         """
-        Return chats dictionary.
+        Возвращает словарь из чатов.
         """
         self.chats = self.data['chats']['list']
         return self.chats
@@ -103,8 +103,8 @@ class Extraction():
 
 class Chat():
     """
-    Chat object consists of telegram's chat field's +
-    an array of Message objects.
+    Объект класса Chat состоит из полей чата телеграмма + 
+    массива из объектов класса Message.
     """
     name = None
     id = None
@@ -112,6 +112,11 @@ class Chat():
     messages = None
 
     def __init__(self, chat, login):
+        """
+        Берет чат и создает объект с упомянутыми выше полями +
+        итерирутеся по сообщениям чата и создает массив с объектами
+        класса Message.
+        """
         self.name = chat["name"] if "name" in chat.keys() else None
         self.id = chat["id"]
         self.type = chat["type"]
@@ -120,15 +125,15 @@ class Chat():
             if message["type"] == "service" and \
                     message["action"] != "phone_call" and \
                     message["action"] != "group_call":
-                continue
+                continue   # если сообщение типа service и не call, пропуск
             messages.append(Message(message, chat, login))
         self.messages = messages
 
 
 class Message():
     """
-    Message object consists of telegram's fields +
-    some useful extra fields, like a type, game table etc.
+    Объект класса Message состоит из полей телеграмма +
+    некоторых полезных полей, таких как тип, игровое место и тп.
     """
     author = None
     send_time = None
@@ -138,6 +143,11 @@ class Message():
     forwarded = None
 
     def __init__(self, message, chat, login):
+        """
+        Берет сообщение и создает объект. Если сообщение типа 
+        service, то заведомо оно есть call.
+        """
+        send_time = datetime.fromisoformat(message["date"] + ZERO)
         self.send_time = message["date"]
         self.text = message["text"]
         if message["type"] == "service":
@@ -154,6 +164,7 @@ class Message():
             self.author = message["from"]
             if "edited" in message.keys():
                 self.edited = True
+                edit = datetime.fromisoformat(message["edited"] + ZERO)
                 self.edit_time = message["edited"]
             else:
                 self.edited = False
@@ -162,59 +173,60 @@ class Message():
                 self.forwarded_from = message["forwarded_from"]
             else:
                 self.forwarded = False
-            tmp_simple_text = True   # flag for simple text message
+            tmp_simple_text = True   # флаг для simple text сообщения
             for key in message.keys():
-                if key not in required_fields_message:
-                    if key not in ['edited',
-                                   'edited_unixtime',
-                                   'forwarded_from',
-                                   'reply_to_message_id',
-                                   'reply_to_peer_id']:
+                if key not in required_fields_message and \
+                        key not in ['edited',
+                                    'edited_unixtime',
+                                    'forwarded_from',
+                                    'reply_to_message_id',
+                                    'reply_to_peer_id']:
                         tmp_simple_text = False
             if tmp_simple_text:
                 self.type = "simple_text"
             elif "media_type" in message.keys() and \
-                    message["media_type"] in ["sticker",  # sticker
-                                              "voice_message",  # gs
-                                              "video_message",  # circle
-                                              "audio_file",  # audio file
-                                              "video_file",  # video
-                                              "animation"]:  # gif
+                    message["media_type"] in ["sticker",  # стикер
+                                              "voice_message",  # гска
+                                              "video_message",  # кружочек
+                                              "audio_file",  # аудио файл
+                                              "video_file",  # видео
+                                              "animation"]:  # гифка
                 self.type = message["media_type"]
+                if "sticker_emoji" in message.keys():
+                    self.sticker_emoji = message["sticker_emoji"]
                 if "duration_seconds" in message.keys():
                     self.duration = message["duration_seconds"]
-            elif "mime_type" in message.keys():   # message with a file
+            elif "mime_type" in message.keys():   # сообщение с файлом
                 self.type = "file"
-            elif "photo" in message.keys():   # message with a photo
+            elif "photo" in message.keys():   # сообщение с фото
                 self.type = "photo"
-            elif "poll" in message.keys():   # questionnaire
+            elif "poll" in message.keys():   # опросник
                 self.type = "poll"
-            elif "contact_information" in message.keys():   # for future
+            elif "contact_information" in message.keys():   # контакт
                 self.type = "contact"
-            elif "location_information" in message.keys():   # for future
+            elif "location_information" in message.keys():   # геолокация
                 self.type = "location"
-            elif "via_bot" in message.keys():   # using a bot
+            elif "via_bot" in message.keys():   # использование бота
                 self.type = "bot_usage"
             elif "game_title" in message.keys() and \
-                    (place := game_finder(login, message)):   # games
+                    (place := game_finder(login, message)):   # игры
                 self.type = "game"
                 self.game_title = message["game_title"]
                 self.game_place = place
             self.type = "unknown"
 
 
-def start_api(login):
+def start_api(login, path):
     '''
-    Function, that analyses json file and returns
-    an array with Message objects.
+    Функция, которая анализирует файл json и возвращает
+    массив с объектами класса Chat.
     params:
-    - login: user's login, about who the main info is
-    (game stats, geolocation etc)
+    - login: логин пользователя, о котором будет главная инфа
+    (статистика игр, геолокации и тд)
     return params:
-    - messages: an array with Message objects.
+    - ret_chats: массив объектов класса Chata.
     '''
-    extractor = Extraction()
-    extractor.data_ex()
+    extractor = Extraction(path)
     old_chats = extractor.chats_ex()
     ret_chats = []
     for chat in old_chats:

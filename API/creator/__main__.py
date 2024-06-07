@@ -3,7 +3,10 @@ import sys
 from . import start_api
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Please select login")
+    if len(sys.argv) != 3:
+        print("Please select login and path for the file with results")
     else:
-        start_api(sys.argv[1])
+        try:
+            start_api(sys.argv[1], sys.argv[2])
+        except:
+            print("Error")
