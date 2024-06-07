@@ -71,9 +71,7 @@ optional_fields_service = ['boosts',
 
 
 def game_finder(login, message):
-    """
-    Helping function, that just finding a login's place at the game.
-    """
+    """Вспомогательная функция, находит место пользователя в игре."""
     for line in message["text"]:
         if type(line) is str and line.find(login) != -1:
             return line[1: line.find(".")]
@@ -83,39 +81,34 @@ def game_finder(login, message):
 
 
 class Extraction():
-    '''
-    Этот класс достает информацию из json файла.
-    '''
+    """Этот класс достает информацию из json файла."""
+
     def __init__(self, data_path):
-        """
-        Достает информацию из json.
-        """
+        """Достает информацию из json."""
         with open(data_path) as f:
             self.data = json.load(f)
 
     def chats_ex(self):
-        """
-        Возвращает словарь из чатов.
-        """
+        """Возвращает словарь из чатов."""
         self.chats = self.data['chats']['list']
         return self.chats
 
 
 class Chat():
+    """Объект класса Chat состоит из полей чата телеграмма.
+
+    Еще содержит массив из объектов класса Message.
     """
-    Объект класса Chat состоит из полей чата телеграмма + 
-    массива из объектов класса Message.
-    """
+
     name = None
     id = None
     type = None
     messages = None
 
     def __init__(self, chat, login):
-        """
-        Берет чат и создает объект с упомянутыми выше полями +
-        итерирутеся по сообщениям чата и создает массив с объектами
-        класса Message.
+        """Берет чат и создает объект с упомянутыми выше полями.
+
+        Еще итерирутеся по сообщениям чата и создает массив объектов Message.
         """
         self.name = chat["name"] if "name" in chat.keys() else None
         self.id = chat["id"]
@@ -131,10 +124,11 @@ class Chat():
 
 
 class Message():
+    """Объект класса Message состоит из полей телеграмма.
+
+    Еще есть некоторые поля, такие как тип, игровое место и тп.
     """
-    Объект класса Message состоит из полей телеграмма +
-    некоторых полезных полей, таких как тип, игровое место и тп.
-    """
+
     author = None
     send_time = None
     type = None
@@ -143,12 +137,12 @@ class Message():
     forwarded = None
 
     def __init__(self, message, chat, login):
-        """
-        Берет сообщение и создает объект. Если сообщение типа 
-        service, то заведомо оно есть call.
+        """Берет сообщение и создает объект.
+
+        Если сообщение типа service, то заведомо оно есть call.
         """
         send_time = datetime.fromisoformat(message["date"] + ZERO)
-        self.send_time = message["date"]
+        self.send_time = send_time
         self.text = message["text"]
         if message["type"] == "service":
             self.author = message["actor"]
@@ -164,8 +158,8 @@ class Message():
             self.author = message["from"]
             if "edited" in message.keys():
                 self.edited = True
-                edit = datetime.fromisoformat(message["edited"] + ZERO)
-                self.edit_time = message["edited"]
+                edit_time = datetime.fromisoformat(message["edited"] + ZERO)
+                self.edit_time = edit_time
             else:
                 self.edited = False
             if "forwarded_from" in message.keys():
@@ -181,7 +175,7 @@ class Message():
                                     'forwarded_from',
                                     'reply_to_message_id',
                                     'reply_to_peer_id']:
-                        tmp_simple_text = False
+                    tmp_simple_text = False
             if tmp_simple_text:
                 self.type = "simple_text"
             elif "media_type" in message.keys() and \
@@ -217,15 +211,13 @@ class Message():
 
 
 def start_api(login, path):
-    '''
-    Функция, которая анализирует файл json и возвращает
-    массив с объектами класса Chat.
+    """Анализирует файл json и возвращает массив с объектами класса Chat.
+
     params:
-    - login: логин пользователя, о котором будет главная инфа
-    (статистика игр, геолокации и тд)
+    - login: логин пользователя, о котором будет главная инфа.
     return params:
-    - ret_chats: массив объектов класса Chata.
-    '''
+    - ret_chats: массив объектов класса Chat.
+    """
     extractor = Extraction(path)
     old_chats = extractor.chats_ex()
     ret_chats = []

@@ -8,5 +8,5 @@ if __name__ == "__main__":
     else:
         try:
             start_api(sys.argv[1], sys.argv[2])
-        except:
-            print("Error")
+        except Exception as e:
+            print(f"Error: {e}")
