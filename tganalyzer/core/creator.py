@@ -70,11 +70,13 @@ optional_fields_service = ['boosts',
 # Доп функции
 
 
-def game_finder(login, message):
-    """Вспомогательная функция, находит место пользователя в игре."""
+def game_parcer(message):
+    """Вспомогательная функция, составляет таблицу пользователей."""
+    game_table = {}
     for line in message["text"]:
-        if type(line) is str and line.find(login) != -1:
-            return line[1: line.find(".")]
+        if type(line) is str and len(line) > 0:
+            game_table[line[line.find(".") + 2: -3]] = line[1: line.find(".")]
+    return game_table
 
 
 # Основные классы
@@ -105,7 +107,7 @@ class Chat():
     type = None
     messages = None
 
-    def __init__(self, chat, login):
+    def __init__(self, chat):
         """Берет чат и создает объект с упомянутыми выше полями.
 
         Еще итерирутеся по сообщениям чата и создает массив объектов Message.
@@ -119,7 +121,7 @@ class Chat():
                     message["action"] != "phone_call" and \
                     message["action"] != "group_call":
                 continue   # если сообщение типа service и не call, пропуск
-            messages.append(Message(message, chat, login))
+            messages.append(Message(message, chat))
         self.messages = messages
 
 
@@ -136,7 +138,7 @@ class Message():
     edited = None
     forwarded = None
 
-    def __init__(self, message, chat, login):
+    def __init__(self, message, chat):
         """Берет сообщение и создает объект.
 
         Если сообщение типа service, то заведомо оно есть call.
@@ -200,21 +202,20 @@ class Message():
                 self.type = "contact"
             elif "location_information" in message.keys():   # геолокация
                 self.type = "location"
-            elif "via_bot" in message.keys():   # использование бота
-                self.type = "bot_usage"
-            elif "game_title" in message.keys() and \
-                    (place := game_finder(login, message)):   # игры
+            elif "game_title" in message.keys():   # игры
                 self.type = "game"
                 self.game_title = message["game_title"]
-                self.game_place = place
+                self.game_table = game_parcer(message)
+            elif "via_bot" in message.keys():   # использование бота
+                self.type = "bot_usage"
             self.type = "unknown"
 
 
-def start_api(login, path):
+def start_api(path):
     """Анализирует файл json и возвращает массив с объектами класса Chat.
 
     params:
-    - login: логин пользователя, о котором будет главная инфа.
+    - path: путь к анализируемому файлу json.
     return params:
     - ret_chats: массив объектов класса Chat.
     """
@@ -222,5 +223,5 @@ def start_api(login, path):
     old_chats = extractor.chats_ex()
     ret_chats = []
     for chat in old_chats:
-        ret_chats.append(Chat(chat, login))
+        ret_chats.append(Chat(chat))
     return ret_chats
