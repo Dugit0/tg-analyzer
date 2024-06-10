@@ -188,8 +188,11 @@ class Message():
                                               "video_file",  # видео
                                               "animation"]:  # гифка
                 self.type = message["media_type"]
-                if "sticker_emoji" in message.keys():
-                    self.sticker_emoji = message["sticker_emoji"]
+                if self.type == "sticker":
+                    if "sticker_emoji" in message.keys():
+                        self.sticker_emoji = message["sticker_emoji"]
+                    else:
+                        self.sticker_emoji = None
                 if "duration_seconds" in message.keys():
                     self.duration = message["duration_seconds"]
             elif "mime_type" in message.keys():   # сообщение с файлом
