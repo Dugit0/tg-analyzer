@@ -109,16 +109,32 @@ class MainWindow(QMainWindow):
         date_range_layout = QHBoxLayout()
         today_date = datetime.date.today()
         assert today_date.year - 5 > 0
+        # From date widgets
+        from_date_layout = QVBoxLayout()
+        from_date_label = QLabel()
+        from_date_label.setText("from_date_label")
+        from_date_label.setAlignment(Qt.AlignHCenter)
         from_date = QDateEdit(QDate(today_date.year - 5,
                                     today_date.month,
                                     today_date.day))
+        from_date.setCalendarPopup(True)
+        from_date.setAlignment(Qt.AlignHCenter)
+        from_date_layout.addWidget(from_date_label)
+        from_date_layout.addWidget(from_date)
+        # To date widgets
+        to_date_layout = QVBoxLayout()
+        to_date_label = QLabel()
+        to_date_label.setText("to_date_label")
+        to_date_label.setAlignment(Qt.AlignHCenter)
         to_date = QDateEdit(QDate(today_date.year,
                                   today_date.month,
                                   today_date.day))
-        from_date.setCalendarPopup(True)
         to_date.setCalendarPopup(True)
-        date_range_layout.addWidget(from_date)
-        date_range_layout.addWidget(to_date)
+        to_date.setAlignment(Qt.AlignHCenter)
+        to_date_layout.addWidget(to_date_label)
+        to_date_layout.addWidget(to_date)
+        date_range_layout.addLayout(from_date_layout)
+        date_range_layout.addLayout(to_date_layout)
 
         # Scroll area for features
         features_area = QScrollArea(self)
