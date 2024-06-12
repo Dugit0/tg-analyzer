@@ -9,8 +9,11 @@ import matplotlib.pyplot as plt
 MS_TKR = lambda x : x.send_time
 TP_SRT = lambda x : x[1]
 FEATURES = ["symbol_sum",
+            "symbol_per_day",
             "word_sum",
+            "word_per_day",
             "message_sum",
+            "message_per_day",
             "gs_sum",
             "gs_len",
             "top_long_gs",
@@ -22,7 +25,9 @@ FEATURES = ["symbol_sum",
             "top_long_ph_call",
             "gr_call_sum",
             "gr_call_len",
-            "fav_stick"]
+            "fav_stick",
+            "photo_sum",
+            "video_sum"]
 
 
 # Вспомогательные функции
@@ -36,16 +41,22 @@ def features_create(features, feat_fl):
             feat_fl["proc_messages"] or \
             feat_fl["messages_summary"]:
         features["message_sum"] = True
+    if feat_fl["symbols_per_day"]:
+        features["symbol_per_day"] = True
 
     if feat_fl["top_3_word_quantity"] or \
             feat_fl["proc_words"] or \
             feat_fl["words_summary"]:
         features["word_sum"] = True
+    if feat_fl["words_per_day"]:
+        features["word_per_day"] = True
 
     if feat_fl["top_3_symbol_quantity"] or \
             feat_fl["proc_symbols"] or \
             feat_fl["symbols_summary"]:
         features["symbol_sum"] = True
+    if feat_fl["messages_per_day"]:
+        features["message_per_day"] = True
 
     if feat_fl["top_3_gs_quantity"]:
         features["gs_sum"] = True
@@ -80,6 +91,12 @@ def features_create(features, feat_fl):
     if feat_fl["favourite_sticker"]:
         features["fav_stick"]
 
+    if feat_fl["photos_summary"]:
+        features["photo_sum"] = True
+
+    if feat_fl["videos_summary"]:
+        features["video_sum"] = True
+
 
 def quan_counter(update, aut, num):
     """Помогает составлять словари в классе Chat_stat."""
@@ -103,10 +120,29 @@ def top_counter(update, aut, dur):
 
 
 def top_counter_chats(update, analysed, author):
-    """Помогает составлять топы по размеру сообщений по чатово"""
+    """Помогает составлять топы по размеру сообщений по чатово."""
 
     sum = sum(analysed.values())
     top_counter(update, author, sum)
+
+
+def top_3_stickers_finder(stickers):
+    """Находит 3 наиболее используемые эмоджики."""
+
+    top_3_stickers = []
+    for emo in stickers.keys():
+        top_counter(top_3_stickers, emo, stickers[emo])
+    return top_3_stickers
+
+
+def sticker_append(update, chat_stickers):
+    """Дополняет информацию о стикерах в общий массив."""
+
+    for emo in chat_stickers.keys():
+        if emo in update.keys():
+            update[emo] += chat_stickers[emo]
+        else:
+            update[emo] = chat_stickers[emo]
 
 
 def pie_create(output_path, all_chats, option):
@@ -140,6 +176,21 @@ def hist_create(output_path, all_chats, option):
     plt.legend()
     plt.savefig(output_path + f'proc_{option}.png')
 
+
+def plot_create(output_path, all_chats, option):
+    """Функция по созданию линейных графиков."""
+
+    for chat in all_chats.keys():
+        analysed = all_chats[chat]
+        name = analysed[0]
+        stats = analysed[1]
+        y, x = stats.keys(), stats.values()
+        plt.plot(x, y, label=name)
+
+    plt.legend()
+    plt.savefig(output_path + f'summary_{option}.png')
+
+
 # Основные классы
 
 class Chat_stat():
@@ -159,7 +210,7 @@ class Chat_stat():
     - fav_stick: любимый стикер-эмоджи по чату (словарь).
     """
 
-    def __init__(self, features, chat, time_gap):
+    def __init__(self, features, chat, time_gap, login):
         """Инициализирует объект класса, подсчитывая статистику по чату.
 
         params:
@@ -169,10 +220,16 @@ class Chat_stat():
 
         if features["symbol_sum"]:
             self.symbol_sum = {}
+        if features["symbol_per_day"]:
+            self.symbol_days = {}
         if features["word_sum"]:
             self.word_sum = {}
+        if features["word_per_day"]:
+            self.word_days = {}
         if features["message_sum"]:
             self.message_sum = {}
+        if features["message_per_day"]:
+            self.message_days = {}
         if features["gs_sum"]:
             self.gs_sum = {}
         if features["gs_len"]:
@@ -197,6 +254,10 @@ class Chat_stat():
             self.gr_call_len = {}
         if features["fav_stick"]:
             self.fav_stick = {}
+        if features["photo_sum"]:
+            self.photo_sum = {}
+        if features["video_sum"]:
+            self.video_sum = {}
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0], key=MS_TKR)
         end_mes = bisect.bisect_right(chat.messages, time_gap[1], key=MS_TKR)
@@ -206,10 +267,18 @@ class Chat_stat():
             if features["symbol_sum"]:
                 tmp_str = message.text.replace(' ', '')
                 quan_counter(self.symbol_sum, aut, len(tmp_str))
+            if features["symbol_per_day"]:
+                tmp_str = message.text.replace(' ', '')
+                quan_counter(self.symbol_days, i, len(tmp_str))
             if features["word_sum"]:
                 quan_counter(self.word_sum, aut, len(message.text.split()))
+            if features["word_per_day"]:
+                quan_counter(self.word_days, i, len(message.text.split()))
             if features["message_sum"]:
                 quan_counter(self.message_sum, aut, 1)
+            if features["message_per_day"]:
+                quan_counter(self.message_days, i, 1)
+            
             if features["ph_call_sum"] and \
                     message.type == "single_call":
                 quan_counter(self.ph_call_sum, aut, 1)
@@ -253,11 +322,16 @@ class Chat_stat():
                 top_counter(self.top_long_circ, aut, dur)
             if features["fav_stick"] and \
                     message.type == "sticker" and \
-                            message.sticker_emoji is not None:
+                    message.sticker_emoji is not None and \
+                    aut == login:
                 emo = message.sticker_emoji
-                if aut not in self.fav_stick.keys():
-                    self.fav_stick[aut] = {}
-                quan_counter(self.fav_stick[aut], emo, 1)
+                quan_counter(self.fav_stick, emo, 1)
+            if features["photo_sum"] and \
+                    message.type == "photo":
+                quan_counter(self.photo_sum, aut, 1)
+            if features["video_sum"] and \
+                    message.type == "video_file":
+                quan_counter(self.video_sum, aut, 1)
 
 
 # Основные функции
@@ -301,6 +375,13 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
     if features_flags["messages_summary"]:
         messages_summary = 0
 
+    if features_flags["symbols_per_day"]:
+        symbol_per_day = {}
+    if features_flags["words_per_day"]:
+        word_per_day = {}
+    if features_flags["messages_per_day"]:
+        message_per_day = {}
+
     if features_flags["top_3_gs_quantity"]:
         top_gs_quan = []
     if features_flags["top_3_gs_length"]:
@@ -335,9 +416,18 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
     if features_flags["proc_gr_call"]:
         len_gr_call_chats = [[], [], []]   # all chats
 
+    if features_flags["favourite_sticker"]:
+        top_fav_stickers = {}
+
+    if features_flags["photos_summary"]:
+        photos_summary = 0
+
+    if features_flags["videos_summary"]:
+        videos_summary = 0
+
     for chat in parsed_chats:
         if chat.id in chat_ids:
-            analysed_chat = Chat_stat(features, chat, time_gap)
+            analysed_chat = Chat_stat(features, chat, time_gap, login)
 
             if features_flags["top_3_symbol_quantity"]:
                 analysed = analysed_chat.symbol_sum
@@ -350,24 +440,34 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 top_counter_chats(top_messages, analysed, chat.id)
 
             if features_flags["proc_symbols"]:
-                sum = sum(analysed_chat.symbol_sum.valuses())
+                sum = sum(analysed_chat.symbol_sum.values())
                 quan_symbol_chats[chat.name] = sum
             if features_flags["proc_words"]:
-                sum = sum(analysed_chat.word_sum.valuses())
+                sum = sum(analysed_chat.word_sum.values())
                 quan_word_chats[chat.name] = sum
             if features_flags["proc_messages"]:
-                sum = sum(analysed_chat.message_sum.valuses())
+                sum = sum(analysed_chat.message_sum.values())
                 quan_message_chats[chat.name] = sum
 
             if features_flags["symbols_summary"]:
-                sum = sum(analysed_chat.symbol_sum.valuses())
+                sum = sum(analysed_chat.symbol_sum.values())
                 symbols_summary += sum
             if features_flags["words_summary"]:
-                sum = sum(analysed_chat.word_sum.valuses())
+                sum = sum(analysed_chat.word_sum.values())
                 words_summary += sum
             if features_flags["messages_summary"]:
-                sum = sum(analysed_chat.message_sum.valuses())
+                sum = sum(analysed_chat.message_sum.values())
                 messages_summary += sum
+
+            if features_flags["symbols_per_day"]:
+                analysed = analysed_chat.symbol_days
+                symbol_per_day[chat.id] = [chat.name, analysed]
+            if features_flags["words_per_day"]:
+                analysed = analysed_chat.word_days
+                word_per_day[chat.id] = [chat.name, analysed]
+            if features_flags["messages_per_day"]:
+                analysed = analysed_chat.message_days
+                message_per_day[chat.id] = [chat.name, analysed]
 
             if features_flags["top_3_gs_quantity"]:
                 analysed = analysed_chat.gs_sum
@@ -450,6 +550,17 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                         recv += sum
                 len_gr_call_chats[1].append(send)
                 len_gr_call_chats[2].append(recv)
+            
+            if features_flags["favourite_sticker"]:
+                sticker_append(top_fav_stickers, analysed_chat.fav_stick)
+
+            if features_flags["photos_summary"]:
+                sum = sum(analysed_chat.photo_sum.values())
+                photos_summary += sum
+            
+            if features_flags["videos_summary"]:
+                sum = sum(analysed_chat.video_sum.values())
+                videos_summary += sum
         else:
             continue
 
@@ -474,6 +585,13 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         bar_create(output_folder, words_summary, "word")
     if features_flags["messages_summary"]:
         bar_create(output_folder, messages_summary, "message")
+
+    if features_flags["symbols_per_day"]:
+        plot_create(output_folder, symbols_summary, "symbol")
+    if features_flags["words_per_day"]:
+        plot_create(output_folder, words_summary, "word")
+    if features_flags["messages_per_day"]:
+        plot_create(output_folder, messages_summary, "message")
 
     if features_flags["top_3_gs_quantity"]:
         ret_stats["top_3_gs_quantity"] = top_gs_quan
@@ -508,5 +626,15 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         ret_stats["top_3_gr_call_length"] = top_gr_call_len
     if features_flags["proc_gr_call"]:
         hist_create(output_folder, len_gr_call_chats, "gr_call")
+
+    if features_flags["favourite_sticker"]:
+        top_3_stickers = top_3_stickers_finder(top_fav_stickers)
+        ret_stats["favourite_sticker"] = top_3_stickers
+
+    if features_flags["photos_summary"]:
+        bar_create(output_folder, photos_summary, "photo")
+
+    if features_flags["videos_summary"]:
+        bar_create(output_folder, videos_summary, "video")
 
     return ret_stats
