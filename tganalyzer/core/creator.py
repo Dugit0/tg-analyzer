@@ -195,6 +195,8 @@ class Message():
                         self.sticker_emoji = None
                 if "duration_seconds" in message.keys():
                     self.duration = message["duration_seconds"]
+                else:
+                    self.duration = 0
             elif "mime_type" in message.keys():   # сообщение с файлом
                 self.type = "file"
             elif "photo" in message.keys():   # сообщение с фото
@@ -211,7 +213,8 @@ class Message():
                 self.game_table = game_parcer(message)
             elif "via_bot" in message.keys():   # использование бота
                 self.type = "bot_usage"
-            self.type = "unknown"
+            else:
+                self.type = "unknown"
 
 
 def start_api(path):

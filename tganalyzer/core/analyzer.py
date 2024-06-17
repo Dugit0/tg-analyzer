@@ -65,8 +65,8 @@ def top_counter_chats(update, analysed, author, top=3):
     :type top: int
     """
 
-    sum = sum(analysed.values())
-    top_counter(update, author, sum, top)
+    summa = sum(analysed.values())
+    top_counter(update, author, summa, top)
 
 
 def sticker_append(update, chat_stickers):
@@ -103,7 +103,7 @@ def top_num_stickers_finder(update, stickers, top=3):
     for emo in stickers.keys():
         top_counter(update, emo, stickers[emo], top)
 
-
+# дизайны всех графиков требуют обговора, Дима
 def pie_create(output_path, all_chats, option):
     """Функция по созданию круговой диаграммы.
     
@@ -122,6 +122,7 @@ def pie_create(output_path, all_chats, option):
 
     plt.pie(x, labels=y)
     plt.savefig(output_path + f'proc_{option}.png')
+    plt.close()
 
 
 def bar_create(output_path, all_chats, option):
@@ -137,11 +138,12 @@ def bar_create(output_path, all_chats, option):
     :type option: str
     """
 
-    y = all_chats.keys()
-    x = all_chats.values()
+    x = all_chats.keys()
+    y = all_chats.values()
 
-    plt.bar(x, labels=y)
+    plt.bar(x, y)
     plt.savefig(output_path + f'summary_{option}.png')
+    plt.close()
 
 
 def hist_create(output_path, all_chats, option):   # Dmitry help with this
@@ -157,6 +159,7 @@ def hist_create(output_path, all_chats, option):   # Dmitry help with this
     plt.hist([x_send, x_recv], stacked=True, label=y)   # не разобрался tbh
     plt.legend()
     plt.savefig(output_path + f'proc_{option}.png')
+    plt.close()
 
 
 def plot_create(output_path, all_chats, option):
@@ -180,7 +183,8 @@ def plot_create(output_path, all_chats, option):
         plt.plot(x, y, label=name)
 
     plt.legend()
-    plt.savefig(output_path + f'summary_{option}.png')
+    plt.savefig(output_path + f'{option}_per_day.png')
+    plt.close()
 
 
 # Основные классы
@@ -246,21 +250,21 @@ class Chat_stat():
                 features["proc_symbols"] or \
                 features["symbols_summary"]:
             self.symbol_sum = {}
-        if features["symbol_per_day"]:
+        if features["symbols_per_day"]:
             self.symbol_days = {}
 
         if features["top_num_word_quantity"] > 0 or \
                 features["proc_words"] or \
                 features["words_summary"]:
             self.word_sum = {}
-        if features["word_per_day"]:
+        if features["words_per_day"]:
             self.word_days = {}
 
         if features["top_num_message_quantity"] > 0 or \
                 features["proc_messages"] or \
                 features["messages_summary"]:
             self.message_sum = {}
-        if features["message_per_day"]:
+        if features["messages_per_day"]:
             self.message_days = {}
 
         if features["top_num_gs_quantity"] > 0:
@@ -306,30 +310,56 @@ class Chat_stat():
                                         key= lambda x : x.send_time)
         end_mes = bisect.bisect_right(chat.messages, time_gap[1],
                                       key= lambda x : x.send_time)
-        for i in range(start_mes, end_mes + 1):
+        for i in range(start_mes, end_mes):
             message = chat.messages[i]
             aut = message.author
             if features["top_num_symbol_quantity"] > 0 or \
                     features["proc_symbols"] or \
                     features["symbols_summary"]:   #only useful symbols
-                tmp_str = message.text.replace(' ', '')
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem.replace(' ', '')
+                else:
+                    tmp_str = message.text.replace(' ', '')
                 quan_counter(self.symbol_sum, aut, len(tmp_str))
-            if features["symbol_per_day"]:
-                tmp_str = message.text.replace(' ', '')
+            if features["symbols_per_day"]:
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem.replace(' ', '')
+                else:
+                    tmp_str = message.text.replace(' ', '')
                 quan_counter(self.symbol_days, i, len(tmp_str))
 
             if features["top_num_word_quantity"] > 0 or \
                     features["proc_words"] or \
                     features["words_summary"]:
-                quan_counter(self.word_sum, aut, len(message.text.split()))
-            if features["word_per_day"]:
-                quan_counter(self.word_days, i, len(message.text.split()))
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem + " "
+                else:
+                    tmp_str = message.text
+                quan_counter(self.word_sum, aut, len(tmp_str.split()))
+            if features["words_per_day"]:
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem + " "
+                else:
+                    tmp_str = message.text
+                quan_counter(self.word_days, i, len(tmp_str.split()))
 
             if features["top_num_message_quantity"] > 0 or \
                     features["proc_messages"] or \
                     features["messages_summary"]:
                 quan_counter(self.message_sum, aut, 1)
-            if features["message_per_day"]:
+            if features["messages_per_day"]:
                 quan_counter(self.message_days, i, 1)
             
             if features["top_num_ph_call_quantity"] > 0 and \
@@ -386,7 +416,7 @@ class Chat_stat():
             if features["favourite_sticker"] is not None and \
                     message.type == "sticker" and \
                     message.sticker_emoji is not None and \
-                    aut == features["fav_stick"][0]:
+                    aut == features["favourite_sticker"][0]:
                 emo = message.sticker_emoji
                 quan_counter(self.fav_stick, emo, 1)
 
@@ -434,24 +464,24 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         quan_message_chats = {}
 
     if features["symbols_summary"]:
-        symbols_summary = 0
+        symbols_summary = {}
     if features["words_summary"]:
-        words_summary = 0
+        words_summary = {}
     if features["messages_summary"]:
-        messages_summary = 0
+        messages_summary = {}
 
     if features["symbols_per_day"]:
-        symbol_per_day = {}
+        symbols_per_day = {}
     if features["words_per_day"]:
-        word_per_day = {}
+        words_per_day = {}
     if features["messages_per_day"]:
-        message_per_day = {}
+        messages_per_day = {}
 
     if features["top_num_gs_quantity"] > 0:
         top_gs_quan = []
     if features["top_num_gs_length"] > 0:
         top_gs_len = []
-    if features["proc_gs"]:
+    if features["proc_gs"] is not None:
         len_gs_chats = [[], [], []]   # all chats
     if features["top_num_gs_in_every_chat"] > 0:
         len_gs_in_chat = {}   # top long gs in chat
@@ -460,7 +490,7 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_circ_quan = []
     if features["top_num_circ_length"] > 0:
         top_circ_len = []
-    if features["proc_circ"]:
+    if features["proc_circ"] is not None:
         len_circ_chats = [[], [], []]   # all chats
     if features["top_num_circ_in_every_chat"] > 0:
         len_circ_in_chat = {}   # top long circ in chat
@@ -469,7 +499,7 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_ph_call_quan = []
     if features["top_num_ph_call_length"] > 0:
         top_ph_call_len = []
-    if features["proc_ph_call"]:
+    if features["proc_ph_call"] is not None:
         len_ph_call_chats = [[], [], []]   # all chats
     if features["top_num_ph_call_in_every_chat"] > 0:
         len_ph_call_in_chat = {}   # top long ph_call in chat
@@ -478,17 +508,17 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_gr_call_quan = []
     if features["top_num_gr_call_length"] > 0:
         top_gr_call_len = []
-    if features["proc_gr_call"]:
+    if features["proc_gr_call"] is not None:
         len_gr_call_chats = [[], [], []]   # all chats
 
     if features["favourite_sticker"] is not None:
         top_fav_stickers = {}
 
     if features["photos_summary"]:
-        photos_summary = 0
+        photos_summary = {}
 
     if features["videos_summary"]:
-        videos_summary = 0
+        videos_summary = {}
 
     for chat in parsed_chats:
         if chat.id in chat_ids:
@@ -508,34 +538,34 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 top_counter_chats(top_messages, analysed, chat.id, top)
 
             if features["proc_symbols"]:
-                sum = sum(analysed_chat.symbol_sum.values())
-                quan_symbol_chats[chat.name] = sum
+                summa = sum(analysed_chat.symbol_sum.values())
+                quan_symbol_chats[chat.name] = summa
             if features["proc_words"]:
-                sum = sum(analysed_chat.word_sum.values())
-                quan_word_chats[chat.name] = sum
+                summa = sum(analysed_chat.word_sum.values())
+                quan_word_chats[chat.name] = summa
             if features["proc_messages"]:
-                sum = sum(analysed_chat.message_sum.values())
-                quan_message_chats[chat.name] = sum
+                summa = sum(analysed_chat.message_sum.values())
+                quan_message_chats[chat.name] = summa
 
             if features["symbols_summary"]:
-                sum = sum(analysed_chat.symbol_sum.values())
-                symbols_summary += sum
+                summa = sum(analysed_chat.symbol_sum.values())
+                symbols_summary[chat.name] = summa
             if features["words_summary"]:
-                sum = sum(analysed_chat.word_sum.values())
-                words_summary += sum
+                summa = sum(analysed_chat.word_sum.values())
+                words_summary[chat.name] = summa
             if features["messages_summary"]:
-                sum = sum(analysed_chat.message_sum.values())
-                messages_summary += sum
+                summa = sum(analysed_chat.message_sum.values())
+                messages_summary[chat.name] = summa
 
             if features["symbols_per_day"]:
                 analysed = analysed_chat.symbol_days
-                symbol_per_day[chat.id] = [chat.name, analysed]
+                symbols_per_day[chat.id] = [chat.name, analysed]
             if features["words_per_day"]:
                 analysed = analysed_chat.word_days
-                word_per_day[chat.id] = [chat.name, analysed]
+                words_per_day[chat.id] = [chat.name, analysed]
             if features["messages_per_day"]:
                 analysed = analysed_chat.message_days
-                message_per_day[chat.id] = [chat.name, analysed]
+                messages_per_day[chat.id] = [chat.name, analysed]
 
             if features["top_num_gs_quantity"] > 0:
                 analysed = analysed_chat.gs_sum
@@ -550,11 +580,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 send = 0
                 recv = 0
                 for aut in analysed_chat.gs_len.keys():
-                    sum = analysed_chat.gs_len[aut]
+                    summa = analysed_chat.gs_len[aut]
                     if aut == features["proc_gs"]:
-                        send += sum
+                        send += summa
                     else:
-                        recv += sum
+                        recv += summa
                 len_gs_chats[1].append(send)
                 len_gs_chats[2].append(recv)
             if features["top_num_gs_in_every_chat"] > 0:
@@ -573,11 +603,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 send = 0
                 recv = 0
                 for aut in analysed_chat.circ_len.keys():
-                    sum = analysed_chat.circ_len[aut]
+                    summa = analysed_chat.circ_len[aut]
                     if aut == features["proc_circ"]:
-                        send += sum
+                        send += summa
                     else:
-                        recv += sum
+                        recv += summa
                 len_circ_chats[1].append(send)
                 len_circ_chats[2].append(recv)
             if features["top_num_circ_in_every_chat"] > 0:
@@ -596,11 +626,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 send = 0
                 recv = 0
                 for aut in analysed_chat.ph_call_len.keys():
-                    sum = analysed_chat.ph_call_len[aut]
+                    summa = analysed_chat.ph_call_len[aut]
                     if aut == features["proc_ph_call"]:
-                        send += sum
+                        send += summa
                     else:
-                        recv += sum
+                        recv += summa
                 len_ph_call_chats[1].append(send)
                 len_ph_call_chats[2].append(recv)
             if features["top_num_ph_call_in_every_chat"] > 0:
@@ -619,11 +649,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 send = 0
                 recv = 0
                 for aut in analysed_chat.gr_call_len.keys():
-                    sum = analysed_chat.gr_call_len[aut]
+                    summa = analysed_chat.gr_call_len[aut]
                     if aut == features["proc_gr_call"]:
-                        send += sum
+                        send += summa
                     else:
-                        recv += sum
+                        recv += summa
                 len_gr_call_chats[1].append(send)
                 len_gr_call_chats[2].append(recv)
             
@@ -631,12 +661,12 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 sticker_append(top_fav_stickers, analysed_chat.fav_stick)
 
             if features["photos_summary"]:
-                sum = sum(analysed_chat.photo_sum.values())
-                photos_summary += sum
+                summa = sum(analysed_chat.photo_sum.values())
+                photos_summary[chat.name] = summa
             
             if features["videos_summary"]:
-                sum = sum(analysed_chat.video_sum.values())
-                videos_summary += sum
+                summa = sum(analysed_chat.video_sum.values())
+                videos_summary[chat.name] = summa
         else:
             continue
 
@@ -663,11 +693,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         bar_create(output_folder, messages_summary, "message")
 
     if features["symbols_per_day"]:
-        plot_create(output_folder, symbols_summary, "symbol")
+        plot_create(output_folder, symbols_per_day, "symbol")
     if features["words_per_day"]:
-        plot_create(output_folder, words_summary, "word")
+        plot_create(output_folder, words_per_day, "word")
     if features["messages_per_day"]:
-        plot_create(output_folder, messages_summary, "message")
+        plot_create(output_folder, messages_per_day, "message")
 
     if features["top_num_gs_quantity"] > 0:
         ret_stats["top_num_gs_quantity"] = top_gs_quan
