@@ -24,4 +24,9 @@ def html_gen(path, login, features):
         loader=jinja2.FileSystemLoader(f"{PATH}/templates")
     )
     tmpl = env.get_template("index.html.jinja2")
-    tmpl.stream(login=login, features=features, text=TEXT).dump(path)
+    tmpl.stream(
+        login=login,
+        features=features,
+        text=TEXT,
+        staticpath=f"{PATH}/static"
+    ).dump(path)
