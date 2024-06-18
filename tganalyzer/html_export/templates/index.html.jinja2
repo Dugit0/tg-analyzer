@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Анализатор статистики для Telegram</title>
+    <title>{{ text.title }}: @{{ login }}</title>
 </head>
 <body>
-    <h1>Анализатор статистики для Telegram</h1>
-    <p>Пользователь:
+    <h1>{{ text.title }}</h1>
+    <p>{{ text.user }}:
     <a href="https://t.me/{{ login }}">
         <em>@{{ login }}</em>
     </a>
     {% for feature, img in features.items() %}
     <p> <h3>{{ feature }}</h3> <img src={{ img }}>
     {% else %}
-    <p> <em>(Ничего не выбрано)</em>
+    <p> <em>{{ text.empty_list }}</em>
     {% endfor %}
 </body>
 </html>
