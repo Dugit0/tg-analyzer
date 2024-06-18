@@ -5,9 +5,14 @@
 </head>
 <body>
     <h1>Анализатор статистики для Telegram</h1>
-    <p>Пользователь: <em>@{{ login }}</em>
+    <p>Пользователь:
+    <a href="https://t.me/{{ login }}">
+        <em>@{{ login }}</em>
+    </a>
     {% for feature, img in features.items() %}
     <p> <h3>{{ feature }}</h3> <img src={{ img }}>
+    {% else %}
+    <p> <em>(Ничего не выбрано)</em>
     {% endfor %}
 </body>
 </html>
