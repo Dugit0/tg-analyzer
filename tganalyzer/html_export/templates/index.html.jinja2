@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Анализатор статистики для Telegram</title>
+</head>
+<body>
+    <h1>Анализатор статистики для Telegram</h1>
+    <p>Пользователь: <em>@{{ login }}</em>
+    {% for feature, img in features.items() %}
+    <p> <h3>{{ feature }}</h3> <img src={{ img }}>
+    {% endfor %}
+</body>
+</html>
