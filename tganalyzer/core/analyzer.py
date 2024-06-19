@@ -32,6 +32,21 @@
 - False на входе если не использовать
 "messages_per_day": создает графики с данными по отправке сообщений в день
 - False на входе если не использовать
+"symbols_quantity_each_person": подсчитывает количество отправленных символов
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с
+ключами - логинами пользователей, а значениями - количеством символов в чате
+"words_quantity_each_person": подсчитывает количество отправленных слов
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с
+ключами - логинами пользователей, а значениями - количеством слов в чате
+"messages_quantity_each_person": подсчитывает количество отправленных сообщений
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с
+ключами - логинами пользователей, а значениями - количеством сообщений в чате
 "top_num_gs_quantity": подсчитывает количество голосовых сообщений
 в чатах и возвращает топ по большему количеству использования
 - получает на вход число, сколько мест в топе (0 если не использовать)
@@ -49,6 +64,11 @@
 - возвращаемым значением является словарь, где ключами являются id чатов, а
 значениями являются убывающие массивы пар вида
 [имя отправителя, длина голосового сообщения]
+"gs_quantity_each_person": подсчитывает количество голосовых сообщений
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с ключами -
+логинами пользователей, а значениями - количеством голосовых сообщений в чате
 "top_num_circ_quantity": подсчитывает количество видео сообщений
 в чатах и возвращает топ по большему количеству использования
 - получает на вход число, сколько мест в топе (0 если не использовать)
@@ -66,6 +86,11 @@
 - возвращаемым значением является словарь, где ключами являются id чатов, а
 значениями являются убывающие массивы пар вида
 [имя отправителя, длина видео сообщения]
+"circs_quantity_each_person": подсчитывает количество видео сообщений
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с ключами -
+логинами пользователей, а значениями - количеством видео сообщений в чате
 "top_num_ph_call_quantity": подсчитывает количество личных звонков
 в чатах и возвращает топ по большему количеству использования
 - получает на вход число, сколько мест в топе (0 если не использовать)
@@ -83,6 +108,11 @@
 - возвращаемым значением является словарь, где ключами являются id чатов, а
 значениями являются убывающие массивы пар вида
 [имя отправителя, длина личного звонка]
+"ph_calls_quantity_each_person": подсчитывает количество личных звонков
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с ключами -
+логинами пользователей, а значениями - количеством личных звонков в чате
 "top_num_gr_call_quantity": подсчитывает количество групповых звонков
 в чатах и возвращает топ по большему количеству использования
 - получает на вход число, сколько мест в топе (0 если не использовать)
@@ -107,6 +137,11 @@
 "photos_summary": создает столбчатую диаграмму с количеством фотографий
 в чатах
 - False на входе если не использовать
+"photos_quantity_each_person": подсчитывает количество отправленных фотографий
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с ключами -
+логинами пользователей, а значениями - количеством фотографий в чате
 "top_num_video_quantity": подсчитывает количество видео в чатах и
 возвращает топ по большему количеству использования
 - получает на вход число, сколько мест в топе (0 если не использовать)
@@ -118,6 +153,11 @@
 "videos_summary": создает столбчатую диаграмму с количеством видео
 в чатах
 - False на входе если не использовать
+"videos_quantity_each_person": подсчитывает количество отправленных видео
+отдельно для каждого пользователя
+- False на входе если не использовать
+- словарь на выходе, где ключи - id чатов, значения - словари с ключами -
+логинами пользователей, а значениями - количеством видео в чате
 """
 import bisect
 import matplotlib.pyplot as plt
@@ -317,32 +357,44 @@ class Chat_stat():
     :type symbol_sum: dict
     :param symbol_days: количество символов в день.
     :type symbol_days: dict
+    :param symbol_people: количесто символов у каждого пользователя
+    :type symbol_people: dict
     :param word_sum: количество слов в чате.
     :type word_sum: dict
     :param word_days: количество слов в день.
     :type word_days: dict
+    :param word_people: количесто слов у каждого пользователя
+    :type word_people: dict
     :param message_sum: количество сообщений в чате.
     :type message_sum: dict
     :param message_days: количество сообщений в день.
     :type message_days: dict
+    :param message_people: количесто сообщений у каждого пользователя
+    :type message_people: dict
     :param gs_sum: количесвто голосовых сообщений в чате.
     :type gs_sum: dict
     :param gs_len: суммарная длина гсок.
     :type gs_len: dict
     :param top_long_gs: самые длинные голосовые сообщения по чату.
     :type top_long_gs: array
+    :param gs_people: количесто голосовых сообщений у каждого пользователя
+    :type gs_people: dict
     :param circ_sum: количество видео сообщений в чате.
     :type circ_sum: dict
     :param circ_len: суммарная длина кружков.
     :type circ_len: dict
     :param top_long_circ: саммые длинные кружки по чату.
     :type top_long_circ: array
+    :param circ_people: количесто видео сообщений у каждого пользователя
+    :type circ_people: dict
     :param ph_call_sum: количество личных звонков в чате.
     :type ph_call_sum: dict
     :param ph_call_len: суммарная длина личных звонков по чату.
     :type ph_call_len: dict
     :param top_long_ph_call: самые длинные звонки по чату.
     :type top_long_ph_call: array
+    :param ph_call_people: количесто личных звонков у каждого пользователя
+    :type ph_call_people: dict
     :param gr_call_sum: количество групповых звонков в чате.
     :type gr_call_sum: dict
     :param gr_call_len: суммарная длина групповых звонков по чату.
@@ -351,10 +403,14 @@ class Chat_stat():
     :type fav_stick: dict
     :param photo_sum: количество фото в чате.
     :type photo_sum: dict
-    :param video_sum: количество видео в чате.
+    :param photo_people: количесто фотографий у каждого пользователя
+    :type photo_people: dict
+    :param video_sum: количество видео файлов в чате.
     :type video_sum: dict
     :param video_len: суммарная длина видео файлов.
     :type video_len: dict
+    :param video_people: количесто видео файлов у каждого пользователя
+    :type video_people: dict
     """
 
     def __init__(self, features, chat, time_gap):
@@ -374,6 +430,8 @@ class Chat_stat():
             self.symbol_sum = {}
         if features["symbols_per_day"]:
             self.symbol_days = {}
+        if features["symbols_quantity_each_person"]:
+            self.symbol_people = {}
 
         if features["top_num_word_quantity"] > 0 or \
                 features["proc_words"] or \
@@ -381,6 +439,8 @@ class Chat_stat():
             self.word_sum = {}
         if features["words_per_day"]:
             self.word_days = {}
+        if features["words_quantity_each_person"]:
+            self.word_people = {}
 
         if features["top_num_message_quantity"] > 0 or \
                 features["proc_messages"] or \
@@ -388,6 +448,8 @@ class Chat_stat():
             self.message_sum = {}
         if features["messages_per_day"]:
             self.message_days = {}
+        if features["messages_quantity_each_person"]:
+            self.message_people = {}
 
         if features["top_num_gs_quantity"] > 0:
             self.gs_sum = {}
@@ -396,6 +458,8 @@ class Chat_stat():
             self.gs_len = {}
         if features["top_num_gs_in_every_chat"] > 0:
             self.top_long_gs = []
+        if features["gs_quantity_each_person"]:
+            self.gs_people = {}
 
         if features["top_num_circ_quantity"] > 0:
             self.circ_sum = {}
@@ -404,6 +468,8 @@ class Chat_stat():
             self.circ_len = {}
         if features["top_num_circ_in_every_chat"] > 0:
             self.top_long_circ = []
+        if features["circs_quantity_each_person"]:
+            self.circ_people = {}
 
         if features["top_num_ph_call_quantity"] > 0:
             self.ph_call_sum = {}
@@ -412,6 +478,8 @@ class Chat_stat():
             self.ph_call_len = {}
         if features["top_num_ph_call_in_every_chat"] > 0:
             self.top_long_ph_call = []
+        if features["ph_calls_quantity_each_person"]:
+            self.ph_call_people = {}
 
         if features["top_num_gr_call_quantity"] > 0:
             self.gr_call_sum = {}
@@ -425,12 +493,16 @@ class Chat_stat():
         if features["top_num_photo_quantity"] > 0 or \
                 features["photos_summary"]:
             self.photo_sum = {}
+        if features["photos_quantity_each_person"]:
+            self.photo_people = {}
 
         if features["top_num_video_quantity"] > 0 or \
                 features["videos_summary"]:
             self.video_sum = {}
         if features["top_num_video_length"] > 0:
             self.video_len = {}
+        if features["videos_quantity_each_person"]:
+            self.video_people = {}
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0],
                                         key= lambda x : x.send_time)
@@ -439,6 +511,8 @@ class Chat_stat():
         for i in range(start_mes, end_mes):
             message = chat.messages[i]
             aut = message.author
+
+            # symbols
             if features["top_num_symbol_quantity"] > 0 or \
                     features["proc_symbols"] or \
                     features["symbols_summary"]:   #only useful symbols
@@ -458,8 +532,19 @@ class Chat_stat():
                             tmp_str += elem.replace(' ', '')
                 else:
                     tmp_str = message.text.replace(' ', '')
-                quan_counter(self.symbol_days, i, len(tmp_str))
+                date = message.send_time.date()
+                quan_counter(self.symbol_days, date, len(tmp_str))
+            if features["symbols_quantity_each_person"]:
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem.replace(' ', '')
+                else:
+                    tmp_str = message.text.replace(' ', '')
+                quan_counter(self.symbol_people, aut, len(tmp_str))
 
+            # words
             if features["top_num_word_quantity"] > 0 or \
                     features["proc_words"] or \
                     features["words_summary"]:
@@ -479,15 +564,30 @@ class Chat_stat():
                             tmp_str += elem + " "
                 else:
                     tmp_str = message.text
-                quan_counter(self.word_days, i, len(tmp_str.split()))
+                date = message.send_time.date()
+                quan_counter(self.word_days, date, len(tmp_str.split()))
+            if features["words_quantity_each_person"]:
+                if type(message.text) is list:
+                    tmp_str = ''
+                    for elem in message.text:
+                        if type(elem) is str:
+                            tmp_str += elem + " "
+                else:
+                    tmp_str = message.text
+                quan_counter(self.word_people, aut, len(tmp_str.split()))
 
+            # messages
             if features["top_num_message_quantity"] > 0 or \
                     features["proc_messages"] or \
                     features["messages_summary"]:
                 quan_counter(self.message_sum, aut, 1)
             if features["messages_per_day"]:
-                quan_counter(self.message_days, i, 1)
-            
+                date = message.send_time.date()
+                quan_counter(self.message_days, date, 1)
+            if features["messages_quantity_each_person"]:
+                quan_counter(self.message_people, aut, 1)
+
+            # single calls
             if features["top_num_ph_call_quantity"] > 0 and \
                     message.type == "single_call":
                 quan_counter(self.ph_call_sum, aut, 1)
@@ -501,7 +601,11 @@ class Chat_stat():
                 dur = message.duration
                 top = features["top_num_ph_call_in_every_chat"]
                 top_counter(self.top_long_ph_call, aut, dur, top)
+            if features["ph_calls_quantity_each_person"] and \
+                    message.type == "single_call":
+                quan_counter(self.ph_call_people, aut, 1)
 
+            # group calls
             if features["top_num_gr_call_quantity"] > 0 and \
                     message.type == "group_call":
                 quan_counter(self.gr_call_sum, aut, 1)
@@ -511,6 +615,7 @@ class Chat_stat():
                 dur = message.duration
                 quan_counter(self.gr_call_len, aut, dur)
 
+            # gs
             if features["top_num_gs_quantity"] > 0 and \
                     message.type == "voice_message":
                 quan_counter(self.gs_sum, aut, 1)
@@ -524,7 +629,11 @@ class Chat_stat():
                 dur = message.duration
                 top = features["top_num_gs_in_every_chat"]
                 top_counter(self.top_long_gs, aut, dur, top)
+            if features["gs_quantity_each_person"] and \
+                    message.type == "voice_message":
+                quan_counter(self.gs_people, aut, 1)
 
+            # circles
             if features["top_num_circ_quantity"] > 0 and \
                     message.type == "video_message":
                 quan_counter(self.circ_sum, aut, 1)
@@ -538,7 +647,11 @@ class Chat_stat():
                 dur = message.duration
                 top = features["top_num_circ_in_every_chat"]
                 top_counter(self.top_long_circ, aut, dur, top)
+            if features["circs_quantity_each_person"] and \
+                    message.type == "video_message":
+                quan_counter(self.circ_people, aut, 1)
 
+            # stickers
             if features["favourite_sticker"] is not None and \
                     message.type == "sticker" and \
                     message.sticker_emoji is not None and \
@@ -546,11 +659,16 @@ class Chat_stat():
                 emo = message.sticker_emoji
                 quan_counter(self.fav_stick, emo, 1)
 
+            # photos
             if (features["top_num_photo_quantity"] > 0 or \
                     features["photos_summary"]) and \
                     message.type == "photo":
                 quan_counter(self.photo_sum, aut, 1)
+            if features["photos_quantity_each_person"] and \
+                    message.type == "photo":
+                quan_counter(self.photo_people, aut, 1)
 
+            # videos
             if (features["top_num_video_quantity"] or \
                     features["videos_summary"]) and \
                     message.type == "video_file":
@@ -559,6 +677,9 @@ class Chat_stat():
                     message.type == "video_file":
                 dur = message.duration
                 quan_counter(self.video_len, aut, dur)
+            if features["videos_quantity_each_person"] and \
+                    message.type == "video_file":
+                quan_counter(self.video_people, aut, 1)
 
 
 # Основные функции
@@ -609,6 +730,13 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
     if features["messages_per_day"]:
         messages_per_day = {}
 
+    if features["symbols_quantity_each_person"]:
+        symbols_per_person = {}
+    if features["words_quantity_each_person"]:
+        words_per_person = {}
+    if features["messages_quantity_each_person"]:
+        messages_per_person = {}
+
     if features["top_num_gs_quantity"] > 0:
         top_gs_quan = []
     if features["top_num_gs_length"] > 0:
@@ -617,6 +745,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         len_gs_chats = [[], [], []]   # all chats
     if features["top_num_gs_in_every_chat"] > 0:
         len_gs_in_chat = {}   # top long gs in chat
+    if features["gs_quantity_each_person"]:
+        gs_per_person = {}
 
     if features["top_num_circ_quantity"] > 0:
         top_circ_quan = []
@@ -626,6 +756,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         len_circ_chats = [[], [], []]   # all chats
     if features["top_num_circ_in_every_chat"] > 0:
         len_circ_in_chat = {}   # top long circ in chat
+    if features["circs_quantity_each_person"]:
+        circs_per_person = {}
 
     if features["top_num_ph_call_quantity"] > 0:
         top_ph_call_quan = []
@@ -635,6 +767,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         len_ph_call_chats = [[], [], []]   # all chats
     if features["top_num_ph_call_in_every_chat"] > 0:
         len_ph_call_in_chat = {}   # top long ph_call in chat
+    if features["ph_calls_quantity_each_person"]:
+        ph_calls_per_person = {}
 
     if features["top_num_gr_call_quantity"] > 0:
         top_gr_call_quan = []
@@ -650,6 +784,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_photos = []
     if features["photos_summary"]:
         photos_summary = {}
+    if features["photos_quantity_each_person"]:
+        photos_per_person = {}
 
     if features["top_num_video_quantity"] > 0:
         top_videos = []
@@ -657,6 +793,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_video_len = []
     if features["videos_summary"]:
         videos_summary = {}
+    if features["videos_quantity_each_person"]:
+        videos_per_person = {}
 
     for chat in parsed_chats:
         if chat.id in chat_ids:
@@ -705,6 +843,17 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 analysed = analysed_chat.message_days
                 messages_per_day[chat.id] = [chat.name, analysed]
 
+            if features["symbols_quantity_each_person"]:
+                analysed = analysed_chat.symbol_people
+                symbols_per_person[chat.id] = analysed
+            if features["words_quantity_each_person"]:
+                analysed = analysed_chat.word_people
+                words_per_person[chat.id] = analysed
+            if features["messages_quantity_each_person"]:
+                analysed = analysed_chat.message_people
+                messages_per_person[chat.id] = analysed
+
+            # gs
             if features["top_num_gs_quantity"] > 0:
                 analysed = analysed_chat.gs_sum
                 top = features["top_num_gs_quantity"]
@@ -727,7 +876,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 len_gs_chats[2].append(recv)
             if features["top_num_gs_in_every_chat"] > 0:
                 len_gs_in_chat[chat.id] = [chat.name, analysed_chat.top_long_gs]
+            if features["gs_quantity_each_person"]:
+                analysed = analysed_chat.gs_people
+                gs_per_person[chat.id] = analysed
 
+            # circles
             if features["top_num_circ_quantity"] > 0:
                 analysed = analysed_chat.circ_sum
                 top = features["top_num_circ_quantity"]
@@ -750,7 +903,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 len_circ_chats[2].append(recv)
             if features["top_num_circ_in_every_chat"] > 0:
                 len_circ_in_chat[chat.id] = [chat.name, analysed_chat.top_long_circ]
+            if features["circs_quantity_each_person"]:
+                analysed = analysed_chat.circ_people
+                circs_per_person[chat.id] = analysed
 
+            # single calls
             if features["top_num_ph_call_quantity"] > 0:
                 analysed = analysed_chat.ph_call_sum
                 top = features["top_num_ph_call_quantity"]
@@ -773,7 +930,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                 len_ph_call_chats[2].append(recv)
             if features["top_num_ph_call_in_every_chat"] > 0:
                 len_ph_call_in_chat[chat.id] = [chat.name, analysed_chat.top_long_ph_call]
+            if features["ph_calls_quantity_each_person"]:
+                analysed = analysed_chat.ph_call_people
+                ph_calls_per_person[chat.id] = analysed
 
+            # group calls
             if features["top_num_gr_call_quantity"] > 0:
                 analysed = analysed_chat.gr_call_sum
                 top = features["top_num_gr_call_quantity"]
@@ -794,10 +955,12 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
                         recv += summa
                 len_gr_call_chats[1].append(send)
                 len_gr_call_chats[2].append(recv)
-            
+
+            # stickers
             if features["favourite_sticker"] is not None:
                 sticker_append(top_fav_stickers, analysed_chat.fav_stick)
 
+            # photos
             if features["top_num_photo_quantity"] > 0:
                 analysed = analysed_chat.photo_sum
                 top = features["top_num_photo_quantity"]
@@ -805,7 +968,11 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
             if features["photos_summary"]:
                 summa = sum(analysed_chat.photo_sum.values())
                 photos_summary[chat.name] = summa
+            if features["photos_quantity_each_person"]:
+                analysed = analysed_chat.photo_people
+                photos_per_person[chat.id] = analysed
 
+            # videos
             if features["top_num_video_quantity"] > 0:
                 analysed = analysed_chat.video_sum
                 top = features["top_num_video_quantity"]
@@ -817,6 +984,9 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
             if features["videos_summary"]:
                 summa = sum(analysed_chat.video_sum.values())
                 videos_summary[chat.name] = summa
+            if features["videos_quantity_each_person"]:
+                analysed = analysed_chat.video_people
+                videos_per_person[chat.id] = analysed
         else:
             continue
 
@@ -849,6 +1019,13 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
     if features["messages_per_day"]:
         plot_create(output_folder, messages_per_day, "message")
 
+    if features["symbols_quantity_each_person"]:
+        ret_stats["symbols_quantity_each_person"] = symbols_per_person
+    if features["words_quantity_each_person"]:
+        ret_stats["words_quantity_each_person"] = words_per_person
+    if features["messages_quantity_each_person"]:
+        ret_stats["messages_quantity_each_person"] = messages_per_person
+
     if features["top_num_gs_quantity"] > 0:
         ret_stats["top_num_gs_quantity"] = top_gs_quan
     if features["top_num_gs_length"] > 0:
@@ -857,6 +1034,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         hist_create(output_folder, len_gs_chats, "gs")
     if features["top_num_gs_in_every_chat"] > 0:
         ret_stats["top_num_gs_in_every_chat"] = len_gs_in_chat
+    if features["gs_quantity_each_person"]:
+        ret_stats["gs_quantity_each_person"] = gs_per_person
 
     if features["top_num_circ_quantity"] > 0:
         ret_stats["top_num_circ_quantity"] = top_circ_quan
@@ -866,6 +1045,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         hist_create(output_folder, len_circ_chats, "circ")
     if features["top_num_circ_in_every_chat"] > 0:
         ret_stats["top_num_circ_in_every_chat"] = len_circ_in_chat
+    if features["circs_quantity_each_person"]:
+        ret_stats["circs_quantity_each_person"] = circs_per_person
 
     if features["top_num_ph_call_quantity"] > 0:
         ret_stats["top_num_ph_call_quantity"] = top_ph_call_quan
@@ -875,6 +1056,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         hist_create(output_folder, len_ph_call_chats, "ph_call")
     if features["top_num_ph_call_in_every_chat"] > 0:
         ret_stats["top_num_ph_call_in_every_chat"] = len_ph_call_in_chat
+    if features["ph_calls_quantity_each_person"]:
+        ret_stats["ph_calls_quantity_each_person"] = ph_calls_per_person
 
     if features["top_num_gr_call_quantity"] > 0:
         ret_stats["top_num_gr_call_quantity"] = top_gr_call_quan
@@ -893,6 +1076,8 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         ret_stats["top_num_photo_quantity"] = top_photos
     if features["photos_summary"]:
         bar_create(output_folder, photos_summary, "photo")
+    if features["photos_quantity_each_person"]:
+        ret_stats["photos_quantity_each_person"] = photos_per_person
 
     if features["top_num_video_quantity"] > 0:
         ret_stats["top_num_video_quantity"] = top_videos
@@ -900,5 +1085,7 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         ret_stats["top_num_video_length"] = top_video_len
     if features["videos_summary"]:
         bar_create(output_folder, videos_summary, "video")
+    if features["videos_quantity_each_person"]:
+        ret_stats["videos_quantity_each_person"] = videos_per_person
 
     return ret_stats
