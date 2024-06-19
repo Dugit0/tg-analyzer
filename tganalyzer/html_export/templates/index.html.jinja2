@@ -6,10 +6,12 @@
 </head>
 <body>
     <h1 class="header">{{ text.title }}</h1>
-    <p>{{ text.user }}:
-    <a href="https://t.me/{{ login }}">
-        <em>@{{ login }}</em>
-    </a>
+    <ul>
+        <li>
+            {{ text.user }}:
+            <a href="https://t.me/{{ login }}"> <em>@{{ login }}</em> </a>
+        </li>
+    </ul>
     {% for feature, img in features.items() %}
     <div class="feature">
         <h3 class="featurename">{{ feature }}</h3>
@@ -18,5 +20,6 @@
     {% else %}
     <p> <em>{{ text.empty_list }}</em>
     {% endfor %}
+    <p align="right"> <a href="#">{{ text.to_top }}</a>
 </body>
 </html>
