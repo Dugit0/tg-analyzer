@@ -100,9 +100,21 @@
 (None если не использовать)
 - возвращаемым значением является массив из заданного количества элементов
 пар вида [стикер-эмоджи, количество использований]
+"top_num_photo_quantity": подсчитывает количество фотографий в чатах
+и возвращает топ по большему количеству использования
+- получает на вход число, сколько мест в топе (0 если не использовать)
+- возвращаемым значением является убывающий массив пар [id чата, значение]
 "photos_summary": создает столбчатую диаграмму с количеством фотографий
 в чатах
 - False на входе если не использовать
+"top_num_video_quantity": подсчитывает количество видео в чатах и
+возвращает топ по большему количеству использования
+- получает на вход число, сколько мест в топе (0 если не использовать)
+- возвращаемым значением является убывающий массив пар [id чата, значение]
+"top_num_video_length": подсчитывает суммарную длительность видео файлов
+в чатах и возвращает топ по самым длинным видео файлам
+- получает на вход число, сколько мест в топе (0 если не использовать)
+- возвращаемым значением является убывающий массив пар [id чата, значение]
 "videos_summary": создает столбчатую диаграмму с количеством видео
 в чатах
 - False на входе если не использовать
@@ -322,7 +334,7 @@ class Chat_stat():
     :param circ_sum: количество видео сообщений в чате.
     :type circ_sum: dict
     :param circ_len: суммарная длина кружков.
-    :type circ_sum: dict
+    :type circ_len: dict
     :param top_long_circ: саммые длинные кружки по чату.
     :type top_long_circ: array
     :param ph_call_sum: количество личных звонков в чате.
@@ -341,6 +353,8 @@ class Chat_stat():
     :type photo_sum: dict
     :param video_sum: количество видео в чате.
     :type video_sum: dict
+    :param video_len: суммарная длина видео файлов.
+    :type video_len: dict
     """
 
     def __init__(self, features, chat, time_gap):
@@ -408,11 +422,15 @@ class Chat_stat():
         if features["favourite_sticker"] is not None:
             self.fav_stick = {}
 
-        if features["photos_summary"]:
+        if features["top_num_photo_quantity"] > 0 or \
+                features["photos_summary"]:
             self.photo_sum = {}
 
-        if features["videos_summary"]:
+        if features["top_num_video_quantity"] > 0 or \
+                features["videos_summary"]:
             self.video_sum = {}
+        if features["top_num_video_length"] > 0:
+            self.video_len = {}
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0],
                                         key= lambda x : x.send_time)
@@ -528,13 +546,19 @@ class Chat_stat():
                 emo = message.sticker_emoji
                 quan_counter(self.fav_stick, emo, 1)
 
-            if features["photos_summary"] and \
+            if (features["top_num_photo_quantity"] > 0 or \
+                    features["photos_summary"]) and \
                     message.type == "photo":
                 quan_counter(self.photo_sum, aut, 1)
 
-            if features["videos_summary"] and \
+            if (features["top_num_video_quantity"] or \
+                    features["videos_summary"]) and \
                     message.type == "video_file":
                 quan_counter(self.video_sum, aut, 1)
+            if features["top_num_video_length"] > 0 and \
+                    message.type == "video_file":
+                dur = message.duration
+                quan_counter(self.video_len, aut, dur)
 
 
 # Основные функции
@@ -622,9 +646,15 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
     if features["favourite_sticker"] is not None:
         top_fav_stickers = {}
 
+    if features["top_num_photo_quantity"] > 0:
+        top_photos = []
     if features["photos_summary"]:
         photos_summary = {}
 
+    if features["top_num_video_quantity"] > 0:
+        top_videos = []
+    if features["top_num_video_length"] > 0:
+        top_video_len = []
     if features["videos_summary"]:
         videos_summary = {}
 
@@ -768,10 +798,22 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
             if features["favourite_sticker"] is not None:
                 sticker_append(top_fav_stickers, analysed_chat.fav_stick)
 
+            if features["top_num_photo_quantity"] > 0:
+                analysed = analysed_chat.photo_sum
+                top = features["top_num_photo_quantity"]
+                top_counter_chats(top_photos, analysed, chat.id, top)
             if features["photos_summary"]:
                 summa = sum(analysed_chat.photo_sum.values())
                 photos_summary[chat.name] = summa
-            
+
+            if features["top_num_video_quantity"] > 0:
+                analysed = analysed_chat.video_sum
+                top = features["top_num_video_quantity"]
+                top_counter_chats(top_videos, analysed, chat.id, top)
+            if features["top_num_video_length"] > 0:
+                analysed = analysed_chat.video_len
+                top = features["top_num_video_length"]
+                top_counter_chats(top_video_len, analysed, chat.id, top)
             if features["videos_summary"]:
                 summa = sum(analysed_chat.video_sum.values())
                 videos_summary[chat.name] = summa
@@ -847,9 +889,15 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         top_num_stickers_finder(top_num_stickers, top_fav_stickers, top)
         ret_stats["favourite_sticker"] = top_num_stickers
 
+    if features["top_num_photo_quantity"] > 0:
+        ret_stats["top_num_photo_quantity"] = top_photos
     if features["photos_summary"]:
         bar_create(output_folder, photos_summary, "photo")
 
+    if features["top_num_video_quantity"] > 0:
+        ret_stats["top_num_video_quantity"] = top_videos
+    if features["top_num_video_length"] > 0:
+        ret_stats["top_num_video_length"] = top_video_len
     if features["videos_summary"]:
         bar_create(output_folder, videos_summary, "video")
 
