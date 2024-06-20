@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QWidget
+# from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
 from PyQt5.QtWidgets import QScrollArea, QSpinBox
 from PyQt5.QtCore import Qt, QDate
 import datetime
-import sys
+# import sys
 import random
 
 random.seed(42)
@@ -237,8 +238,3 @@ class MainWindow(QMainWindow):
         pass
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    app.setApplicationName("tg-analyzer")
-    window = MainWindow()
-    sys.exit(app.exec_())
