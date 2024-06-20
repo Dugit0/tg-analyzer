@@ -7,22 +7,43 @@ from collections import defaultdict
 # Функции подсчета
 
 def counter_symbols(update, message, feat_meaning):
-    update[message.author] += len(message.text)
+    update[message.author][message.send_time.date()] += len(message.text)
+
+
+def counter_words(update, message, feat_meaning):
+    update[message.author][message.send_time.date()] += len(message.text.split())
+
+
+def counter_msgs(update, message, feat_meaning):
+    update[message.author][message.send_time.date()] += 1
 
 
 # Функции подготовки вывода
 
-def return_symbols(update, chat_data, id):
+def return_text_info(update, chat_data, id):
     update[id] = chat_data
 
 
 # Константы
 
-DEPENDENCIES = {"symbols_per_person": {"class_type": defaultdict,
-                                       "class_func": counter_symbols,
-                                       "return_type": dict,
-                                       "return_func": return_symbols
-                                       }
+DEPENDENCIES = {"symb": {"class_type": defaultdict,
+                         "class_extra_type": defaultdict,
+                         "class_func": counter_symbols,
+                         "return_type": dict,
+                         "return_func": return_text_info
+                        },
+                "word": {"class_type": defaultdict,
+                         "class_extra_type": defaultdict,
+                         "class_func": counter_words,
+                         "return_type": dict,
+                         "return_func": return_text_info
+                        },
+                "msg": {"class_type": defaultdict,
+                        "class_extra_type": defaultdict,
+                        "class_func": counter_msgs,
+                        "return_type": dict,
+                        "return_func": return_text_info
+                        }
                 } 
 
 
@@ -44,7 +65,11 @@ class Chat_stat():
 
         for feature in DEPENDENCIES.keys():
             if features[feature]:
-                setattr(self, feature, DEPENDENCIES[feature]["class_type"](int))
+                tmp_type = int
+                if "class_extra_type" in DEPENDENCIES[feature].keys():
+                    tmp_type = lambda: DEPENDENCIES[feature]["class_extra_type"](int)
+                setattr(self, feature, 
+                        DEPENDENCIES[feature]["class_type"](tmp_type))
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0],
                                         key=lambda x : x.send_time)
@@ -59,7 +84,7 @@ class Chat_stat():
 
 # Основные функции
 
-def start_analyses(parsed_chats, chat_ids, time_gap, 
+def start_analyses(parsed_chats, time_gap, 
                    features, output_folder):
     """Основная функция для анализа.
 
@@ -82,14 +107,10 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
             features_type[feature] = DEPENDENCIES[feature]["return_type"]()
 
     for chat in parsed_chats:
-        if chat.id not in chat_ids:
-            continue
         analysed_chat = Chat_stat(features, chat, time_gap)
-        
+
         for feature in features.keys():
             if features[feature]:
-                #print(getattr(analysed_chat, feature))
-                #print(DEPENDENCIES[feature]["class_type"])
                 DEPENDENCIES[feature]["return_func"](features_type[feature],
                                                  getattr(analysed_chat, feature), chat.id)
 
@@ -98,4 +119,4 @@ def start_analyses(parsed_chats, chat_ids, time_gap,
         if features[feature]:
             ret_stats[feature] = features_type[feature]
 
-    return ret_stats
+    return [ret_stats, parsed_chats, time_gap]
