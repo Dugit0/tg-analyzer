@@ -145,7 +145,10 @@ class Message():
         """
         send_time = datetime.fromisoformat(message["date"] + ZERO)
         self.send_time = send_time
-        self.text = message["text"]
+        if isinstance(message["text"], list):
+            self.text = "\n".join([i for i in message["text"] if isinstance(i, str)])
+        else:
+            self.text = message["text"]
         if message["type"] == "service":
             self.author = message["actor"]
             if message["action"] == "phone_call":
@@ -217,7 +220,7 @@ class Message():
                 self.type = "unknown"
 
 
-def start_api(path):
+def start_creator(path):
     """Анализирует файл json и возвращает массив с объектами класса Chat.
 
     params:
