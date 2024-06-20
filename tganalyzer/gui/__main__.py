@@ -3,7 +3,9 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from . import MainWindow
 
-LANGUAGES = ['en', 'ru']
+LANGUAGES = {'en': 'en_US.UTF-8',
+             'ru': 'ru_RU.UTF-8',
+             }
 
 parser = argparse.ArgumentParser(
         prog='tg-analyzer',
@@ -15,7 +17,7 @@ if args.language in LANGUAGES:
     print(args.language)
     app = QApplication(sys.argv)
     app.setApplicationName("tg-analyzer")
-    window = MainWindow()
+    window = MainWindow(lang=LANGUAGES[args.language])
     sys.exit(app.exec_())
 else:
     print(f"Unexpected language: {args.language}", file=sys.stderr)

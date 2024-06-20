@@ -4,9 +4,12 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
 from PyQt5.QtWidgets import QScrollArea, QSpinBox
 from PyQt5.QtCore import Qt, QDate
+from pathlib import Path
 import datetime
 # import sys
 import random
+import gettext
+
 
 random.seed(42)
 
@@ -34,14 +37,22 @@ def get_all_chats():
     return res
 
 
+PO_PATH = Path(__file__).resolve().parent / 'po'
+LOCALES = {
+    "ru_RU.UTF-8": gettext.translation("gui", PO_PATH, ["ru"]),
+    "en_US.UTF-8": gettext.NullTranslations(),
+}
+
+
 class MainWindow(QMainWindow):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, lang='en_US.UTF-8', **kwargs):
 
-        super(MainWindow, self).__init__(*args, **kwargs)
-        self.setGeometry(300, 100, 400, 600)
+        super(MainWindow, self).__init__()
+        self.setGeometry(300, 100, 500, 700)
 
         # Variables for application logic
+        self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
         self.feature_names = [f"Feature {i:02d}" for i in range(11)]
@@ -54,7 +65,8 @@ class MainWindow(QMainWindow):
         # Horizontal layout with path to json file and button for choice it
         data_file_layout = QHBoxLayout()
         self.data_path_label = QLabel()
-        select_data_button = QPushButton("Select file", self)
+        select_data_button = QPushButton(self.locale.gettext("Select file"),
+                                         self)
         select_data_button.clicked.connect(self.select_data_dir)
         data_file_layout.addWidget(self.data_path_label, 3)
         data_file_layout.addWidget(select_data_button, 1)
@@ -73,9 +85,14 @@ class MainWindow(QMainWindow):
 
         # Buttons that show all/only private/only public chats
         filter_button_layout = QHBoxLayout()
-        all_chats_button = QPushButton("Show all chats", self)
-        only_private_button = QPushButton("Show only private chats", self)
-        only_public_button = QPushButton("Show only public chats", self)
+        all_chats_button = QPushButton(self.locale.gettext("Show all chats"),
+                                       self)
+        only_private_button = QPushButton(self.locale.gettext("Show only "
+                                                              "private chats"),
+                                          self)
+        only_public_button = QPushButton(self.locale.gettext("Show only "
+                                                             "public chats"),
+                                         self)
         all_chats_button.clicked.connect(self.show_all_chats)
         only_private_button.clicked.connect(self.show_only_private_chats)
         only_public_button.clicked.connect(self.show_only_public_chats)
@@ -85,8 +102,8 @@ class MainWindow(QMainWindow):
 
         # Buttons that choice all/don't choice any chats
         choice_button_layout = QHBoxLayout()
-        choice_all_button = QPushButton("Select all chats", self)
-        choice_nothing_button = QPushButton("Remove selection", self)
+        choice_all_button = QPushButton(self.locale.gettext("Select all chats"), self)
+        choice_nothing_button = QPushButton(self.locale.gettext("Remove selection"), self)
         choice_all_button.clicked.connect(self.choice_all_chat)
         choice_nothing_button.clicked.connect(self.choice_nothing_chat)
         choice_button_layout.addWidget(choice_all_button)
@@ -94,8 +111,8 @@ class MainWindow(QMainWindow):
 
         # Button and spin that choice chats with more than N messages
         complex_choice_layot = QHBoxLayout()
-        complex_choice_button = QPushButton("Select chats with more than "
-                                            "X messages", self)
+        complex_choice_button = QPushButton(self.locale.gettext("Select chats with more than "
+                                            "X messages"), self)
         # complex_choice_label = QLabel()
         # complex_choice_label.setText("complex_choice_label")
         self.complex_choice_spin = QSpinBox()
@@ -113,7 +130,7 @@ class MainWindow(QMainWindow):
         assert today_date.year - 5 > 0
         # From date widgets
         from_date_label = QLabel()
-        from_date_label.setText("Analyze the time period from")
+        from_date_label.setText(self.locale.gettext("Analyze the time period from"))
         from_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         from_date = QDateEdit(QDate(today_date.year - 5,
                                     today_date.month,
@@ -122,7 +139,7 @@ class MainWindow(QMainWindow):
         from_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         # To date widgets
         to_date_label = QLabel()
-        to_date_label.setText("to")
+        to_date_label.setText(self.locale.gettext("to"))
         to_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         to_date = QDateEdit(QDate(today_date.year,
                                   today_date.month,
@@ -152,7 +169,7 @@ class MainWindow(QMainWindow):
         features_area.setWidget(features_wiget)
 
         # Button that create a report
-        create_report_button = QPushButton("Create report", self)
+        create_report_button = QPushButton(self.locale.gettext("Create report"), self)
         create_report_button.clicked.connect(self.create_report)
 
         # Adding wigets and layouts to main layout
@@ -183,6 +200,7 @@ class MainWindow(QMainWindow):
                 del self.chat_checkboxes[i]
 
     def select_data_dir(self):
+        # TODO localisation?
         path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
                                               "JSON Files (*.json)")
         if path:
