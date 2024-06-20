@@ -1,0 +1,46 @@
+body {
+    background-color: #daf2ff;
+}
+
+a {
+    color: #2aabee;
+}
+
+a:visited {
+    color: #8d78e3;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+h1.header {
+    background: linear-gradient(#2aabee, #229ed9);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+}
+
+div.feature {
+    width: 90vw;
+    max-height: 75vh;
+    border: 2px dotted #2aabee;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h3.featurename {
+    color: #229ed9;
+    font-style: italic;
+}
+
+img.plot {
+    max-width: 80vw;
+    max-height: 60vh;
+}
