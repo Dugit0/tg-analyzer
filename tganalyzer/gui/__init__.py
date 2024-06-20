@@ -110,31 +110,27 @@ class MainWindow(QMainWindow):
         today_date = datetime.date.today()
         assert today_date.year - 5 > 0
         # From date widgets
-        from_date_layout = QVBoxLayout()
         from_date_label = QLabel()
-        from_date_label.setText("from_date_label")
-        from_date_label.setAlignment(Qt.AlignHCenter)
+        from_date_label.setText("Analyze the time period from")
+        from_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         from_date = QDateEdit(QDate(today_date.year - 5,
                                     today_date.month,
                                     today_date.day))
         from_date.setCalendarPopup(True)
-        from_date.setAlignment(Qt.AlignHCenter)
-        from_date_layout.addWidget(from_date_label)
-        from_date_layout.addWidget(from_date)
+        from_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         # To date widgets
-        to_date_layout = QVBoxLayout()
         to_date_label = QLabel()
-        to_date_label.setText("to_date_label")
-        to_date_label.setAlignment(Qt.AlignHCenter)
+        to_date_label.setText("to")
+        to_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         to_date = QDateEdit(QDate(today_date.year,
                                   today_date.month,
                                   today_date.day))
         to_date.setCalendarPopup(True)
-        to_date.setAlignment(Qt.AlignHCenter)
-        to_date_layout.addWidget(to_date_label)
-        to_date_layout.addWidget(to_date)
-        date_range_layout.addLayout(from_date_layout)
-        date_range_layout.addLayout(to_date_layout)
+        to_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        date_range_layout.addWidget(from_date_label, 5)
+        date_range_layout.addWidget(from_date, 3)
+        date_range_layout.addWidget(to_date_label, 1)
+        date_range_layout.addWidget(to_date, 3)
 
         # Scroll area for features
         features_area = QScrollArea(self)
