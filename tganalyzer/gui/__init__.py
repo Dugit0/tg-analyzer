@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         # Horizontal layout with path to json file and button for choice it
         data_file_layout = QHBoxLayout()
         self.data_path_label = QLabel()
-        select_data_button = QPushButton("select_data_button", self)
+        select_data_button = QPushButton("Select file", self)
         select_data_button.clicked.connect(self.select_data_dir)
         data_file_layout.addWidget(self.data_path_label, 3)
         data_file_layout.addWidget(select_data_button, 1)
@@ -72,9 +72,9 @@ class MainWindow(QMainWindow):
 
         # Buttons that show all/only private/only public chats
         filter_button_layout = QHBoxLayout()
-        all_chats_button = QPushButton("all_chats_button", self)
-        only_private_button = QPushButton("only_private_button", self)
-        only_public_button = QPushButton("only_public_button", self)
+        all_chats_button = QPushButton("Show all chats", self)
+        only_private_button = QPushButton("Show only private chats", self)
+        only_public_button = QPushButton("Show only public chats", self)
         all_chats_button.clicked.connect(self.show_all_chats)
         only_private_button.clicked.connect(self.show_only_private_chats)
         only_public_button.clicked.connect(self.show_only_public_chats)
@@ -84,8 +84,8 @@ class MainWindow(QMainWindow):
 
         # Buttons that choice all/don't choice any chats
         choice_button_layout = QHBoxLayout()
-        choice_all_button = QPushButton("choice_all", self)
-        choice_nothing_button = QPushButton("choice_nothing", self)
+        choice_all_button = QPushButton("Select all chats", self)
+        choice_nothing_button = QPushButton("Remove selection", self)
         choice_all_button.clicked.connect(self.choice_all_chat)
         choice_nothing_button.clicked.connect(self.choice_nothing_chat)
         choice_button_layout.addWidget(choice_all_button)
@@ -93,17 +93,18 @@ class MainWindow(QMainWindow):
 
         # Button and spin that choice chats with more than N messages
         complex_choice_layot = QHBoxLayout()
-        complex_choice_button = QPushButton("complex_choice_button", self)
-        complex_choice_label = QLabel()
-        complex_choice_label.setText("complex_choice_label")
+        complex_choice_button = QPushButton("Select chats with more than "
+                                            "X messages", self)
+        # complex_choice_label = QLabel()
+        # complex_choice_label.setText("complex_choice_label")
         self.complex_choice_spin = QSpinBox()
         self.complex_choice_spin.setRange(0, 1_000_000_000)
         self.complex_choice_spin.setSingleStep(100)
         self.complex_choice_spin.setValue(100)
         complex_choice_button.clicked.connect(self.complex_chat_choice)
-        complex_choice_layot.addWidget(complex_choice_button)
-        complex_choice_layot.addWidget(complex_choice_label)
-        complex_choice_layot.addWidget(self.complex_choice_spin)
+        complex_choice_layot.addWidget(complex_choice_button, 3)
+        # complex_choice_layot.addWidget(complex_choice_label)
+        complex_choice_layot.addWidget(self.complex_choice_spin, 1)
 
         # Layout with date range
         date_range_layout = QHBoxLayout()
@@ -150,7 +151,7 @@ class MainWindow(QMainWindow):
         features_area.setWidget(features_wiget)
 
         # Button that create a report
-        create_report_button = QPushButton("create_report_button", self)
+        create_report_button = QPushButton("Create report", self)
         create_report_button.clicked.connect(self.create_report)
 
         # Adding wigets and layouts to main layout
