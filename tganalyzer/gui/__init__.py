@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.data_path_label = QLabel()
         select_data_button = QPushButton(self.locale.gettext("Select file"),
                                          self)
-        select_data_button.clicked.connect(self.select_data_dir)
+        select_data_button.clicked.connect(self.select_data_file)
         data_file_layout.addWidget(self.data_path_label, 3)
         data_file_layout.addWidget(select_data_button, 1)
 
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
                 self.chat_checkboxes[i].deleteLater()
                 del self.chat_checkboxes[i]
 
-    def select_data_dir(self):
+    def select_data_file(self):
         # TODO localisation?
         path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
                                               "JSON Files (*.json)")
