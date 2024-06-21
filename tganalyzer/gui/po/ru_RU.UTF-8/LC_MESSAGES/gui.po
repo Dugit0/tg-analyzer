@@ -1,10 +1,11 @@
 # Russian (Russia) translations for tg-analyzer.
-# This file is distributed under the same license as the tg-analyzer project.
+# This file is distributed under the same license as the tg-analyzer
+# project.
 # Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>, 2024.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.0.0\n"
+"Project-Id-Version:  0.0.0\n"
 "Report-Msgid-Bugs-To: dmitry.astrakhantsev@gmail.com\n"
 "POT-Creation-Date: 2024-06-21 02:10+0300\n"
 "PO-Revision-Date: 2024-06-21 02:14+0300\n"
@@ -18,43 +19,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.15.0\n"
 
-#: __init__.py:67
+#: __init__.py:77
 msgid "Select file"
 msgstr "Выберите файл"
 
-#: __init__.py:87
+#: __init__.py:98
 msgid "Show all chats"
 msgstr "Показать все чаты"
 
-#: __init__.py:89
+#: __init__.py:100
 msgid "Show only private chats"
 msgstr "Показать только личные чаты"
 
-#: __init__.py:92
+#: __init__.py:102
 msgid "Show only public chats"
 msgstr "Показать только беседы"
 
-#: __init__.py:104
+#: __init__.py:113
 msgid "Select all chats"
 msgstr "Выбрать все чаты"
 
-#: __init__.py:105
+#: __init__.py:115
 msgid "Remove selection"
 msgstr "Убрать выделение"
 
-#: __init__.py:113
+#: __init__.py:124
 msgid "Select chats with more than X messages"
 msgstr "Выбрать чаты, в которых больше чем X сообщений"
 
-#: __init__.py:132
+#: __init__.py:144
 msgid "Analyze the time period from"
 msgstr "Анализировать временной промежуток от"
 
-#: __init__.py:141
+#: __init__.py:153
 msgid "to"
 msgstr "до"
 
-#: __init__.py:171
+#: __init__.py:184
 msgid "Create report"
 msgstr "Создать отчет"
 
