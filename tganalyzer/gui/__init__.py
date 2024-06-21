@@ -1,4 +1,3 @@
-# from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
@@ -6,7 +5,6 @@ from PyQt5.QtWidgets import QScrollArea, QSpinBox
 from PyQt5.QtCore import Qt, QDate
 from pathlib import Path
 import datetime
-# import sys
 import random
 import gettext
 
