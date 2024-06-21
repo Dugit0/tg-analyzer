@@ -102,7 +102,7 @@ class Chat_stat():
         for feature in DEPENDENCIES.keys():
             if features[feature]:
                 tp = int
-                if "class_extra_type" in DEPENDENCIES[feature].keys():
+                if "class_ex_type" in DEPENDENCIES[feature].keys():
                     tp = lambda: DEPENDENCIES[feature]["class_ex_type"](int)
                 setattr(self, feature, 
                         DEPENDENCIES[feature]["class_type"](tp))
