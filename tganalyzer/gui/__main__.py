@@ -1,11 +1,14 @@
+"""CLI для запуска GUI. Для более подробной информации см. `--help`."""
 import argparse
 import sys
 from PyQt5.QtWidgets import QApplication
 from . import MainWindow
 
+
 LANGUAGES = {'en': 'en_US.UTF-8',
              'ru': 'ru_RU.UTF-8',
              }
+
 
 parser = argparse.ArgumentParser(
         prog='tg-analyzer',

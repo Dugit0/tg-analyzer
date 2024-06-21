@@ -1,3 +1,4 @@
+"""Графический интерфейс tg-analyzer."""
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
@@ -9,13 +10,16 @@ import random
 import gettext
 
 
+# ========================= DEBUG =========================
 random.seed(42)
 
 SIDE_EFFECT = 0
 
 
 class Chat:
+    # noqa: D101
     def __init__(self, chat_name, chat_type, messages_len):
+        # noqa: D107
         self.name = chat_name
         self.type = chat_type
         self.messages = [0] * messages_len
@@ -34,6 +38,7 @@ def get_all_chats():
     # for i in range(20):
     #     res.append(f"new_chat{i:03d}")
     return res
+# ========================= DEBUG =========================
 
 
 PO_PATH = Path(__file__).resolve().parent / 'po'
@@ -44,9 +49,14 @@ LOCALES = {
 
 
 class MainWindow(QMainWindow):
+    """Основное окно приложения."""
 
     def __init__(self, *args, lang='en_US.UTF-8', **kwargs):
+        """Основное окно приложения.
 
+        :param lang: название языка, для которого поддерживается перевод.
+        :type lang: str
+        """
         super(MainWindow, self).__init__()
         self.setGeometry(300, 100, 500, 700)
 
@@ -193,6 +203,11 @@ class MainWindow(QMainWindow):
         self.show()
 
     def clear_chat_area(self):
+        """Очищает область чатов.
+
+        Удаляет все чекбоксы чатов при выборе нового .json-файла из области
+        чатов. Не удаляет сами чаты.
+        """
         if (count := self.chats_layout.count()):
             for i in range(count - 1, -1, -1):
                 self.chats_layout.removeItem(self.chats_layout.itemAt(i))
@@ -202,6 +217,11 @@ class MainWindow(QMainWindow):
                 del self.chat_checkboxes[i]
 
     def select_data_file(self):
+        """Выбирает файл экспорта.
+
+        Удаляет чаты и их чекбоксы, если они были, открывает окно выбора файла
+        и создает новые чекбоксы на основе полученного .json-файла.
+        """
         # TODO localisation?
         path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
                                               "JSON Files (*.json)")
@@ -220,6 +240,14 @@ class MainWindow(QMainWindow):
                 self.chats_layout.addWidget(checkbox)
 
     def show_chat_with_filter(self, key):
+        """Отфильтровывает чаты для отображения.
+
+        Показывает в области чатов только те чаты, для которых `key` возвращает
+        True.
+
+        :param key: key-функция для выбора чатов
+        :type key: function
+        """
         self.clear_chat_area()
         for chat in self.chats:
             if key(chat):
@@ -229,23 +257,32 @@ class MainWindow(QMainWindow):
                 self.chats_layout.addWidget(checkbox)
 
     def show_all_chats(self):
+        """Показывает в области чатов все чаты."""
         self.show_chat_with_filter(lambda chat: True)
 
     def show_only_private_chats(self):
+        """Показывает в области чатов только личные чаты."""
         self.show_chat_with_filter(lambda chat: chat.type == "private")
 
     def show_only_public_chats(self):
+        """Показывает в области чатов только беседы чаты."""
         self.show_chat_with_filter(lambda chat: chat.type == "public")
 
     def choice_all_chat(self):
+        """Помечает выбранными все отображенные чаты."""
         for checkbox in self.chat_checkboxes:
             checkbox.setCheckState(Qt.CheckState.Checked)
 
     def choice_nothing_chat(self):
+        """Снимает выделение со всех отображенных чатов."""
         for checkbox in self.chat_checkboxes:
             checkbox.setCheckState(Qt.CheckState.Unchecked)
 
     def complex_chat_choice(self):
+        """Помечает выбранными чаты, в которых больше, чем X сообщений.
+
+        X выбирается пользователем в виджете `complex_choice_spin`.
+        """
         n = self.complex_choice_spin.value()
         # TODO name is not id
         chat_names = {chat.name for chat in self.chats
@@ -255,4 +292,5 @@ class MainWindow(QMainWindow):
                 checkbox.setCheckState(Qt.CheckState.Checked)
 
     def create_report(self):
+        """Создает отчет."""
         pass
