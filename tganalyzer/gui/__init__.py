@@ -26,7 +26,8 @@ class Chat:
 def get_all_chats():
     """TMP FUNC! Will be removed."""
     global SIDE_EFFECT
-    res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i) for t in ['private', 'public']
+    res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i)
+           for t in ['private', 'public']
            for i in range(100, 1001, 50)]
     SIDE_EFFECT += 1
     # random.shuffle(res)
@@ -85,14 +86,12 @@ class MainWindow(QMainWindow):
 
         # Buttons that show all/only private/only public chats
         filter_button_layout = QHBoxLayout()
-        all_chats_button = QPushButton(self.locale.gettext("Show all chats"),
-                                       self)
-        only_private_button = QPushButton(self.locale.gettext("Show only "
-                                                              "private chats"),
-                                          self)
-        only_public_button = QPushButton(self.locale.gettext("Show only "
-                                                             "public chats"),
-                                         self)
+        all_chats_button = QPushButton(
+                self.locale.gettext("Show all chats"), self)
+        only_private_button = QPushButton(
+                self.locale.gettext("Show only private chats"), self)
+        only_public_button = QPushButton(
+                self.locale.gettext("Show only public chats"), self)
         all_chats_button.clicked.connect(self.show_all_chats)
         only_private_button.clicked.connect(self.show_only_private_chats)
         only_public_button.clicked.connect(self.show_only_public_chats)
@@ -102,8 +101,10 @@ class MainWindow(QMainWindow):
 
         # Buttons that choice all/don't choice any chats
         choice_button_layout = QHBoxLayout()
-        choice_all_button = QPushButton(self.locale.gettext("Select all chats"), self)
-        choice_nothing_button = QPushButton(self.locale.gettext("Remove selection"), self)
+        choice_all_button = QPushButton(
+                self.locale.gettext("Select all chats"), self)
+        choice_nothing_button = QPushButton(
+                self.locale.gettext("Remove selection"), self)
         choice_all_button.clicked.connect(self.choice_all_chat)
         choice_nothing_button.clicked.connect(self.choice_nothing_chat)
         choice_button_layout.addWidget(choice_all_button)
@@ -111,8 +112,9 @@ class MainWindow(QMainWindow):
 
         # Button and spin that choice chats with more than N messages
         complex_choice_layot = QHBoxLayout()
-        complex_choice_button = QPushButton(self.locale.gettext("Select chats with more than "
-                                            "X messages"), self)
+        complex_choice_button = QPushButton(
+                self.locale.gettext("Select chats with more than X messages"),
+                self)
         # complex_choice_label = QLabel()
         # complex_choice_label.setText("complex_choice_label")
         self.complex_choice_spin = QSpinBox()
@@ -130,7 +132,8 @@ class MainWindow(QMainWindow):
         assert today_date.year - 5 > 0
         # From date widgets
         from_date_label = QLabel()
-        from_date_label.setText(self.locale.gettext("Analyze the time period from"))
+        from_date_label.setText(
+                self.locale.gettext("Analyze the time period from"))
         from_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         from_date = QDateEdit(QDate(today_date.year - 5,
                                     today_date.month,
@@ -169,7 +172,8 @@ class MainWindow(QMainWindow):
         features_area.setWidget(features_wiget)
 
         # Button that create a report
-        create_report_button = QPushButton(self.locale.gettext("Create report"), self)
+        create_report_button = QPushButton(
+                self.locale.gettext("Create report"), self)
         create_report_button.clicked.connect(self.create_report)
 
         # Adding wigets and layouts to main layout
@@ -254,5 +258,3 @@ class MainWindow(QMainWindow):
 
     def create_report(self):
         pass
-
-

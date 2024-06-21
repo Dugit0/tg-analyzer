@@ -21,5 +21,6 @@ if args.language in LANGUAGES:
     sys.exit(app.exec_())
 else:
     print(f"Unexpected language: {args.language}", file=sys.stderr)
-    print(f"One of these languages was expected: {', '.join(LANGUAGES)}", file=sys.stderr)
+    print(f"One of these languages was expected: {', '.join(LANGUAGES)}",
+          file=sys.stderr)
     sys.exit(1)
