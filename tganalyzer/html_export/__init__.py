@@ -3,6 +3,7 @@
 import datetime
 import jinja2
 import os
+import shutil
 from collections import defaultdict
 from matplotlib import pyplot as plt
 
@@ -120,6 +121,7 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     basename_nodots = basename.replace(".", "_")
     files_dir = f"{dirname}/{basename_nodots}_files"
     os.makedirs(files_dir, exist_ok=True)
+    shutil.copy(f"{PATH}/themes/{theme}.css", f"{files_dir}/style.css")
 
     features = {}
     for feat, data in chatdata.items():
@@ -131,9 +133,7 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     )
     tmpl = env.get_template("index.html.jinja2")
     tmpl.stream(
-        staticpath=f"{PATH}/static",
         files_dir=os.path.basename(files_dir),
-        theme=theme,
         text=TEXT,
         login=metadata["login"],
         features=features,
