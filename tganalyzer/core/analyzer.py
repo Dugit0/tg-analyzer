@@ -70,6 +70,22 @@ def counter_files(update, message, feat_meaning, feature):
         update[message.author]["length"] += message.duration
 
 
+def counter_photos(update, message, feat_meaning, feature):
+    """Подсчитывает число фотографий каждого пользователя.
+    
+    :param update: структура для подсчета фотографий.
+    :type update: dict
+    :param message: анализируемое сообщение.
+    :type message: Message
+    :param feat_meaning: значение, передаваемое при вызове анализатора.
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
+    """
+    if message.type == feature:
+        update[message.author] += 1
+
+
 # Функции подготовки вывода
 
 def return_text_info(update, chat_data, id):
@@ -122,6 +138,12 @@ DEPENDENCIES = {"symb": {"class_type": defaultdict,
                                "class_func": counter_files,
                                "return_type": dict,
                                "return_func": return_text_info
+                },
+                "photo": {"class_type": defaultdict,
+                          "class_ex_type": int,
+                          "class_func": counter_photos,
+                          "return_type": dict,
+                          "return_func": return_text_info
                 }
                 } 
 
