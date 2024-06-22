@@ -13,14 +13,14 @@ def draw_msg_word(
     data: dict[int, dict[str, dict[datetime.date, int]]],
     feature: str,
 ) -> dict:
-    """Отрисовка графиков статистики сообщений/слов.
+    """Отрисовка графиков и сбор статистики сообщений/слов.
 
     :param path: путь к папке, в которой сохранить изображения.
     :param data: сведения о чатах вида
         {ID чата: {имя пользователя: {дата: количество сообщений/слов}}}.
     :param feature: код опции ("msg" или "word").
     :return: названия файлов изображений вида
-        {ID чата: {"user": путь, "date": путь}} или
+        {ID чата: {"user": путь, "date": путь, "avg": число}} или
         {"agg": {"chat": путь, "date": путь}}.
     """
     # Вспомогательные словари:
@@ -95,6 +95,10 @@ def draw_msg_word(
                     format="svg", transparent=True)
         plt.close(fig)
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
+
+        # среднего числа сообщений в день
+        ans[chatid]["avg"] = (sum(by_date[chatid].values())
+                              / len(by_date[chatid]))
 
     return ans
 

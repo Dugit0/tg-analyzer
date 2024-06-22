@@ -14,10 +14,14 @@
     </ul>
     {% for feat, featstat in features.items() %}
         {% for chat, chatstat in featstat.items() %}
-            {% for type, img in chatstat.items() %}
+            {% for type, res in chatstat.items() %}
     <div class="feature">
         <h3 class="featurename">{{ feat }}_{{ chat }}_{{ type }}</h3>
-        <img class="plot" src="{{ files_dir }}/{{ img }}">
+                {% if res is number %}
+        <h1>{{ res|round(3) }}</h1>
+                {% else %}
+        <img class="plot" src="{{ files_dir }}/{{ res }}">
+                {% endif %}
     </div>
             {% endfor %}
         {% endfor %}
