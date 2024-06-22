@@ -10,7 +10,7 @@ def counter_symbols(update, message, feat_meaning, feature):
     """Подсчитывает число символов каждого пользователя в каждый день.
     
     :param update: структура для подсчета символов.
-    :type update: dict
+    :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
     :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
@@ -25,7 +25,7 @@ def counter_words(update, message, feat_meaning, feature):
     """Подсчитывает число слов каждого пользователя в каждый день.
     
     :param update: структура для подсчета слов.
-    :type update: dict
+    :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
     :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
@@ -40,7 +40,7 @@ def counter_msgs(update, message, feat_meaning, feature):
     """Подсчитывает число сообщений каждого пользователя в каждый день.
     
     :param update: структура для подсчета сообщений.
-    :type update: dict
+    :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
     :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
@@ -49,6 +49,25 @@ def counter_msgs(update, message, feat_meaning, feature):
     :type feature: str
     """
     update[message.author][message.send_time.date()] += 1
+
+
+def counter_files(update, message, feat_meaning, feature):
+    """Подсчитывает число и длину сообщений-файлов каждого пользователя.
+    
+    К сообщениям-файлам относятся голосовые сообщения, видео сообщения,
+    и видео файлы.
+    :param update: структура для подсчета количества и длины сообщений-файлов.
+    :type update: defaultdict[str, defaultdict[str, int]]
+    :param message: анализируемое сообщение.
+    :type message: Message
+    :param feat_meaning: значение, передаваемое при вызове анализатора.
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
+    """
+    if message.type == feature:
+        update[message.author]["quantity"] += 1
+        update[message.author]["length"] += message.duration
 
 
 # Функции подготовки вывода
@@ -85,6 +104,24 @@ DEPENDENCIES = {"symb": {"class_type": defaultdict,
                         "class_func": counter_msgs,
                         "return_type": dict,
                         "return_func": return_text_info
+                },
+                "voice_message": {"class_type": defaultdict,
+                                  "class_ex_type": lambda: defaultdict(int),
+                                  "class_func": counter_files,
+                                  "return_type": dict,
+                                  "return_func": return_text_info
+                },
+                "video_message": {"class_type": defaultdict,
+                                  "class_ex_type": lambda: defaultdict(int),
+                                  "class_func": counter_files,
+                                  "return_type": dict,
+                                  "return_func": return_text_info
+                },
+                "video_file": {"class_type": defaultdict,
+                               "class_ex_type": lambda: defaultdict(int),
+                               "class_func": counter_files,
+                               "return_type": dict,
+                               "return_func": return_text_info
                 }
                 } 
 
