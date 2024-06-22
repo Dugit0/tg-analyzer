@@ -74,7 +74,7 @@ def counter_photos(update, message, feat_meaning, feature):
     """Подсчитывает число фотографий каждого пользователя.
     
     :param update: структура для подсчета фотографий.
-    :type update: dict
+    :type update: defaultdict[str, int]
     :param message: анализируемое сообщение.
     :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
@@ -84,6 +84,22 @@ def counter_photos(update, message, feat_meaning, feature):
     """
     if message.type == feature:
         update[message.author] += 1
+
+
+def counter_days_nights(update, message, feat_meaning, feature):
+    """Подсчитывает число сообщений каждого пользователя в разное время суток.
+    
+    :param update: структура для подсчета сообщений.
+    :type update: defaultdict[str, defaultdict[str, int]]
+    :param message: анализируемое сообщение.
+    :type message: Message
+    :param feat_meaning: значение, передаваемое при вызове анализатора.
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
+    """
+    _time = ["night", "morning", "afternoon", "evening"]
+    update[message.author][_time[message.send_time.hour // 6]] += 1
 
 
 # Функции подготовки вывода
@@ -144,6 +160,12 @@ DEPENDENCIES = {"symb": {"class_type": defaultdict,
                           "class_func": counter_photos,
                           "return_type": dict,
                           "return_func": return_text_info
+                },
+                "day_night": {"class_type": defaultdict,
+                        "class_ex_type": lambda: defaultdict(int),
+                        "class_func": counter_days_nights,
+                        "return_type": dict,
+                        "return_func": return_text_info
                 }
                 } 
 
