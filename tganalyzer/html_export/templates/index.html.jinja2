@@ -12,11 +12,15 @@
             <a href="https://t.me/{{ login }}"> <em>@{{ login }}</em> </a>
         </li>
     </ul>
-    {% for feature, img in features.items() %}
+    {% for feat, featstat in features.items() %}
+        {% for chat, chatstat in featstat.items() %}
+            {% for type, img in chatstat.items() %}
     <div class="feature">
-        <h3 class="featurename">{{ feature }}</h3>
-        <img class="plot" src={{ img }}>
+        <h3 class="featurename">{{ feat }}_{{ chat }}_{{ type }}</h3>
+        <img class="plot" src="{{ files_dir }}/{{ img }}">
     </div>
+            {% endfor %}
+        {% endfor %}
     {% else %}
     <p> <em>{{ text.empty_list }}</em>
     {% endfor %}

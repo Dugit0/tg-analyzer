@@ -7,16 +7,20 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 
 
-def draw_msg(
+def draw_msg_word(
     path: str,
-    msgdata: dict[int, dict[str, dict[datetime.date, int]]]
+    data: dict[int, dict[str, dict[datetime.date, int]]],
+    feature: str,
 ) -> dict:
-    """Отрисовка графиков статистики сообщений.
+    """Отрисовка графиков статистики сообщений/слов.
 
     :param path: путь к папке, в которой сохранить изображения.
-    :param msgdata: сведения о сообщениях вида
-        {ID чата: {имя пользователя: {дата: количество сообщений}}}.
-    :return: пути к изображениям вида {код опции: путь}.
+    :param data: сведения о чатах вида
+        {ID чата: {имя пользователя: {дата: количество сообщений/слов}}}.
+    :param feature: код опции ("msg" или "word").
+    :return: названия файлов изображений вида
+        {ID чата: {"user": путь, "date": путь}} или
+        {"agg": {"chat": путь, "date": путь}}.
     """
     # Вспомогательные словари:
     # по чатам
@@ -28,7 +32,7 @@ def draw_msg(
     # по дате для каждого чата
     by_date = defaultdict(lambda: defaultdict(int))
 
-    for chatid, chatdata in msgdata.items():
+    for chatid, chatdata in data.items():
         for username, userdata in chatdata.items():
             for date, count in userdata.items():
                 by_chat_agg[chatid] += count
@@ -39,48 +43,57 @@ def draw_msg(
     # Возвращаемый словарь путей
     ans = {}
 
+    ans["agg"] = {}
     # Построение отсортированной столбчатой диаграммы по всем чатам
-    ans["agg_msg_all"] = f"{path}/agg_msg_all.svg"
     fig, ax = plt.subplots(figsize=(len(by_chat_agg) + 1, 5))
     by_chat_agg = dict(
         sorted(by_chat_agg.items(), key=lambda it: it[1], reverse=True)
     )   # предварительная сортировка (в порядке убывания) по значению (кол-ву)
     ax.bar(range(len(by_chat_agg)), by_chat_agg.values())
     ax.set_xticks(range(len(by_chat_agg)), by_chat_agg.keys())
-    fig.savefig(ans["agg_msg_all"], format="svg", transparent=True)
+    fig.savefig(f"{path}/agg_{feature}_chat.svg",
+                format="svg", transparent=True)
+    plt.close(fig)
+    ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
 
     # Построение графика по дате среди всех чатов
-    ans["agg_msg_day"] = f"{path}/agg_msg_day.svg"
     fig, ax = plt.subplots(figsize=(len(by_date_agg) + 1, 5))
     by_date_agg = dict(
         sorted(by_date_agg.items(), key=lambda it: it[0])
     )   # предварительная сортировка по ключу (дате)
     ax.plot(range(len(by_date_agg)), by_date_agg.values())
     ax.set_xticks(range(len(by_date_agg)), by_date_agg.keys())
-    fig.savefig(ans["agg_msg_day"], format="svg", transparent=True)
+    fig.savefig(f"{path}/agg_{feature}_date.svg",
+                format="svg", transparent=True)
+    plt.close(fig)
+    ans["agg"]["date"] = f"agg_{feature}_date.svg"
 
     # Построение по каждому чату:
-    for chatid in msgdata:
+    for chatid in data:
+        ans[chatid] = {}
         # круговой диаграммы по пользователям
-        ans[f"msg_person_{chatid}"] = f"{path}/msg_person_{chatid}.svg"
         fig, ax = plt.subplots()
         ax.pie(
             by_user[chatid].values(),
             labels=by_user[chatid].keys(),
             autopct="%1.1f%%"
         )
-        fig.savefig(ans[f"msg_person_{chatid}"],
+        fig.savefig(f"{path}/{chatid}_{feature}_user.svg",
                     format="svg", transparent=True)
+        plt.close(fig)
+        ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
 
         # графика по дате
-        ans[f"msg_day_{chatid}"] = f"{path}/msg_day_{chatid}.svg"
         fig, ax = plt.subplots(figsize=(len(by_date[chatid]) + 1, 5))
         by_date[chatid] = dict(
             sorted(by_date[chatid].items(), key=lambda it: it[0])
         )   # предварительная сортировка по ключу (дате)
         ax.plot(range(len(by_date[chatid])), by_date[chatid].values())
         ax.set_xticks(range(len(by_date[chatid])), by_date[chatid].keys())
-        fig.savefig(ans[f"msg_day_{chatid}"], format="svg", transparent=True)
+        fig.savefig(f"{path}/{chatid}_{feature}_date.svg",
+                    format="svg", transparent=True)
+        plt.close(fig)
+        ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
 
     return ans
 
@@ -108,14 +121,20 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     files_dir = f"{dirname}/{basename_nodots}_files"
     os.makedirs(files_dir, exist_ok=True)
 
+    features = {}
+    for feat, data in chatdata.items():
+        if feat in ("msg", "word"):
+            features[feat] = draw_msg_word(files_dir, data, feat)
+
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(f"{PATH}/templates")
     )
     tmpl = env.get_template("index.html.jinja2")
     tmpl.stream(
         staticpath=f"{PATH}/static",
+        files_dir=os.path.basename(files_dir),
         theme=theme,
         text=TEXT,
         login=metadata["login"],
-        features=draw_msg(files_dir, chatdata["msg"]),
+        features=features,
     ).dump(path)
