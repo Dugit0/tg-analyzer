@@ -6,41 +6,47 @@ from collections import defaultdict
 
 # Функции подсчета
 
-def counter_symbols(update, message, feat_meaning):
+def counter_symbols(update, message, feat_meaning, feature):
     """Подсчитывает число символов каждого пользователя в каждый день.
     
     :param update: структура для подсчета символов.
     :type update: dict
     :param message: анализируемое сообщение.
-    :type chat_data: Message
+    :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
-    :type id: int/bool/str
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
     """
     update[message.author][message.send_time.date()] += len(message.text)
 
 
-def counter_words(update, message, feat_meaning):
+def counter_words(update, message, feat_meaning, feature):
     """Подсчитывает число слов каждого пользователя в каждый день.
     
     :param update: структура для подсчета слов.
     :type update: dict
     :param message: анализируемое сообщение.
-    :type chat_data: Message
+    :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
-    :type id: int/bool/str
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
     """
     update[message.author][message.send_time.date()] += len(message.text.split())
 
 
-def counter_msgs(update, message, feat_meaning):
+def counter_msgs(update, message, feat_meaning, feature):
     """Подсчитывает число сообщений каждого пользователя в каждый день.
     
     :param update: структура для подсчета сообщений.
     :type update: dict
     :param message: анализируемое сообщение.
-    :type chat_data: Message
+    :type message: Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
-    :type id: int/bool/str
+    :type feat_meaning: int/bool/str
+    :param feature: название цели анализа.
+    :type feature: str
     """
     update[message.author][message.send_time.date()] += 1
 
@@ -63,23 +69,23 @@ def return_text_info(update, chat_data, id):
 # Константы
 
 DEPENDENCIES = {"symb": {"class_type": defaultdict,
-                         "class_ex_type": defaultdict,
+                         "class_ex_type": lambda: defaultdict(int),
                          "class_func": counter_symbols,
                          "return_type": dict,
                          "return_func": return_text_info
-                        },
+                },
                 "word": {"class_type": defaultdict,
-                         "class_ex_type": defaultdict,
+                         "class_ex_type": lambda: defaultdict(int),
                          "class_func": counter_words,
                          "return_type": dict,
                          "return_func": return_text_info
-                        },
+                },
                 "msg": {"class_type": defaultdict,
-                        "class_ex_type": defaultdict,
+                        "class_ex_type": lambda: defaultdict(int),
                         "class_func": counter_msgs,
                         "return_type": dict,
                         "return_func": return_text_info
-                        }
+                }
                 } 
 
 
@@ -101,11 +107,7 @@ class Chat_stat():
 
         for feature in DEPENDENCIES.keys():
             if features[feature]:
-                tp = int
-                if "class_ex_type" in DEPENDENCIES[feature].keys():
-                    tp = lambda: DEPENDENCIES[feature]["class_ex_type"](int)
-                setattr(self, feature, 
-                        DEPENDENCIES[feature]["class_type"](tp))
+                setattr(self, feature, DEPENDENCIES[feature]["class_type"](DEPENDENCIES[feature]["class_ex_type"]))
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0],
                                         key=lambda x : x.send_time)
@@ -118,7 +120,9 @@ class Chat_stat():
                     DEPENDENCIES[feature]["class_func"](getattr(self, 
                                                                 feature),
                                                         message,
-                                                        features[feature])
+                                                        features[feature],
+                                                        feature)
+            
 
 
 # Основные функции
@@ -139,10 +143,8 @@ def start_analyses(parsed_chats, time_gap,
     для репрезентации.
     :rtype: list
     """
-    features_type = {}
-    for feature in features.keys():
-        if features[feature]:
-            features_type[feature] = DEPENDENCIES[feature]["return_type"]()
+    
+    features_type = {feature: DEPENDENCIES[feature]["return_type"]() for feature in features.keys() if features[feature]}
 
     ret_parsed_chats = {}
     for chat in parsed_chats:
@@ -150,10 +152,7 @@ def start_analyses(parsed_chats, time_gap,
         analysed_chat = Chat_stat(features, chat, time_gap)
         for feature in features.keys():
             if features[feature]:
-                DEPENDENCIES[feature]["return_func"](features_type[feature],
-                                                 getattr(analysed_chat,
-                                                         feature),
-                                                 chat.id)
+                DEPENDENCIES[feature]["return_func"](features_type[feature], getattr(analysed_chat, feature), chat.id)
 
     ret_stats = {}
     for feature in features.keys():

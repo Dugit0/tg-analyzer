@@ -134,7 +134,7 @@ class Message():
     author = None
     send_time = None
     type = None
-    text = None
+    text = ""
     edited = None
     forwarded = None
 
@@ -146,9 +146,14 @@ class Message():
         send_time = datetime.fromisoformat(message["date"] + ZERO)
         self.send_time = send_time
         if isinstance(message["text"], list):
-            self.text = "\n".join([i for i in message["text"] if isinstance(i, str)])
+            for i in message["text"]:
+                if isinstance(i, str):
+                    self.text += " " + i
+                else:
+                    self.text += " " + i["text"]
+            self.text = self.text.strip()
         else:
-            self.text = message["text"]
+            self.text = message["text"].strip()
         if message["type"] == "service":
             self.author = message["actor"]
             if message["action"] == "phone_call":
