@@ -1,3 +1,4 @@
+# TODO Fix "name is not fullname"-problem
 """Графический интерфейс tg-analyzer."""
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
@@ -9,35 +10,38 @@ import datetime
 import random
 import gettext
 
+import tganalyzer
+from tganalyzer.core.creator import start_creator
+
 
 # ========================= DEBUG =========================
-random.seed(42)
+# random.seed(42)
 
-SIDE_EFFECT = 0
-
-
-class Chat:
-    # noqa: D101
-    def __init__(self, chat_name, chat_type, messages_len):
-        # noqa: D107
-        self.name = chat_name
-        self.type = chat_type
-        self.messages = [0] * messages_len
+# SIDE_EFFECT = 0
 
 
-def get_all_chats():
-    """TMP FUNC! Will be removed."""
-    global SIDE_EFFECT
-    res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i)
-           for t in ['private', 'public']
-           for i in range(100, 1001, 50)]
-    SIDE_EFFECT += 1
-    # random.shuffle(res)
-    # very_long_name = "very " * 20 + "long name"
-    # res.append(very_long_name)
-    # for i in range(20):
-    #     res.append(f"new_chat{i:03d}")
-    return res
+# class Chat:
+#     # noqa: D101
+#     def __init__(self, chat_name, chat_type, messages_len):
+#         # noqa: D107
+#         self.name = chat_name
+#         self.type = chat_type
+#         self.messages = [0] * messages_len
+
+
+# def get_all_chats():
+#     """TMP FUNC! Will be removed."""
+#     global SIDE_EFFECT
+#     res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i)
+#            for t in ['private', 'public']
+#            for i in range(100, 1001, 50)]
+#     SIDE_EFFECT += 1
+#     # random.shuffle(res)
+#     # very_long_name = "very " * 20 + "long name"
+#     # res.append(very_long_name)
+#     # for i in range(20):
+#     #     res.append(f"new_chat{i:03d}")
+#     return res
 # ========================= DEBUG =========================
 
 
@@ -64,7 +68,10 @@ class MainWindow(QMainWindow):
         self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
-        self.feature_names = [f"Feature {i:02d}" for i in range(11)]
+        self.feature_names = ["Symbol counting",
+                              "Word counting",
+                              "Message counting",
+                              ]
         self.chat_checkboxes = []
         self.feature_checkboxes = []
 
@@ -232,7 +239,7 @@ class MainWindow(QMainWindow):
                     del self.chats[i]
             self.data_path = path
             self.data_path_label.setText(path)
-            self.chats = get_all_chats()
+            self.chats = start_creator(path)
             for chat in self.chats:
                 checkbox = QCheckBox(chat.name, self)
                 # TODO name is not id
@@ -262,11 +269,15 @@ class MainWindow(QMainWindow):
 
     def show_only_private_chats(self):
         """Показывает в области чатов только личные чаты."""
-        self.show_chat_with_filter(lambda chat: chat.type == "private")
+        # TODO Есть ли другие типы личных чатов?
+        self.show_chat_with_filter(lambda chat: chat.type == "personal_chat")
 
     def show_only_public_chats(self):
         """Показывает в области чатов только беседы чаты."""
-        self.show_chat_with_filter(lambda chat: chat.type == "public")
+        # TODO Есть ли другие типы групп?
+        self.show_chat_with_filter(lambda chat:
+                                   chat.type in ["private_group",
+                                                 "private_supergroup"])
 
     def choice_all_chat(self):
         """Помечает выбранными все отображенные чаты."""
