@@ -87,7 +87,7 @@ class Extraction():
 
     def __init__(self, data_path):
         """Достает информацию из json."""
-        with open(data_path) as f:
+        with open(data_path, encoding='utf-8') as f:
             self.data = json.load(f)
 
     def chats_ex(self):
