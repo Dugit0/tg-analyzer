@@ -279,10 +279,11 @@ class MainWindow(QMainWindow):
             checkbox.setCheckState(Qt.CheckState.Unchecked)
 
     def complex_chat_choice(self):
-        """Помечает выбранными чаты, в которых больше, чем X сообщений.
+        """Помечает только те чаты, в которых больше, чем X сообщений.
 
         X выбирается пользователем в виджете `complex_choice_spin`.
         """
+        self.choice_nothing_chat()
         n = self.complex_choice_spin.value()
         # TODO name is not id
         chat_names = {chat.name for chat in self.chats
