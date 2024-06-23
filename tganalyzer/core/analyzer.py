@@ -11,7 +11,7 @@ def counter_symbols(update, message, feat_meaning, feature):
     :param update: структура для подсчета символов.
     :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -26,7 +26,7 @@ def counter_words(update, message, feat_meaning, feature):
     :param update: структура для подсчета слов.
     :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -42,7 +42,7 @@ def counter_msgs(update, message, feat_meaning, feature):
     :param update: структура для подсчета сообщений.
     :type update: defaultdict[str, defaultdict[datetime, int]]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -59,7 +59,7 @@ def counter_files(update, message, feat_meaning, feature):
     :param update: структура для подсчета количества и длины сообщений-файлов.
     :type update: defaultdict[str, defaultdict[str, int]]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -76,7 +76,7 @@ def counter_photos(update, message, feat_meaning, feature):
     :param update: структура для подсчета фотографий.
     :type update: defaultdict[str, int]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -92,7 +92,7 @@ def counter_days_nights(update, message, feat_meaning, feature):
     :param update: структура для подсчета сообщений.
     :type update: defaultdict[str, defaultdict[str, int]]
     :param message: анализируемое сообщение.
-    :type message: Message
+    :type message: creator.Message
     :param feat_meaning: значение, передаваемое при вызове анализатора.
     :type feat_meaning: int/bool/str
     :param feature: название цели анализа.
@@ -127,6 +127,14 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
+            # symb structure in final data:
+            # "symb": {
+            #   chat.id: {
+            #       "username": {
+            #           datetime.datetime: int
+            #       }
+            #   }
+            # }
         "word": {
             "class_type": defaultdict,
             "class_ex_type": lambda: defaultdict(int),
@@ -134,12 +142,29 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
-        "msg": {"class_type": defaultdict,
-                "class_ex_type": lambda: defaultdict(int),
-                "class_func": counter_msgs,
-                "return_type": dict,
-                "return_func": return_text_info
-                },
+            # word structure in final data:
+            # "word": {
+            #   chat.id: {
+            #       "username": {
+            #           datetime.datetime: int
+            #       }
+            #   }
+            # }
+        "msg": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_msgs,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+            # msg structure in final data:
+            # "msg": {
+            #   chat.id: {
+            #       "username": {
+            #           datetime.datetime: int
+            #       }
+            #   }
+            # }
         "voice_message": {
             "class_type": defaultdict,
             "class_ex_type": lambda: defaultdict(int),
@@ -147,6 +172,15 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
+            # voice_message structure in final data:
+            # "voice_message": {
+            #   chat.id: {
+            #       "username": {
+            #           "quantity": int,
+            #           "length": int
+            #       }
+            #   }
+            # }
         "video_message": {
             "class_type": defaultdict,
             "class_ex_type": lambda: defaultdict(int),
@@ -154,6 +188,15 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
+            # video_message structure in final data:
+            # "video_message": {
+            #   chat.id: {
+            #       "username": {
+            #           "quantity": int,
+            #           "length": int
+            #       }
+            #   }
+            # }
         "video_file": {
             "class_type": defaultdict,
             "class_ex_type": lambda: defaultdict(int),
@@ -161,6 +204,15 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
+            # video_file structure in final data:
+            # "video_file": {
+            #   chat.id: {
+            #       "username": {
+            #           "quantity": int,
+            #           "length": int
+            #       }
+            #   }
+            # }
         "photo": {
             "class_type": defaultdict,
             "class_ex_type": int,
@@ -168,6 +220,13 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             },
+            # photo structure in final data:
+            # "photo": {
+            #   chat.id: {
+            #       "username": int
+            #       }
+            #   }
+            # }
         "day_night": {
             "class_type": defaultdict,
             "class_ex_type": lambda: defaultdict(int),
@@ -175,6 +234,17 @@ DEPENDENCIES = {
             "return_type": dict,
             "return_func": return_text_info
             }
+            # day_night structure in final data:
+            # "day_night": {
+            #   chat.id: {
+            #       "username": {
+            #           "night": int,
+            #           "morning": int,
+            #           "afternoon": int,
+            #           "evening": int
+            #       }
+            #   }
+            # }
         }
 
 
@@ -187,11 +257,12 @@ class Chat_stat():
         """Инициализирует объект класса, подсчитывая статистику по чату.
 
         :param features: какие статистики надо подсчитать.
-        :type features: dict
+        :type features: dict[str: bool]
         :param chat: анализируемый чат.
         :type chat: creator.Chat
         :param time_gap: временной промежуток рассматриваемых сообщений.
-        :type time_gap: list (начальная дата и конечная)
+        Начальная дата и конечная, aware.
+        :type time_gap: list[datetime.datetime, datetime.datetime]
         """
         for feature in DEPENDENCIES.keys():
             if features[feature]:
@@ -219,14 +290,14 @@ def start_analyses(parsed_chats, time_gap, features):
     """Основная функция для анализа.
 
     :param parsed_chats: массив объектов класса Chat из creator.
-    :type parsed_chats: list
-    :param time_gap: границы временного интервала.
-    :type time_gap: list
+    :type parsed_chats: list[creator.Chat]
+    :param time_gap: границы временного интервала (aware).
+    :type time_gap: list[datetime.datetime, datetime.datetime]
     :param features: словарь с необходимыми для подсчета статистик данными.
-    :type features: dict
+    :type features: dict[str: bool]
     :return: массив, содержащий общую статистику и метаданные на отправку
     для репрезентации.
-    :rtype: list
+    :rtype: list[dict[str: feature's structure], dict[chat.id: chat]]
     """
     features_type = {feature: DEPENDENCIES[feature]["return_type"]()
                      for feature in features.keys() if features[feature]}
@@ -245,4 +316,4 @@ def start_analyses(parsed_chats, time_gap, features):
     ret_stats = {feature: features_type[feature]
                  for feature in features.keys() if features[feature]}
 
-    return [ret_stats, ret_parsed_chats, time_gap]
+    return [ret_stats, ret_parsed_chats]
