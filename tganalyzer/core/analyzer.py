@@ -17,8 +17,7 @@ def counter_symbols(update, message, feat_meaning, feature):
     :param feature: название цели анализа.
     :type feature: str
     """
-    num = len(message.text)
-    update[message.author][message.send_time.date()] += num
+    update[message.author][message.send_time.date()] += len(message.text)
 
 
 def counter_words(update, message, feat_meaning, feature):
@@ -33,8 +32,8 @@ def counter_words(update, message, feat_meaning, feature):
     :param feature: название цели анализа.
     :type feature: str
     """
-    num = len(message.text.split())
-    update[message.author][message.send_time.date()] += num
+    update[message.author][message.send_time.date()] += \
+        len(message.text.split())
 
 
 def counter_msgs(update, message, feat_meaning, feature):
@@ -120,55 +119,63 @@ def return_text_info(update, chat_data, id):
 
 # Константы
 
-DP = {"symb": {"class_type": defaultdict,
-               "class_ex_type": lambda: defaultdict(int),
-               "class_func": counter_symbols,
-               "return_type": dict,
-               "return_func": return_text_info
-               },
-      "word": {"class_type": defaultdict,
-               "class_ex_type": lambda: defaultdict(int),
-               "class_func": counter_words,
-               "return_type": dict,
-               "return_func": return_text_info
-               },
-      "msg": {"class_type": defaultdict,
-              "class_ex_type": lambda: defaultdict(int),
-              "class_func": counter_msgs,
-              "return_type": dict,
-              "return_func": return_text_info
-              },
-      "voice_message": {"class_type": defaultdict,
-                        "class_ex_type": lambda: defaultdict(int),
-                        "class_func": counter_files,
-                        "return_type": dict,
-                        "return_func": return_text_info
-                        },
-      "video_message": {"class_type": defaultdict,
-                        "class_ex_type": lambda: defaultdict(int),
-                        "class_func": counter_files,
-                        "return_type": dict,
-                        "return_func": return_text_info
-                        },
-      "video_file": {"class_type": defaultdict,
-                     "class_ex_type": lambda: defaultdict(int),
-                     "class_func": counter_files,
-                     "return_type": dict,
-                     "return_func": return_text_info
-                     },
-      "photo": {"class_type": defaultdict,
-                "class_ex_type": int,
-                "class_func": counter_photos,
+DEPENDENCIES = {
+        "symb": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_symbols,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "word": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_words,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "msg": {"class_type": defaultdict,
+                "class_ex_type": lambda: defaultdict(int),
+                "class_func": counter_msgs,
                 "return_type": dict,
                 "return_func": return_text_info
                 },
-      "day_night": {"class_type": defaultdict,
-                    "class_ex_type": lambda: defaultdict(int),
-                    "class_func": counter_days_nights,
-                    "return_type": dict,
-                    "return_func": return_text_info
-                    }
-      }
+        "voice_message": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "video_message": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "video_file": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "photo": {
+            "class_type": defaultdict,
+            "class_ex_type": int,
+            "class_func": counter_photos,
+            "return_type": dict,
+            "return_func": return_text_info
+            },
+        "day_night": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_days_nights,
+            "return_type": dict,
+            "return_func": return_text_info
+            }
+        }
 
 
 # Основные классы
@@ -186,10 +193,12 @@ class Chat_stat():
         :param time_gap: временной промежуток рассматриваемых сообщений.
         :type time_gap: list (начальная дата и конечная)
         """
-        for f in DP.keys():
-            if features[f]:
-                meaning = DP[f]["class_type"](DP[f]["class_ex_type"])
-                setattr(self, f, meaning)
+        for feature in DEPENDENCIES.keys():
+            if features[feature]:
+                setattr(self,
+                        feature,
+                        DEPENDENCIES[feature]["class_type"](
+                                DEPENDENCIES[feature]["class_ex_type"]))
 
         start_mes = bisect.bisect_left(chat.messages, time_gap[0],
                                        key=lambda x: x.send_time)
@@ -197,9 +206,11 @@ class Chat_stat():
                                       key=lambda x: x.send_time)
         for i in range(start_mes, end_mes):
             msg = chat.messages[i]
-            for f in features.keys():
-                if features[f]:
-                    DP[f]["class_func"](getattr(self, f), msg, features[f], f)
+            for feature in features.keys():
+                if features[feature]:
+                    DEPENDENCIES[feature]["class_func"](
+                            getattr(self, feature), msg,
+                            features[feature], feature)
 
 
 # Основные функции
@@ -217,20 +228,21 @@ def start_analyses(parsed_chats, time_gap, features):
     для репрезентации.
     :rtype: list
     """
-    features_type = {f: DP[f]["return_type"]()
-                     for f in features.keys() if features[f]}
+    features_type = {feature: DEPENDENCIES[feature]["return_type"]()
+                     for feature in features.keys() if features[feature]}
 
     ret_parsed_chats = {}
     for chat in parsed_chats:
         ret_parsed_chats[chat.id] = chat   # упорядочивание для удобства html
         analysed_chat = Chat_stat(features, chat, time_gap)
-        for f in features.keys():
-            if features[f]:
-                DP[f]["return_func"](features_type[f],
-                                     getattr(analysed_chat, f),
-                                     chat.id)
+        for feature in features.keys():
+            if features[feature]:
+                DEPENDENCIES[feature]["return_func"](
+                        features_type[feature],
+                        getattr(analysed_chat, feature),
+                        chat.id)
 
-    ret_stats = {f: features_type[f]
-                 for f in features.keys() if features[f]}
+    ret_stats = {feature: features_type[feature]
+                 for feature in features.keys() if features[feature]}
 
     return [ret_stats, ret_parsed_chats, time_gap]
