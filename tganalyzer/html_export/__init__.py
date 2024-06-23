@@ -6,6 +6,7 @@ import os
 import shutil
 from collections import defaultdict
 from matplotlib import pyplot as plt
+from pathlib import Path
 
 
 def daterange(start: datetime.date, stop: datetime.date, step: int = 1):
@@ -21,7 +22,7 @@ def daterange(start: datetime.date, stop: datetime.date, step: int = 1):
         date += datetime.timedelta(days=step)
 
 
-def draw_top_bar(path: str, data: dict, topsize: int = 3):
+def draw_top_bar(path: Path, data: dict, topsize: int = 3):
     """Построение отсортированной столбчатой диаграммы топ-``topsize``.
 
     :param path: путь к конечному файлу.
@@ -44,7 +45,7 @@ def draw_top_bar(path: str, data: dict, topsize: int = 3):
     plt.close(fig)
 
 
-def draw_date_plot(path: str, data: dict, label_max: int = 7):
+def draw_date_plot(path: Path, data: dict, label_max: int = 7):
     """Построение графика данных по дате.
 
     :param path: путь к конечному файлу.
@@ -65,7 +66,7 @@ def draw_date_plot(path: str, data: dict, label_max: int = 7):
     plt.close(fig)
 
 
-def draw_pie(path: str, data: dict, pieces: int = 5):
+def draw_pie(path: Path, data: dict, pieces: int = 5):
     """Построение отсортированной круговой диаграммы топ-``pieces``.
 
     :param path: путь к конечному файлу.
@@ -86,7 +87,7 @@ def draw_pie(path: str, data: dict, pieces: int = 5):
 
 
 def draw_msg_word(
-    path: str,
+    path: Path,
     data: dict[int, dict[str, dict[datetime.date, int]]],
     feature: str,
 ) -> dict[str]:
@@ -122,34 +123,34 @@ def draw_msg_word(
     ans = {}
     ans["agg"] = {}
 
-    draw_top_bar(f"{path}/agg_{feature}_chat.svg", by_chat_agg, 10)
+    draw_top_bar(path / f"agg_{feature}_chat.svg", by_chat_agg, 10)
     ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
 
-    draw_date_plot(f"{path}/agg_{feature}_date.svg", by_date_agg, 15)
+    draw_date_plot(path / f"agg_{feature}_date.svg", by_date_agg, 15)
     ans["agg"]["date"] = f"agg_{feature}_date.svg"
 
     for chatid in data:
         ans[chatid] = {}
 
-        draw_pie(f"{path}/{chatid}_{feature}_user.svg", by_user[chatid], 5)
+        draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
         ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
 
         draw_date_plot(
-            f"{path}/{chatid}_{feature}_date.svg",
+            path / f"{chatid}_{feature}_date.svg",
             by_date[chatid],
             15
         )
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
 
         # среднее число сообщений в день
-        dates_sorted = list(by_date[chatid].keys())
-        delta = (dates_sorted[-1] - dates_sorted[0]).days
+        datelist = list(by_date[chatid].keys())
+        delta = (datelist[-1] - datelist[0]).days + 1
         ans[chatid]["avg"] = sum(by_date[chatid].values()) / delta
 
     return ans
 
 
-PATH = os.path.dirname(__file__)
+PATH = Path(__file__).resolve().parent
 TEXT = {
     "title": "Анализатор статистики Telegram",
     "user": "Пользователь",
@@ -158,7 +159,12 @@ TEXT = {
 }
 
 
-def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
+def html_export(
+    path: str,
+    metadata: dict,
+    chatdata: dict,
+    theme: str = "light"
+):
     """Создание HTML-файла из данных о пользователе и чатах.
 
     :param path: путь к конечному файлу.
@@ -166,12 +172,10 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     :param metadata: данные о пользователе вида {поле: значение}.
     :param chatdata: данные о чатах вида {опция: данные}.
     """
-    path = os.path.abspath(path)
-    dirname, basename = os.path.dirname(path), os.path.basename(path)
-    basename_nodots = basename.replace(".", "_")
-    files_dir = f"{dirname}/{basename_nodots}_files"
+    abspath = Path(path).resolve()
+    files_dir = abspath.parent / f"{abspath.name.replace('.', '_')}_files"
     os.makedirs(files_dir, exist_ok=True)
-    shutil.copy(f"{PATH}/themes/{theme}.css", f"{files_dir}/style.css")
+    shutil.copyfile(PATH / "themes" / f"{theme}.css", files_dir / "style.css")
 
     features = defaultdict(lambda: defaultdict(str))
     for feat, data in chatdata.items():
@@ -184,11 +188,11 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
             chatstat[chat][feat] = stat
 
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(f"{PATH}/templates")
+        loader=jinja2.FileSystemLoader(PATH / "templates")
     )
     tmpl = env.get_template("index.html.jinja2")
     tmpl.stream(
-        files_dir=os.path.basename(files_dir),
+        files_dir=files_dir.name,
         text=TEXT,
         metadata=metadata,
         chatstat=chatstat,
