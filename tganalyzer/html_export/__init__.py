@@ -89,7 +89,7 @@ def draw_msg_word(
     path: str,
     data: dict[int, dict[str, dict[datetime.date, int]]],
     feature: str,
-) -> dict:
+) -> dict[str]:
     """Отрисовка графиков и сбор статистики сообщений/слов.
 
     :param path: путь к папке, в которой сохранить изображения.
@@ -173,10 +173,15 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     os.makedirs(files_dir, exist_ok=True)
     shutil.copy(f"{PATH}/themes/{theme}.css", f"{files_dir}/style.css")
 
-    features = {}
+    features = defaultdict(lambda: defaultdict(str))
     for feat, data in chatdata.items():
         if feat in ("msg", "word"):
             features[feat] = draw_msg_word(files_dir, data, feat)
+
+    chatstat = defaultdict(lambda: defaultdict(str))
+    for feat, featdata in features.items():
+        for chat, stat in featdata.items():
+            chatstat[chat][feat] = stat
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(f"{PATH}/templates")
@@ -185,6 +190,6 @@ def html_export(path: str, theme: str, metadata: dict, chatdata: dict):
     tmpl.stream(
         files_dir=os.path.basename(files_dir),
         text=TEXT,
-        login=metadata["login"],
-        features=features,
+        metadata=metadata,
+        chatstat=chatstat,
     ).dump(path)

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ text.title }}: @{{ login }}</title>
+    <title>{{ text.title }}: @{{ metadata.login }}</title>
     <link rel="stylesheet" type="text/css" href="{{ files_dir }}/style.css">
 </head>
 <body>
@@ -9,22 +9,25 @@
     <ul>
         <li>
             {{ text.user }}:
-            <a href="https://t.me/{{ login }}"> <em>@{{ login }}</em> </a>
+            <a href="https://t.me/{{ metadata.login }}"> <em>@{{ metadata.login }}</em> </a>
         </li>
     </ul>
-    {% for feat, featstat in features.items() %}
-        {% for chat, chatstat in featstat.items() %}
-            {% for type, res in chatstat.items() %}
-    <div class="feature">
-        <h3 class="featurename">{{ feat }}_{{ chat }}_{{ type }}</h3>
+    {% for chat, chatdata in chatstat.items() %}
+    <div class="chatblock">
+        <h2 class="chatname">Chat ID #{{ chat }}</h2>
+        {% for feat, featdata in chatdata.items() %}
+        <hr class="featsep">
+        <h3 class="featurename">{{ feat }}</h3>
+            {% for type, res in featdata.items() %}
+        <h4 class="typename">{{ type }}</h4>
                 {% if res is number %}
         <h1>{{ res|round(3) }}</h1>
                 {% else %}
         <img class="plot" src="{{ files_dir }}/{{ res }}">
                 {% endif %}
-    </div>
             {% endfor %}
         {% endfor %}
+    </div>
     {% else %}
     <p> <em>{{ text.empty_list }}</em>
     {% endfor %}
