@@ -12,6 +12,8 @@ import gettext
 
 import tganalyzer
 from tganalyzer.core.creator import start_creator
+from tganalyzer.core.analyzer import start_analyses
+from tganalyzer.html_export import html_export
 
 
 # ========================= DEBUG =========================
@@ -68,14 +70,15 @@ class MainWindow(QMainWindow):
         self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
-        self.feature_names = [
-                "Symbol counting",
-                "Word counting",
-                "Message counting",
-                "Voice message analysis",
-                "Circle analysis",
-                "Photo counting" "Video file analysis",
-                "Activity at different times of the day",
+        self.features = [
+                "symb": "Symbol counting",
+                "word": "Word counting",
+                "msg": "Message counting",
+                "voice_message": "Voice message analysis",
+                "video_message": "Circle analysis",
+                "video_file": "Video file analysis",
+                "photo": "Photo counting",
+                "day_night": "Activity at different times of the day",
                 ]
         self.chat_checkboxes = []
         self.feature_checkboxes = []
@@ -155,32 +158,33 @@ class MainWindow(QMainWindow):
         from_date_label.setText(
                 self.locale.gettext("Analyze the time period from"))
         from_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        from_date = QDateEdit(QDate(today_date.year - 5,
+        self.from_date = QDateEdit(QDate(today_date.year - 5,
                                     today_date.month,
                                     today_date.day))
-        from_date.setCalendarPopup(True)
-        from_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.from_date.setCalendarPopup(True)
+        self.from_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         # To date widgets
         to_date_label = QLabel()
         to_date_label.setText(self.locale.gettext("to"))
         to_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        to_date = QDateEdit(QDate(today_date.year,
+        self.to_date = QDateEdit(QDate(today_date.year,
                                   today_date.month,
                                   today_date.day))
-        to_date.setCalendarPopup(True)
-        to_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.to_date.setCalendarPopup(True)
+        self.to_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         date_range_layout.addWidget(from_date_label, 5)
-        date_range_layout.addWidget(from_date, 3)
+        date_range_layout.addWidget(self.from_date, 3)
         date_range_layout.addWidget(to_date_label, 1)
-        date_range_layout.addWidget(to_date, 3)
+        date_range_layout.addWidget(self.to_date, 3)
 
         # Scroll area for features
         features_area = QScrollArea(self)
         features_wiget = QWidget()
         self.features_layout = QVBoxLayout()
         features_wiget.setLayout(self.features_layout)
-        for feature_name in self.feature_names:
-            checkbox = QCheckBox(feature_name, self)
+        for feature in self.features:
+            checkbox = QCheckBox(self.features[feature], self)
+            checkbox.feature_name = feature
             checkbox.setCheckState(Qt.CheckState.Checked)
             self.feature_checkboxes.append(checkbox)
             self.features_layout.addWidget(checkbox)
@@ -247,7 +251,7 @@ class MainWindow(QMainWindow):
             self.chats = start_creator(path)
             for chat in self.chats:
                 checkbox = QCheckBox(chat.name, self)
-                # TODO name is not id
+                checkbox.chat_id = chat.id
                 self.chat_checkboxes.append(checkbox)
                 self.chats_layout.addWidget(checkbox)
 
@@ -264,7 +268,7 @@ class MainWindow(QMainWindow):
         for chat in self.chats:
             if key(chat):
                 checkbox = QCheckBox(chat.name, self)
-                # TODO name is not id
+                checkbox.chat_id = chat.id
                 self.chat_checkboxes.append(checkbox)
                 self.chats_layout.addWidget(checkbox)
 
@@ -301,13 +305,38 @@ class MainWindow(QMainWindow):
         """
         self.choice_nothing_chat()
         n = self.complex_choice_spin.value()
-        # TODO name is not id
-        chat_names = {chat.name for chat in self.chats
-                      if len(chat.messages) > n}
+        chat_ids = {chat.id for chat in self.chats
+                    if len(chat.messages) > n}
         for checkbox in self.chat_checkboxes:
-            if checkbox.text() in chat_names:
+            if checkbox.chat_id in chat_ids:
                 checkbox.setCheckState(Qt.CheckState.Checked)
 
     def create_report(self):
         """Создает отчет."""
-        pass
+        chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
+                    if checkbox.CheckState == Qt.CheckState.Checked}
+        parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
+        time_gap = [self.from_date.date.toPyDateTime(),
+                    self.to_date.date.toPyDateTime()]
+        features = {checkbox.feature_name:
+                    checkbox.CheckState == Qt.CheckState.Checked
+                    for checkbox in self.feature_checkboxes}
+
+        ret_stats, ret_parsed_chats, _ = start_analyses(parsed_chats,
+                                                        time_gap,
+                                                        features)
+        metadata = {
+                "login": "TODO LOGIN",
+                "chats": ret_parsed_chats,
+                "time_gap": time_gap,
+                }
+        html_export("TODO PATH", "light", metadata, ret_stats)
+
+
+
+
+
+
+
+
+
