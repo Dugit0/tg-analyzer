@@ -1,6 +1,5 @@
 body {
-    background-color: #262626;
-    color: white;
+    background-color: #daf2ff;
 }
 
 a {
@@ -25,9 +24,8 @@ h1.header {
     border-radius: 10px;
 }
 
-div.feature {
+div.chatblock {
     width: 90vw;
-    max-height: 75vh;
     border: 2px dotted #2aabee;
     border-radius: 5px;
     text-align: center;
@@ -36,7 +34,20 @@ div.feature {
     margin-bottom: 20px;
 }
 
+h2.chatname {
+    color: #229ed9;
+}
+
+hr.featsep {
+    border-top: 1px dashed #229ed9;
+}
+
 h3.featurename {
+    color: #229ed9;
+    font-style: italic;
+}
+
+h4.typename {
     color: #229ed9;
     font-style: italic;
 }
@@ -44,5 +55,4 @@ h3.featurename {
 img.plot {
     max-width: 80vw;
     max-height: 60vh;
-    filter: invert(100%);
 }
