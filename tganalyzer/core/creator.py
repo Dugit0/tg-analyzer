@@ -112,11 +112,17 @@ class Chat():
 
         Еще итерирутеся по сообщениям чата и создает массив объектов Message.
         """
-        self.name = chat["name"] if "name" in chat.keys() else None
+        self.name = chat["name"] if "name" in chat.keys() and \
+                chat["type"] != "personal_chat" else None
         self.id = chat["id"]
         self.type = chat["type"]
         messages = []
         for message in chat['messages']:
+            if self.name is not None and \
+                    self.type == "personal_chat" and \
+                    message["from_id"] == "user" + str(self.id):
+                # Поиск полного имени контакта для определения имени чата
+                self.name = message["from"]
             if message["type"] == "service" and \
                     message["action"] != "phone_call" and \
                     message["action"] != "group_call":
