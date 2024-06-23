@@ -8,6 +8,83 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 
 
+def daterange(start: datetime.date, stop: datetime.date, step: int = 1):
+    """Итерация по диапазону дат с заданным шагом аналогично range().
+
+    :param start: дата начала.
+    :param stop: дата конца (не входит в диапазон).
+    :param step: шаг итерации.
+    """
+    date = start
+    while (step > 0 and date < stop) or (step < 0 and date > stop):
+        yield date
+        date += datetime.timedelta(days=step)
+
+
+def draw_top_bar(path: str, data: dict, topsize: int = 3):
+    """Построение отсортированной столбчатой диаграммы топ-``topsize``.
+
+    :param path: путь к конечному файлу.
+    :param data: словарь данных с ключами-метками.
+    :param topsize: количество элементов в топе.
+    """
+    fig, ax = plt.subplots(figsize=(12, 6))
+    data_sorted = dict(
+        sorted(data.items(), key=lambda it: it[1], reverse=True)
+    )   # предварительная сортировка (в порядке убывания) по значению
+    x, y = list(data_sorted.keys()), list(data_sorted.values())
+    if len(y) > topsize:
+        x[topsize:], y[topsize:] = ["other"], [sum(y[topsize:])]
+
+    bar = ax.bar(range(len(x)), y)
+    ax.set_xticks(range(len(x)), x)
+    ax.bar_label(bar)
+    ax.grid(axis="y")
+    fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
+    plt.close(fig)
+
+
+def draw_date_plot(path: str, data: dict, label_max: int = 7):
+    """Построение графика данных по дате.
+
+    :param path: путь к конечному файлу.
+    :param data: словарь данных с ключами класса ``datetime.date``.
+    :param label_max: максимальное количество меток на оси дат.
+    """
+    fig, ax = plt.subplots(figsize=(12, 6))
+    data_sorted = {dt: data[dt] for dt in daterange(
+        min(data.keys()), max(data.keys()) + datetime.timedelta(days=1)
+    )}  # предварительная сортировка по ключу (дате) с включением 0
+    x, y = list(data_sorted.keys()), list(data_sorted.values())
+
+    ax.plot(range(len(x)), y)
+    label_pos = list(range(0, len(x), (len(x) / label_max).__ceil__()))
+    ax.set_xticks(label_pos, [x[i] for i in label_pos])
+    ax.grid(axis="both")
+    fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
+    plt.close(fig)
+
+
+def draw_pie(path: str, data: dict, pieces: int = 5):
+    """Построение отсортированной круговой диаграммы топ-``pieces``.
+
+    :param path: путь к конечному файлу.
+    :param data: словарь данных.
+    :param pieces: количество элементов в топе.
+    """
+    fig, ax = plt.subplots()
+    data_sorted = dict(
+        sorted(data.items(), key=lambda it: it[1], reverse=True)
+    )   # предварительная сортировка (в порядке убывания) по значению
+    labels, values = list(data_sorted.keys()), list(data_sorted.values())
+    if len(values) > pieces:
+        labels[pieces:], values[pieces:] = ["other"], [sum(values[pieces:])]
+
+    ax.pie(values, labels=labels, autopct="%1.1f%%")
+    fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
+    plt.close(fig)
+
+
 def draw_msg_word(
     path: str,
     data: dict[int, dict[str, dict[datetime.date, int]]],
@@ -43,62 +120,31 @@ def draw_msg_word(
 
     # Возвращаемый словарь путей
     ans = {}
-
     ans["agg"] = {}
-    # Построение отсортированной столбчатой диаграммы по всем чатам
-    fig, ax = plt.subplots(figsize=(len(by_chat_agg) + 1, 5))
-    by_chat_agg = dict(
-        sorted(by_chat_agg.items(), key=lambda it: it[1], reverse=True)
-    )   # предварительная сортировка (в порядке убывания) по значению (кол-ву)
-    ax.bar(range(len(by_chat_agg)), by_chat_agg.values())
-    ax.set_xticks(range(len(by_chat_agg)), by_chat_agg.keys())
-    fig.savefig(f"{path}/agg_{feature}_chat.svg",
-                format="svg", transparent=True)
-    plt.close(fig)
+
+    draw_top_bar(f"{path}/agg_{feature}_chat.svg", by_chat_agg, 10)
     ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
 
-    # Построение графика по дате среди всех чатов
-    fig, ax = plt.subplots(figsize=(len(by_date_agg) + 1, 5))
-    by_date_agg = dict(
-        sorted(by_date_agg.items(), key=lambda it: it[0])
-    )   # предварительная сортировка по ключу (дате)
-    ax.plot(range(len(by_date_agg)), by_date_agg.values())
-    ax.set_xticks(range(len(by_date_agg)), by_date_agg.keys())
-    fig.savefig(f"{path}/agg_{feature}_date.svg",
-                format="svg", transparent=True)
-    plt.close(fig)
+    draw_date_plot(f"{path}/agg_{feature}_date.svg", by_date_agg, 15)
     ans["agg"]["date"] = f"agg_{feature}_date.svg"
 
-    # Построение по каждому чату:
     for chatid in data:
         ans[chatid] = {}
-        # круговой диаграммы по пользователям
-        fig, ax = plt.subplots()
-        ax.pie(
-            by_user[chatid].values(),
-            labels=by_user[chatid].keys(),
-            autopct="%1.1f%%"
-        )
-        fig.savefig(f"{path}/{chatid}_{feature}_user.svg",
-                    format="svg", transparent=True)
-        plt.close(fig)
+
+        draw_pie(f"{path}/{chatid}_{feature}_user.svg", by_user[chatid], 5)
         ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
 
-        # графика по дате
-        fig, ax = plt.subplots(figsize=(len(by_date[chatid]) + 1, 5))
-        by_date[chatid] = dict(
-            sorted(by_date[chatid].items(), key=lambda it: it[0])
-        )   # предварительная сортировка по ключу (дате)
-        ax.plot(range(len(by_date[chatid])), by_date[chatid].values())
-        ax.set_xticks(range(len(by_date[chatid])), by_date[chatid].keys())
-        fig.savefig(f"{path}/{chatid}_{feature}_date.svg",
-                    format="svg", transparent=True)
-        plt.close(fig)
+        draw_date_plot(
+            f"{path}/{chatid}_{feature}_date.svg",
+            by_date[chatid],
+            15
+        )
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
 
-        # среднего числа сообщений в день
-        ans[chatid]["avg"] = (sum(by_date[chatid].values())
-                              / len(by_date[chatid]))
+        # среднее число сообщений в день
+        dates_sorted = list(by_date[chatid].keys())
+        delta = (dates_sorted[-1] - dates_sorted[0]).days
+        ans[chatid]["avg"] = sum(by_date[chatid].values()) / delta
 
     return ans
 
