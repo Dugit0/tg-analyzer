@@ -68,10 +68,15 @@ class MainWindow(QMainWindow):
         self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
-        self.feature_names = ["Symbol counting",
-                              "Word counting",
-                              "Message counting",
-                              ]
+        self.feature_names = [
+                "Symbol counting",
+                "Word counting",
+                "Message counting",
+                "Voice message analysis",
+                "Circle analysis",
+                "Photo counting" "Video file analysis",
+                "Activity at different times of the day",
+                ]
         self.chat_checkboxes = []
         self.feature_checkboxes = []
 
