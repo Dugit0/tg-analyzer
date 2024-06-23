@@ -118,8 +118,9 @@ class Chat():
         self.type = chat["type"]
         messages = []
         for message in chat['messages']:
-            if self.name is not None and \
+            if self.name is None and \
                     self.type == "personal_chat" and \
+                    "from_id" in message.keys() and \
                     message["from_id"] == "user" + str(self.id):
                 # Поиск полного имени контакта для определения имени чата
                 self.name = message["from"]
