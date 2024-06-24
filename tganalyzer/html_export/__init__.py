@@ -2,6 +2,7 @@
 
 import datetime
 import jinja2
+import matplotlib
 import os
 import shutil
 from collections import defaultdict
@@ -106,13 +107,17 @@ def draw_top_bar(path: Path, data: dict, topsize: int = 3):
         x[topsize:], y[topsize:] = [TEXT["other"]], [sum(y[topsize:])]
 
     bar = ax.bar(range(len(x)), y)
-    ax.set_xticks([])
+    ax.set_xticks(
+        range(len(x)), x,
+        rotation=45, ha="right", rotation_mode="anchor"
+    )
     ax.bar_label(bar)
-    ax.bar_label(bar, x, label_type="center", rotation=90)
+    ax.grid(axis="y")
     fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
     plt.close(fig)
 
 
+# TODO Решить проблему с 10 цветами matplotlib
 def draw_date_plot(path: Path, data: dict[str, dict], label_max: int = 7):
     """Построение графика данных по дате.
 
@@ -159,7 +164,7 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
         labels[pieces:] = [TEXT["other"]]
         values[pieces:] = [sum(values[pieces:])]
 
-    wedges, _, _ = ax.pie(values, autopct="%1.1f%%")
+    wedges, _, _ = ax.pie(values, autopct="%1.1f%%", pctdistance=1.25)
     ax.legend(
         wedges, labels,
         loc="center left", bbox_to_anchor=(1, 0.5), frameon=False
@@ -240,6 +245,8 @@ def html_export(
     :param metadata: данные о пользователе вида {поле: значение}.
     :param chatdata: данные о чатах вида {опция: данные}.
     """
+    matplotlib.use("svg")   # отключение интерактивного бэкенда
+
     abspath = Path(path).resolve()
     files_dir = abspath.parent / f"{abspath.name.replace('.', '_')}_files"
     os.makedirs(files_dir, exist_ok=True)

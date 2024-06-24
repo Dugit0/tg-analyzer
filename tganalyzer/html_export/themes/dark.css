@@ -61,8 +61,7 @@ h1.numberoftheday {
 }
 
 img.plot {
-    max-width: 80vw;
-    max-height: 60vh;
+    max-width: 80%;
     filter: invert(100%);
 }
 
