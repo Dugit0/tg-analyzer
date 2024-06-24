@@ -44,6 +44,15 @@ TEXT = {
         "photo": {
             "name": "Фотографии",
         },
+        "day_night": {
+            "name": "Статистика по времени суток",
+            "timesofday": {
+                "night": "Ночь",
+                "morning": "Утро",
+                "afternoon": "День",
+                "evening": "Вечер",
+            },
+        },
     },
     "types": {
         "chat": "По чатам",
@@ -292,7 +301,7 @@ def draw_voicemsg_videomsg_videos_photos(
         ("video_file" и "photo")
             {ID чата или "agg": {"quantity": имя}}.
     """
-    # Возвращаемый словарь имен/характеристик
+    # Возвращаемый словарь имен
     ans = {}
     # Вспомогательные словари:
     # по количеству для всех чатов
@@ -373,6 +382,83 @@ def draw_voicemsg_videomsg_videos_photos(
     return ans
 
 
+# TODO Упорядочить графики (от ночи к вечеру)
+def draw_timesofday(
+    path: Path,
+    data: dict[int, dict[str, dict[str, int]]],
+):
+    """Отрисовка графиков статистики по времени суток
+
+    :param path: путь к папке, в которой сохранить изображения.
+    :param data: сведения о чатах вида:
+        {ID чата: {имя пользователя: {время суток: количество}}}.
+    :return: имена файлов изображений вида:
+        {ID чата или "agg": имя}}.
+    """
+    # Возвращаемый словарь имен
+    ans = {}
+    # Вспомогательные словари:
+    # по чатам
+    quantity_agg = defaultdict(int)
+    # для каждого чата
+    quantity = defaultdict(lambda: defaultdict(int))
+
+    for chatid, chatdata in data.items():
+        for _, userdata in chatdata.items():
+            for tod, count in userdata.items():
+                quantity_agg[tod] += count
+                quantity[chatid][tod] += count
+
+    ans["agg"] = {}
+    if not quantity_agg:
+        return ans
+
+    quantity_agg = {
+        TEXT["features"]["day_night"]["timesofday"][tod]: value
+        for tod, value in quantity_agg.items()
+    }
+    if sum(quantity_agg.values()) > 0:
+        fig, ax = plt.subplots()
+        ax.pie(
+            quantity_agg.values(), labels=quantity_agg.keys(),
+            autopct="%1.1f%%", counterclock=False, startangle=90
+        )
+        fig.savefig(
+            path / "agg_timesofday.svg",
+            format="svg", transparent=True, bbox_inches="tight"
+        )
+        plt.close(fig)
+        ans["agg"]["quantity"] = "agg_timesofday.svg"
+    else:
+        ans["agg"]["quantity"] = None
+
+    for chatid in data:
+        ans[chatid] = {}
+        if not quantity[chatid]:
+            continue
+
+        quantity[chatid] = {
+            TEXT["features"]["day_night"]["timesofday"][tod]: value
+            for tod, value in quantity[chatid].items()
+        }
+        if sum(quantity[chatid].values()) > 0:
+            fig, ax = plt.subplots()
+            ax.pie(
+                quantity[chatid].values(), labels=quantity[chatid].keys(),
+                autopct="%1.1f%%", counterclock=False, startangle=90
+            )
+            fig.savefig(
+                path / f"{chatid}_timesofday.svg",
+                format="svg", transparent=True, bbox_inches="tight"
+            )
+            plt.close(fig)
+            ans[chatid]["quantity"] = f"{chatid}_timesofday.svg"
+        else:
+            ans[chatid]["quantity"] = None
+
+    return ans
+
+
 def html_export(
     path: str,
     metadata: dict,
@@ -409,6 +495,8 @@ def html_export(
                 features[feat] = draw_voicemsg_videomsg_videos_photos(
                     files_dir, chatdata[feat], chatnames, feat
                 )
+            case "day_night":
+                features[feat] = draw_timesofday(files_dir, chatdata[feat])
 
     chatstat = defaultdict(lambda: defaultdict(str))
     for feat, featdata in features.items():
