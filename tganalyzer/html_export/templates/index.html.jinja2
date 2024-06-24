@@ -31,9 +31,7 @@
         <p><em>{{ text.na|e }}</em></p>
                 {% elif res is number %}
         <h1 class="numberoftheday">{{ res|round(3) }}</h1>
-                    {% if type == "avg" %}
-        {{ text.features[feat].avg_unit|e }}
-                    {% endif %}
+        {{ text.features[feat].units|e }}
                 {% else %}
         <img class="plot" src="{{ files_dir }}/{{ res }}">
                 {% endif %}
