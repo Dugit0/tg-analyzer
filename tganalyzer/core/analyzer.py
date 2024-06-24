@@ -8,7 +8,7 @@ from collections import defaultdict
 # Функции подсчета
 
 def counter_symbols(
-        update: defaultdict[str, defaultdict[datetime.datetime, int]],
+        update: defaultdict[str, defaultdict[datetime.datetime.date, int]],
         message: creator.Message,
         feature: str
         ):
@@ -22,7 +22,7 @@ def counter_symbols(
 
 
 def counter_words(
-        update: defaultdict[str, defaultdict[datetime.datetime, int]],
+        update: defaultdict[str, defaultdict[datetime.datetime.date, int]],
         message: creator.Message,
         feature: str
         ):
@@ -37,7 +37,7 @@ def counter_words(
 
 
 def counter_msgs(
-        update: defaultdict[str, defaultdict[datetime.datetime, int]],
+        update: defaultdict[str, defaultdict[datetime.datetime.date, int]],
         message: creator.Message,
         feature: str
         ):
@@ -254,7 +254,7 @@ class Chat_stat():
             self,
             features: dict[str, bool],
             chat: creator.Chat,
-            time_gap: list[datetime.datetime, datetime.datetime]
+            time_gap: tuple[datetime.datetime, datetime.datetime]
             ):
         """Инициализирует объект класса, подсчитывая статистику по чату.
 
@@ -286,7 +286,7 @@ class Chat_stat():
 
 def start_analyses(
         parsed_chats: list[creator.Chat],
-        time_gap: list[datetime.datetime],
+        time_gap: tuple[datetime.datetime, datetime.datetime],
         features: dict[str, bool]
         ) -> tuple[dict, dict[int, creator.Chat]]:
     """Основная функция для анализа.
