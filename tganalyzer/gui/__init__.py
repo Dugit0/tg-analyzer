@@ -313,8 +313,9 @@ class MainWindow(QMainWindow):
                 "chats": ret_parsed_chats,
                 "time_gap": time_gap,
                 }
-        # TODO path
+        # TODO Убрать эту конструкцию
         try:
+            # TODO path
             html_export("index.html", metadata, ret_stats)
         except Exception as e:
             print(type(e), e)
