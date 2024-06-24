@@ -16,6 +16,7 @@ TEXT = {
     "user": "Пользователь",
     "daterange": "Диапазон дат",
     "agg_stat": "Статистика по всем чатам",
+    "na": "Нет информации",
     "empty_list": "Ничего не выбрано",
     "to_top": "Наверх",
     "features": {
@@ -216,6 +217,9 @@ def draw_symb_msg_word(
         len_days[chatid] = (date_max - date_min).days + 1
 
     ans["agg"] = {}
+    if not by_chat_agg:
+        return ans
+
     draw_top_bar(path / f"agg_{feature}_chat.svg", by_chat_agg, 10)
     ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
     draw_date_plot(path / f"agg_{feature}_date.svg", by_date_agg, 10)
@@ -223,8 +227,14 @@ def draw_symb_msg_word(
 
     for chatid in data:
         ans[chatid] = {}
-        draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
-        ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
+        if not by_user[chatid]:
+            continue
+
+        if sum(by_user[chatid].values()) > 0:
+            draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
+            ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
+        else:
+            ans[chatid]["user"] = None
         draw_date_plot(path / f"{chatid}_{feature}_date.svg", data[chatid], 10)
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
         ans[chatid]["avg"] = by_chat_agg[chatnames[chatid]] / len_days[chatid]
