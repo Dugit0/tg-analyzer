@@ -70,8 +70,11 @@ optional_fields_service = ['boosts',
 # Доп функции
 
 
-def game_parcer(message):
-    """Вспомогательная функция, составляет таблицу пользователей."""
+def game_parcer(message: dict):
+    """Вспомогательная функция, составляет таблицу пользователей.
+
+    :param message: структура телеграмма, содержащая данные о сообщении-игре.
+    """
     game_table = {}
     for line in message["text"]:
         if type(line) is str and len(line) > 0:
@@ -85,8 +88,11 @@ def game_parcer(message):
 class Extraction():
     """Этот класс достает информацию из json файла."""
 
-    def __init__(self, data_path):
-        """Достает информацию из json."""
+    def __init__(self, data_path: str):
+        """Достает информацию из json.
+
+        :param data_path: путь к json файлу.
+        """
         with open(data_path, encoding='utf-8') as f:
             self.data = json.load(f)
 
@@ -107,13 +113,14 @@ class Chat():
     type = None
     messages = None
 
-    def __init__(self, chat):
+    def __init__(self, chat: dict):
         """Берет чат и создает объект с упомянутыми выше полями.
 
         Еще итерирутеся по сообщениям чата и создает массив объектов Message.
+        :param chat: структура телеграмма, содержащая данные о чате.
         """
         self.name = chat["name"] if "name" in chat.keys() and \
-                chat["type"] != "personal_chat" else None
+                                    chat["type"] != "personal_chat" else None
         self.id = chat["id"]
         self.type = chat["type"]
         messages = []
@@ -145,10 +152,12 @@ class Message():
     edited = None
     forwarded = None
 
-    def __init__(self, message, chat):
+    def __init__(self, message: dict, chat: dict):
         """Берет сообщение и создает объект.
 
         Если сообщение типа service, то заведомо оно есть call.
+        :param message: структура телеграмма, содержащая данные о сообщении.
+        :param chat: структура телеграмма, содержащая данные о чате.
         """
         send_time = datetime.fromisoformat(message["date"] + ZERO)
         self.send_time = send_time
@@ -232,13 +241,11 @@ class Message():
                 self.type = "unknown"
 
 
-def start_creator(path):
+def start_creator(path: str) -> list[Chat]:
     """Анализирует файл json и возвращает массив с объектами класса Chat.
 
-    params:
-    - path: путь к анализируемому файлу json.
-    return params:
-    - ret_chats: массив объектов класса Chat.
+    :param path: путь к анализируемому файлу json.
+    :return: массив объектов класса Chat.
     """
     extractor = Extraction(path)
     old_chats = extractor.chats_ex()
