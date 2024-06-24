@@ -91,9 +91,9 @@ class Extraction():
     def __init__(self, data_path: str):
         """Достает информацию из json.
 
-        :param data_pah: путь к json файлу.
+        :param data_path: путь к json файлу.
         """
-        with open(data_path) as f:
+        with open(data_path, encoding='utf-8') as f:
             self.data = json.load(f)
 
     def chats_ex(self):

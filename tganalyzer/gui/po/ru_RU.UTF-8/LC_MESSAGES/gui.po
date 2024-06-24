@@ -1,0 +1,93 @@
+# Russian (Russia) translations for tg-analyzer.
+# This file is distributed under the same license as the tg-analyzer
+# project.
+# Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  0.0.0\n"
+"Report-Msgid-Bugs-To: dmitry.astrakhantsev@gmail.com\n"
+"POT-Creation-Date: 2024-06-21 02:10+0300\n"
+"PO-Revision-Date: 2024-06-21 02:14+0300\n"
+"Last-Translator: Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>\n"
+"Language: ru_RU\n"
+"Language-Team: ru_RU <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.15.0\n"
+
+#: __init__.py:42
+msgid "Symbol counting"
+msgstr "Подсчет символов"
+
+#: __init__.py:43
+msgid "Word counting"
+msgstr "Подсчет слов"
+
+#: __init__.py:44
+msgid "Message counting"
+msgstr "Подсчет сообщений"
+
+#: __init__.py:45
+msgid "Voice message analysis"
+msgstr "Подсчет голосовых сообщений"
+
+#: __init__.py:46
+msgid "Circle analysis"
+msgstr "Анализ кружков"
+
+#: __init__.py:47
+msgid "Video file analysis"
+msgstr "Анализ видео"
+
+#: __init__.py:48
+msgid "Photo counting"
+msgstr "Подсчет фотографий"
+
+#: __init__.py:49
+msgid "Activity at different timesof the day"
+msgstr "Активность в разные периоды дня"
+
+#: __init__.py:61
+msgid "Select file"
+msgstr "Выберите файл"
+
+#: __init__.py:82
+msgid "Show all chats"
+msgstr "Показать все чаты"
+
+#: __init__.py:84
+msgid "Show only private chats"
+msgstr "Показать только личные чаты"
+
+#: __init__.py:86
+msgid "Show only public chats"
+msgstr "Показать только беседы"
+
+#: __init__.py:97
+msgid "Select all chats"
+msgstr "Выбрать все чаты"
+
+#: __init__.py:99
+msgid "Remove selection"
+msgstr "Убрать выделение"
+
+#: __init__.py:108
+msgid "Select chats with more than X messages"
+msgstr "Выбрать чаты, в которых больше чем X сообщений"
+
+#: __init__.py:128
+msgid "Analyze the time period from"
+msgstr "Анализировать временной промежуток от"
+
+#: __init__.py:137
+msgid "to"
+msgstr "до"
+
+#: __init__.py:169
+msgid "Create report"
+msgstr "Создать отчет"
+
