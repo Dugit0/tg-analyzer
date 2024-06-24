@@ -38,6 +38,12 @@ TEXT = {
         "video_message": {
             "name": "Видеосообщения",
         },
+        "video_file": {
+            "name": "Видеофайлы",
+        },
+        "photo": {
+            "name": "Фотографии",
+        },
     },
     "types": {
         "chat": "По чатам",
@@ -262,22 +268,29 @@ def draw_symb_msg_word(
 
 
 # TODO Придумать, как добавить на графики единицы измерения (секунды)
-def draw_voicemsg_videomsg(
+def draw_voicemsg_videomsg_videos_photos(
     path: Path,
-    data: dict[int, dict[str, dict[str, int]]],
+    data: dict[int, dict],
     chatnames: dict[int, str],
     feature: str,
 ):
-    """Отрисовка графиков статистики видео-/голосовых сообщений.
+    """Отрисовка графиков статистики видео-/голосовых сообщений, видео и фото.
 
     :param path: путь к папке, в которой сохранить изображения.
-    :param data: сведения о чатах вида
-        {ID чата: {имя пользователя: {характеристика: количество}}}.
+    :param data: сведения о чатах вида:
+        ("photo")
+            {ID чата: {имя пользователя: количество}};
+        (остальные)
+            {ID чата: {имя пользователя: {характеристика: количество}}}.
     :param chatnames: словарь вида {ID чата: имя чата} (для отрисовки).
-    :param feature: код опции ("voice_message" или "video_message").
-    :return: имена файлов изображений вида
-        {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
-        {"agg": {"quantity": имя, "length": имя}}.
+    :param feature: код опции
+        ("voice_message", "video_message", "video_file" или "photo").
+    :return: имена файлов изображений вида:
+        ("voice_message" и "video_message")
+            {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
+            {"agg": {"quantity": имя, "length": имя}};
+        ("video_file" и "photo")
+            {ID чата или "agg": {"quantity": имя}}.
     """
     # Возвращаемый словарь имен/характеристик
     ans = {}
@@ -293,14 +306,20 @@ def draw_voicemsg_videomsg(
     # по средней длительности для каждого чата
     len_avg = defaultdict(dict)
 
+    msg_mode = feature.endswith("_message")
     for chatid, chatdata in data.items():
         for username, userdata in chatdata.items():
-            quantity_agg[chatnames[chatid]] += userdata["quantity"]
-            length_agg[chatnames[chatid]] += userdata["length"]
-            quantity[chatid][username] = userdata["quantity"]
-            length[chatid][username] = userdata["length"]
-            len_avg[chatid][username] = (userdata["length"]
-                                         / userdata["quantity"])
+            if feature == "photo":
+                quantity_agg[chatnames[chatid]] += userdata
+                quantity[chatid][username] = userdata
+            else:
+                quantity_agg[chatnames[chatid]] += userdata["quantity"]
+                quantity[chatid][username] = userdata["quantity"]
+            if msg_mode:
+                length_agg[chatnames[chatid]] += userdata["length"]
+                length[chatid][username] = userdata["length"]
+                len_avg[chatid][username] = (userdata["length"]
+                                            / userdata["quantity"])
 
     ans["agg"] = {}
     if not quantity_agg:
@@ -314,14 +333,15 @@ def draw_voicemsg_videomsg(
         ans["agg"]["quantity"] = f"agg_{feature}_quantity.svg"
     else:
         ans["agg"]["quantity"] = None
-    if sum(length_agg.values()) > 0:
-        draw_pie(
-            path / f"agg_{feature}_length.svg",
-            length_agg, 5, pct=False, amounts=True
-        )
-        ans["agg"]["length"] = f"agg_{feature}_length.svg"
-    else:
-        ans["agg"]["length"] = None
+    if msg_mode:
+        if sum(length_agg.values()) > 0:
+            draw_pie(
+                path / f"agg_{feature}_length.svg",
+                length_agg, 5, pct=False, amounts=True
+            )
+            ans["agg"]["length"] = f"agg_{feature}_length.svg"
+        else:
+            ans["agg"]["length"] = None
 
     for chatid in data:
         ans[chatid] = {}
@@ -336,16 +356,19 @@ def draw_voicemsg_videomsg(
             ans[chatid]["quantity"] = f"{chatid}_{feature}_quantity.svg"
         else:
             ans[chatid]["quantity"] = None
-        if sum(length[chatid].values()) > 0:
-            draw_pie(
-                path / f"{chatid}_{feature}_length.svg",
-                length[chatid], 5, pct=False, amounts=True
+        if msg_mode:
+            if sum(length[chatid].values()) > 0:
+                draw_pie(
+                    path / f"{chatid}_{feature}_length.svg",
+                    length[chatid], 5, pct=False, amounts=True
+                )
+                ans[chatid]["length"] = f"{chatid}_{feature}_length.svg"
+            else:
+                ans[chatid]["length"] = None
+            draw_top_bar(
+                path / f"{chatid}_{feature}_lenavg.svg", len_avg[chatid]
             )
-            ans[chatid]["length"] = f"{chatid}_{feature}_length.svg"
-        else:
-            ans[chatid]["length"] = None
-        draw_top_bar(path / f"{chatid}_{feature}_lenavg.svg", len_avg[chatid])
-        ans[chatid]["avg"] = f"{chatid}_{feature}_lenavg.svg"
+            ans[chatid]["avg"] = f"{chatid}_{feature}_lenavg.svg"
 
     return ans
 
@@ -382,8 +405,8 @@ def html_export(
                 features[feat] = draw_symb_msg_word(
                     files_dir, chatdata[feat], chatnames, feat
                 )
-            case "voice_message" | "video_message":
-                features[feat] = draw_voicemsg_videomsg(
+            case "voice_message" | "video_message" | "video_file" | "photo":
+                features[feat] = draw_voicemsg_videomsg_videos_photos(
                     files_dir, chatdata[feat], chatnames, feat
                 )
 
