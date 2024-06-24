@@ -9,6 +9,8 @@ from pathlib import Path
 import datetime
 import random
 import gettext
+import pytz
+
 
 import tganalyzer
 from tganalyzer.core.creator import start_creator
@@ -70,7 +72,7 @@ class MainWindow(QMainWindow):
         self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
-        self.features = [
+        self.features = {
                 "symb": "Symbol counting",
                 "word": "Word counting",
                 "msg": "Message counting",
@@ -79,7 +81,7 @@ class MainWindow(QMainWindow):
                 "video_file": "Video file analysis",
                 "photo": "Photo counting",
                 "day_night": "Activity at different times of the day",
-                ]
+                }
         self.chat_checkboxes = []
         self.feature_checkboxes = []
 
@@ -314,23 +316,36 @@ class MainWindow(QMainWindow):
     def create_report(self):
         """Создает отчет."""
         chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
-                    if checkbox.CheckState == Qt.CheckState.Checked}
+                    if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
-        time_gap = [self.from_date.date.toPyDateTime(),
-                    self.to_date.date.toPyDateTime()]
+        from_datetime = datetime.datetime.combine(
+                self.from_date.date().toPyDate(),
+                datetime.datetime.min.time()
+                )
+        to_datetime = datetime.datetime.combine(
+                self.to_date.date().toPyDate(),
+                datetime.datetime.max.time()
+                )
+        from_datetime = from_datetime.replace(tzinfo=pytz.utc)
+        to_datetime = to_datetime.replace(tzinfo=pytz.utc)
+        time_gap = [from_datetime, to_datetime]
         features = {checkbox.feature_name:
-                    checkbox.CheckState == Qt.CheckState.Checked
+                    checkbox.isChecked()
                     for checkbox in self.feature_checkboxes}
 
-        ret_stats, ret_parsed_chats, _ = start_analyses(parsed_chats,
-                                                        time_gap,
-                                                        features)
+        print(chat_ids)
+        print(features)
+
+        ret_stats, ret_parsed_chats = start_analyses(parsed_chats,
+                                                     time_gap,
+                                                     features)
         metadata = {
                 "login": "TODO LOGIN",
                 "chats": ret_parsed_chats,
                 "time_gap": time_gap,
                 }
-        html_export("TODO PATH", "light", metadata, ret_stats)
+        # TODO path
+        html_export("index.html", metadata, ret_stats)
 
 
 
