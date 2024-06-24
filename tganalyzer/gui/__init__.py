@@ -260,8 +260,8 @@ class MainWindow(QMainWindow):
         """Показывает в области чатов только беседы чаты."""
         # TODO Есть ли другие типы групп?
         self.show_chat_with_filter(lambda chat:
-                                   chat.type in ["private_group",
-                                                 "private_supergroup"])
+                                   chat.type in {"private_group",
+                                                 "private_supergroup"})
 
     def choice_all_chat(self):
         """Помечает выбранными все отображенные чаты."""
