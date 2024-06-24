@@ -314,4 +314,7 @@ class MainWindow(QMainWindow):
                 "time_gap": time_gap,
                 }
         # TODO path
-        html_export("index.html", metadata, ret_stats)
+        try:
+            html_export("index.html", metadata, ret_stats)
+        except Exception as e:
+            print(type(e), e)
