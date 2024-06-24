@@ -1,4 +1,3 @@
-# TODO Fix "name is not fullname"-problem
 """Графический интерфейс tg-analyzer."""
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
@@ -7,46 +6,13 @@ from PyQt5.QtWidgets import QScrollArea, QSpinBox
 from PyQt5.QtCore import Qt, QDate
 from pathlib import Path
 import datetime
-import random
 import gettext
 import pytz
-
 
 import tganalyzer
 from tganalyzer.core.creator import start_creator
 from tganalyzer.core.analyzer import start_analyses
 from tganalyzer.html_export import html_export
-
-
-# ========================= DEBUG =========================
-# random.seed(42)
-
-# SIDE_EFFECT = 0
-
-
-# class Chat:
-#     # noqa: D101
-#     def __init__(self, chat_name, chat_type, messages_len):
-#         # noqa: D107
-#         self.name = chat_name
-#         self.type = chat_type
-#         self.messages = [0] * messages_len
-
-
-# def get_all_chats():
-#     """TMP FUNC! Will be removed."""
-#     global SIDE_EFFECT
-#     res = [Chat(f"{SIDE_EFFECT}_{t}_{i:03d}", t, i)
-#            for t in ['private', 'public']
-#            for i in range(100, 1001, 50)]
-#     SIDE_EFFECT += 1
-#     # random.shuffle(res)
-#     # very_long_name = "very " * 20 + "long name"
-#     # res.append(very_long_name)
-#     # for i in range(20):
-#     #     res.append(f"new_chat{i:03d}")
-#     return res
-# ========================= DEBUG =========================
 
 
 PO_PATH = Path(__file__).resolve().parent / 'po'
@@ -161,8 +127,8 @@ class MainWindow(QMainWindow):
                 self.locale.gettext("Analyze the time period from"))
         from_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.from_date = QDateEdit(QDate(today_date.year - 5,
-                                    today_date.month,
-                                    today_date.day))
+                                         today_date.month,
+                                         today_date.day))
         self.from_date.setCalendarPopup(True)
         self.from_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         # To date widgets
@@ -170,8 +136,8 @@ class MainWindow(QMainWindow):
         to_date_label.setText(self.locale.gettext("to"))
         to_date_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.to_date = QDateEdit(QDate(today_date.year,
-                                  today_date.month,
-                                  today_date.day))
+                                       today_date.month,
+                                       today_date.day))
         self.to_date.setCalendarPopup(True)
         self.to_date.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         date_range_layout.addWidget(from_date_label, 5)
@@ -332,10 +298,6 @@ class MainWindow(QMainWindow):
         features = {checkbox.feature_name:
                     checkbox.isChecked()
                     for checkbox in self.feature_checkboxes}
-
-        print(chat_ids)
-        print(features)
-
         ret_stats, ret_parsed_chats = start_analyses(parsed_chats,
                                                      time_gap,
                                                      features)
@@ -346,12 +308,3 @@ class MainWindow(QMainWindow):
                 }
         # TODO path
         html_export("index.html", metadata, ret_stats)
-
-
-
-
-
-
-
-
-
