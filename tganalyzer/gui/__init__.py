@@ -217,7 +217,13 @@ class MainWindow(QMainWindow):
                     del self.chats[i]
             self.data_path = path
             self.data_path_label.setText(path)
-            self.chats = start_creator(path)
+            all_chats = start_creator(path)
+            print(*[(chat.name, chat.type) for chat in all_chats], sep='\n')
+            self.chats = [chat for chat in all_chats
+                          if (chat.type in {"personal_chat",
+                                           "private_group",
+                                           "private_supergroup"}
+                              and chat.name is not None)]
             for chat in self.chats:
                 checkbox = QCheckBox(chat.name, self)
                 checkbox.chat_id = chat.id
