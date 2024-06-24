@@ -101,7 +101,7 @@ def counter_days_nights(
 # Функции подготовки вывода
 
 def return_text_info(
-        update: dict[int: defaultdict],
+        update: dict[int, defaultdict],
         chat_data: defaultdict,
         id: int
         ):
@@ -252,7 +252,7 @@ class Chat_stat():
 
     def __init__(
             self,
-            features: dict[str: bool],
+            features: dict[str, bool],
             chat: creator.Chat,
             time_gap: list[datetime.datetime, datetime.datetime]
             ):
@@ -287,8 +287,8 @@ class Chat_stat():
 def start_analyses(
         parsed_chats: list[creator.Chat],
         time_gap: list[datetime.datetime],
-        features: dict[str: bool]
-        ) -> list[dict, dict[int: creator.Chat]]:
+        features: dict[str, bool]
+        ) -> tuple[dict, dict[int, creator.Chat]]:
     """Основная функция для анализа.
 
     :param parsed_chats: массив объектов класса Chat из creator.
@@ -317,4 +317,4 @@ def start_analyses(
     ret_stats = {feature: features_type[feature]
                  for feature in features.keys() if features[feature]}
 
-    return [ret_stats, ret_parsed_chats]
+    return ret_stats, ret_parsed_chats
