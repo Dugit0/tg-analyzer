@@ -39,14 +39,15 @@ class MainWindow(QMainWindow):
         self.data_path = ""
         self.chats = []
         self.features = {
-                "symb": "Symbol counting",
-                "word": "Word counting",
-                "msg": "Message counting",
-                "voice_message": "Voice message analysis",
-                "video_message": "Circle analysis",
-                "video_file": "Video file analysis",
-                "photo": "Photo counting",
-                "day_night": "Activity at different times of the day",
+                "symb": self.locale.gettext("Symbol counting"),
+                "word": self.locale.gettext("Word counting"),
+                "msg": self.locale.gettext("Message counting"),
+                "voice_message": self.locale.gettext("Voice message analysis"),
+                "video_message": self.locale.gettext("Circle analysis"),
+                "video_file": self.locale.gettext("Video file analysis"),
+                "photo": self.locale.gettext("Photo counting"),
+                "day_night": self.locale.gettext("Activity at different times"
+                                                 "of the day"),
                 }
         self.chat_checkboxes = []
         self.feature_checkboxes = []
