@@ -9,6 +9,38 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 
 
+PATH = Path(__file__).resolve().parent
+TEXT = {
+    "title": "Анализатор статистики Telegram",
+    "user": "Пользователь",
+    "daterange": "Диапазон дат",
+    "agg_stat": "Статистика по всем чатам",
+    "empty_list": "Ничего не выбрано",
+    "to_top": "Наверх",
+    "features": {
+        "symb": {
+            "name": "Символы",
+            "avg_unit": "символов в день",
+        },
+        "msg": {
+            "name": "Сообщения",
+            "avg_unit": "сообщений в день",
+        },
+        "word": {
+            "name": "Слова",
+            "avg_unit": "слов в день",
+        },
+    },
+    "types": {
+        "chat": "По чатам",
+        "user": "По пользователям",
+        "date": "По дате",
+        "avg": "Среднее количество",
+    },
+    "other": "Другие",
+}
+
+
 class daterange:
     """Итерация по диапазону дат с заданным шагом аналогично range()."""
 
@@ -71,12 +103,12 @@ def draw_top_bar(path: Path, data: dict, topsize: int = 3):
     )   # предварительная сортировка (в порядке убывания) по значению
     x, y = list(data_sorted.keys()), list(data_sorted.values())
     if len(y) > topsize:
-        x[topsize:], y[topsize:] = ["other"], [sum(y[topsize:])]
+        x[topsize:], y[topsize:] = [TEXT["other"]], [sum(y[topsize:])]
 
     bar = ax.bar(range(len(x)), y)
-    ax.set_xticks(range(len(x)), x)
+    ax.set_xticks([])
     ax.bar_label(bar)
-    ax.grid(axis="y")
+    ax.bar_label(bar, x, label_type="center", rotation=90)
     fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
     plt.close(fig)
 
@@ -124,9 +156,14 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
     )   # предварительная сортировка (в порядке убывания) по значению
     labels, values = list(data_sorted.keys()), list(data_sorted.values())
     if len(values) > pieces:
-        labels[pieces:], values[pieces:] = ["other"], [sum(values[pieces:])]
+        labels[pieces:] = [TEXT["other"]]
+        values[pieces:] = [sum(values[pieces:])]
 
-    ax.pie(values, labels=labels, autopct="%1.1f%%")
+    wedges, _, _ = ax.pie(values, autopct="%1.1f%%")
+    ax.legend(
+        wedges, labels,
+        loc="center left", bbox_to_anchor=(1, 0.5), frameon=False
+    )
     fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
     plt.close(fig)
 
@@ -134,6 +171,7 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
 def draw_symb_msg_word(
     path: Path,
     data: dict[int, dict[str, dict[datetime.date, int]]],
+    chatnames: dict[int, str],
     feature: str,
 ) -> dict[str]:
     """Отрисовка графиков и сбор статистики символов/сообщений/слов.
@@ -141,6 +179,7 @@ def draw_symb_msg_word(
     :param path: путь к папке, в которой сохранить изображения.
     :param data: сведения о чатах вида
         {ID чата: {имя пользователя: {дата: количество}}}.
+    :param chatnames: словарь вида {ID чата: имя чата} (для отрисовки).
     :param feature: код опции ("symb", "msg" или "word").
     :return: имена файлов изображений или числовые характеристики вида
         {ID чата: {"user": имя, "date": имя, "avg": число}} или
@@ -166,7 +205,7 @@ def draw_symb_msg_word(
                     date_min = date
                 if date > date_max:
                     date_max = date
-                by_chat_agg[chatid] += count
+                by_chat_agg[chatnames[chatid]] += count
                 by_date_agg[username][date] += count
                 by_user[chatid][username] += count
         len_days[chatid] = (date_max - date_min).days + 1
@@ -183,24 +222,15 @@ def draw_symb_msg_word(
         ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
         draw_date_plot(path / f"{chatid}_{feature}_date.svg", data[chatid], 10)
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
-        ans[chatid]["avg"] = by_chat_agg[chatid] / len_days[chatid]
+        ans[chatid]["avg"] = by_chat_agg[chatnames[chatid]] / len_days[chatid]
 
     return ans
-
-
-PATH = Path(__file__).resolve().parent
-TEXT = {
-    "title": "Анализатор статистики Telegram",
-    "user": "Пользователь",
-    "empty_list": "Ничего не выбрано",
-    "to_top": "Наверх",
-}
 
 
 def html_export(
     path: str,
     metadata: dict,
-    chatdata: dict,
+    chatdata: dict[str, dict[int, dict]],
     theme: str = "light"
 ):
     """Создание HTML-файла из данных о пользователе и чатах.
@@ -215,10 +245,18 @@ def html_export(
     os.makedirs(files_dir, exist_ok=True)
     shutil.copyfile(PATH / "themes" / f"{theme}.css", files_dir / "style.css")
 
+    chatnames = {
+        chatid: chat.name for chatid, chat in metadata["chats"].items()
+    }
     features = defaultdict(lambda: defaultdict(str))
-    for feat, data in chatdata.items():
-        if feat in ("symb", "msg", "word"):
-            features[feat] = draw_symb_msg_word(files_dir, data, feat)
+    for feat in TEXT["features"]:
+        if feat not in chatdata:
+            continue
+        match feat:
+            case "symb" | "msg" | "word":
+                features[feat] = draw_symb_msg_word(
+                    files_dir, chatdata[feat], chatnames, feat
+                )
 
     chatstat = defaultdict(lambda: defaultdict(str))
     for feat, featdata in features.items():
