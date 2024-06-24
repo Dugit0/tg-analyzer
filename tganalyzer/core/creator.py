@@ -70,9 +70,7 @@ optional_fields_service = ['boosts',
 # Доп функции
 
 
-def game_parcer(
-        message: dict
-        ):
+def game_parcer(message: dict):
     """Вспомогательная функция, составляет таблицу пользователей.
 
     :param message: структура телеграмма, содержащая данные о сообщении-игре.
@@ -90,10 +88,7 @@ def game_parcer(
 class Extraction():
     """Этот класс достает информацию из json файла."""
 
-    def __init__(
-            self,
-            data_path: str
-            ):
+    def __init__(self, data_path: str):
         """Достает информацию из json.
 
         :param data_pah: путь к json файлу.
@@ -101,9 +96,7 @@ class Extraction():
         with open(data_path) as f:
             self.data = json.load(f)
 
-    def chats_ex(
-            self
-            ):
+    def chats_ex(self):
         """Возвращает словарь из чатов."""
         self.chats = self.data['chats']['list']
         return self.chats
@@ -120,10 +113,7 @@ class Chat():
     type = None
     messages = None
 
-    def __init__(
-            self,
-            chat: dict
-            ):
+    def __init__(self, chat: dict):
         """Берет чат и создает объект с упомянутыми выше полями.
 
         Еще итерирутеся по сообщениям чата и создает массив объектов Message.
@@ -162,11 +152,7 @@ class Message():
     edited = None
     forwarded = None
 
-    def __init__(
-            self,
-            message: dict,
-            chat: dict
-            ):
+    def __init__(self, message: dict, chat: dict):
         """Берет сообщение и создает объект.
 
         Если сообщение типа service, то заведомо оно есть call.
@@ -255,9 +241,7 @@ class Message():
                 self.type = "unknown"
 
 
-def start_creator(
-        path: str
-        ) -> list[Chat]:
+def start_creator(path: str) -> list[Chat]:
     """Анализирует файл json и возвращает массив с объектами класса Chat.
 
     :param path: путь к анализируемому файлу json.
