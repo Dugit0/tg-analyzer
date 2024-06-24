@@ -9,17 +9,53 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 
 
-def daterange(start: datetime.date, stop: datetime.date, step: int = 1):
-    """Итерация по диапазону дат с заданным шагом аналогично range().
+class daterange:
+    """Итерация по диапазону дат с заданным шагом аналогично range()."""
 
-    :param start: дата начала.
-    :param stop: дата конца (не входит в диапазон).
-    :param step: шаг итерации.
-    """
-    date = start
-    while (step > 0 and date < stop) or (step < 0 and date > stop):
-        yield date
-        date += datetime.timedelta(days=step)
+    __slots__ = "start", "stop", "step"
+
+    def __init__(
+        self, start: datetime.date, stop: datetime.date, step: int = 1
+    ):
+        """Создание объекта.
+
+        :param start: дата начала.
+        :param stop: дата конца (не входит в диапазон).
+        :param step: шаг итерации.
+        """
+        self.start, self.stop = start, stop
+        self.step = datetime.timedelta(days=step)
+
+    def __iter__(self):
+        """Итерация по диапазону."""
+        date = self.start
+        while (self.step.days > 0 and date < self.stop
+               or self.step.days < 0 and date > self.stop):
+            yield date
+            date += self.step
+
+    def __len__(self):
+        """Длина диапазона."""
+        len = (self.stop - self.start).days / self.step.days
+        return len.__ceil__() if len > 0 else 0
+
+    def __getitem__(self, idx: int):
+        """Взятие элемента диапазона.
+
+        :param idx: индекс.
+        """
+        if idx not in range(len(self)):
+            raise IndexError(f"{self.__class__.__name__} index out of range")
+        return self.start + datetime.timedelta(days=(idx * self.step.days))
+
+    def __str__(self):
+        """Строковое представление."""
+        return "{}({}, {}, {}d)".format(
+            self.__class__.__name__,
+            self.start.isoformat(), self.stop.isoformat(), self.step.days
+        )
+
+    __repr__ = __str__
 
 
 def draw_top_bar(path: Path, data: dict, topsize: int = 3):
