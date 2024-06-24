@@ -45,22 +45,31 @@ def draw_top_bar(path: Path, data: dict, topsize: int = 3):
     plt.close(fig)
 
 
-def draw_date_plot(path: Path, data: dict, label_max: int = 7):
+def draw_date_plot(path: Path, data: dict[str, dict], label_max: int = 7):
     """Построение графика данных по дате.
 
     :param path: путь к конечному файлу.
-    :param data: словарь данных с ключами класса ``datetime.date``.
+    :param data: словарь данных вида {имя пользователя: {дата: данные}}.
     :param label_max: максимальное количество меток на оси дат.
     """
     fig, ax = plt.subplots(figsize=(12, 6))
-    data_sorted = {dt: data[dt] for dt in daterange(
-        min(data.keys()), max(data.keys()) + datetime.timedelta(days=1)
-    )}  # предварительная сортировка по ключу (дате) с включением 0
-    x, y = list(data_sorted.keys()), list(data_sorted.values())
+    date_min, date_max = datetime.date.max, datetime.date.min
+    for user, userdata in data.items():
+        tmp = sorted(userdata.keys())
+        if tmp[0] < date_min:
+            date_min = tmp[0]
+        if tmp[-1] > date_max:
+            date_max = tmp[-1]
+        data_sorted = {dt: userdata[dt] for dt in daterange(
+            tmp[0], tmp[-1] + datetime.timedelta(days=1)
+        )}  # предварительная сортировка по ключу (дате) с включением 0
+        ax.plot(data_sorted.keys(), data_sorted.values(), label=user)
 
-    ax.plot(range(len(x)), y)
-    label_pos = list(range(0, len(x), (len(x) / label_max).__ceil__()))
-    ax.set_xticks(label_pos, [x[i] for i in label_pos])
+    ax.set_xticks(list(daterange(
+        date_min, date_max,
+        (((date_max - date_min).days + 1) / label_max).__ceil__()
+    )))
+    ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), frameon=False)
     ax.grid(axis="both")
     fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
     plt.close(fig)
@@ -86,66 +95,59 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
     plt.close(fig)
 
 
-def draw_msg_word(
+def draw_symb_msg_word(
     path: Path,
     data: dict[int, dict[str, dict[datetime.date, int]]],
     feature: str,
 ) -> dict[str]:
-    """Отрисовка графиков и сбор статистики сообщений/слов.
+    """Отрисовка графиков и сбор статистики символов/сообщений/слов.
 
     :param path: путь к папке, в которой сохранить изображения.
     :param data: сведения о чатах вида
-        {ID чата: {имя пользователя: {дата: количество сообщений/слов}}}.
-    :param feature: код опции ("msg" или "word").
-    :return: названия файлов изображений вида
-        {ID чата: {"user": путь, "date": путь, "avg": число}} или
-        {"agg": {"chat": путь, "date": путь}}.
+        {ID чата: {имя пользователя: {дата: количество}}}.
+    :param feature: код опции ("symb", "msg" или "word").
+    :return: имена файлов изображений или числовые характеристики вида
+        {ID чата: {"user": имя, "date": имя, "avg": число}} или
+        {"agg": {"chat": имя, "date": имя}}.
     """
+    # Возвращаемый словарь имен/характеристик
+    ans = {}
     # Вспомогательные словари:
     # по чатам
     by_chat_agg = defaultdict(int)
-    # по дате среди всех чатов
-    by_date_agg = defaultdict(int)
+    # по пользователям и дате среди всех чатов
+    by_date_agg = defaultdict(lambda: defaultdict(int))
     # по пользователям для каждого чата
     by_user = defaultdict(lambda: defaultdict(int))
-    # по дате для каждого чата
-    by_date = defaultdict(lambda: defaultdict(int))
+    # по продолжительности каждого чата в днях
+    len_days = {}
 
     for chatid, chatdata in data.items():
+        date_min, date_max = datetime.date.max, datetime.date.min
         for username, userdata in chatdata.items():
             for date, count in userdata.items():
+                if date < date_min:
+                    date_min = date
+                if date > date_max:
+                    date_max = date
                 by_chat_agg[chatid] += count
-                by_date_agg[date] += count
+                by_date_agg[username][date] += count
                 by_user[chatid][username] += count
-                by_date[chatid][date] += count
+        len_days[chatid] = (date_max - date_min).days + 1
 
-    # Возвращаемый словарь путей
-    ans = {}
     ans["agg"] = {}
-
     draw_top_bar(path / f"agg_{feature}_chat.svg", by_chat_agg, 10)
     ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
-
-    draw_date_plot(path / f"agg_{feature}_date.svg", by_date_agg, 15)
+    draw_date_plot(path / f"agg_{feature}_date.svg", by_date_agg, 10)
     ans["agg"]["date"] = f"agg_{feature}_date.svg"
 
     for chatid in data:
         ans[chatid] = {}
-
         draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
         ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
-
-        draw_date_plot(
-            path / f"{chatid}_{feature}_date.svg",
-            by_date[chatid],
-            15
-        )
+        draw_date_plot(path / f"{chatid}_{feature}_date.svg", data[chatid], 10)
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
-
-        # среднее число сообщений в день
-        datelist = list(by_date[chatid].keys())
-        delta = (datelist[-1] - datelist[0]).days + 1
-        ans[chatid]["avg"] = sum(by_date[chatid].values()) / delta
+        ans[chatid]["avg"] = by_chat_agg[chatid] / len_days[chatid]
 
     return ans
 
@@ -179,8 +181,8 @@ def html_export(
 
     features = defaultdict(lambda: defaultdict(str))
     for feat, data in chatdata.items():
-        if feat in ("msg", "word"):
-            features[feat] = draw_msg_word(files_dir, data, feat)
+        if feat in ("symb", "msg", "word"):
+            features[feat] = draw_symb_msg_word(files_dir, data, feat)
 
     chatstat = defaultdict(lambda: defaultdict(str))
     for feat, featdata in features.items():
