@@ -39,7 +39,8 @@ h2.chatname {
 }
 
 hr.featsep {
-    border-top: 1px dashed #229ed9;
+    border: 1px dashed #229ed9;
+    margin-top: 20px;
 }
 
 h3.featurename {
@@ -52,7 +53,19 @@ h4.typename {
     font-style: italic;
 }
 
+h1.numberoftheday {
+    margin: 0px;
+    padding: 0px;
+    font-size: 300%;
+}
+
 img.plot {
     max-width: 80vw;
     max-height: 60vh;
+}
+
+p.toplink {
+    text-align: right;
+    padding-top: 0px;
+    padding-right: 20px;
 }
