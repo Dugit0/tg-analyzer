@@ -1,6 +1,6 @@
 """Создает статистику по сообщениям."""
 import bisect
-import creator
+from . import creator
 import datetime
 from collections import defaultdict
 
