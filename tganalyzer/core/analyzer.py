@@ -128,7 +128,7 @@ DEPENDENCIES = {
         # "symb": {
         #   chat.id: {
         #       "username": {
-        #           datetime.datetime: int
+        #           datetime.datetime.date: int
         #       }
         #   }
         # }
@@ -143,7 +143,7 @@ DEPENDENCIES = {
         # "word": {
         #   chat.id: {
         #       "username": {
-        #           datetime.datetime: int
+        #           datetime.datetime.date: int
         #       }
         #   }
         # }
@@ -158,7 +158,7 @@ DEPENDENCIES = {
         # "msg": {
         #   chat.id: {
         #       "username": {
-        #           datetime.datetime: int
+        #           datetime.datetime.date: int
         #       }
         #   }
         # }
