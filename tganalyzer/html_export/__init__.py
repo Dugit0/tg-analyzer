@@ -32,12 +32,20 @@ TEXT = {
             "name": "Слова",
             "units": "слов в день",
         },
+        "voice_message": {
+            "name": "Голосовые сообщения",
+        },
+        "video_message": {
+            "name": "Видеосообщения",
+        },
     },
     "types": {
         "chat": "По чатам",
         "user": "По пользователям",
         "date": "По дате",
-        "avg": "Среднее количество",
+        "avg": "Среднее значение",
+        "quantity": "По количеству",
+        "length": "По общей длительности",
     },
     "other": "Другие",
 }
@@ -149,12 +157,17 @@ def draw_date_plot(path: Path, data: dict[str, dict], label_max: int = 7):
     plt.close(fig)
 
 
-def draw_pie(path: Path, data: dict, pieces: int = 5):
+def draw_pie(
+    path: Path, data: dict, pieces: int = 5,
+    pct: bool = True, amounts: bool = False,
+):
     """Построение отсортированной круговой диаграммы топ-``pieces``.
 
     :param path: путь к конечному файлу.
     :param data: словарь данных.
     :param pieces: количество элементов в топе.
+    :param pct: отображать ли подписи процентов (да/нет).
+    :param amounts: отображать ли подписи процентов (да/нет).
     """
     fig, ax = plt.subplots()
     data_sorted = dict(
@@ -165,7 +178,13 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
         labels[pieces:] = [TEXT["other"]]
         values[pieces:] = [sum(values[pieces:])]
 
-    wedges, _, _ = ax.pie(values, autopct="%1.1f%%", pctdistance=1.25)
+    wedges, *_ = ax.pie(
+        values,
+        labels=(values if amounts else None),
+        autopct=("%1.1f%%" if pct else None),
+        labeldistance=0.875,
+        pctdistance=1.25,
+    )
     ax.legend(
         wedges, labels,
         loc="center left", bbox_to_anchor=(1, 0.5), frameon=False
@@ -242,6 +261,95 @@ def draw_symb_msg_word(
     return ans
 
 
+# TODO Придумать, как добавить на графики единицы измерения (секунды)
+def draw_voicemsg_videomsg(
+    path: Path,
+    data: dict[int, dict[str, dict[str, int]]],
+    chatnames: dict[int, str],
+    feature: str,
+):
+    """Отрисовка графиков статистики видео-/голосовых сообщений.
+
+    :param path: путь к папке, в которой сохранить изображения.
+    :param data: сведения о чатах вида
+        {ID чата: {имя пользователя: {характеристика: количество}}}.
+    :param chatnames: словарь вида {ID чата: имя чата} (для отрисовки).
+    :param feature: код опции ("voice_message" или "video_message").
+    :return: имена файлов изображений вида
+        {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
+        {"agg": {"quantity": имя, "length": имя}}.
+    """
+    # Возвращаемый словарь имен/характеристик
+    ans = {}
+    # Вспомогательные словари:
+    # по количеству для всех чатов
+    quantity_agg = defaultdict(int)
+    # по суммарной длительности для всех чатов
+    length_agg = defaultdict(int)
+    # по количеству для каждого чата
+    quantity = defaultdict(dict)
+    # по суммарной длительности для каждого чата
+    length = defaultdict(dict)
+    # по средней длительности для каждого чата
+    len_avg = defaultdict(dict)
+
+    for chatid, chatdata in data.items():
+        for username, userdata in chatdata.items():
+            quantity_agg[chatnames[chatid]] += userdata["quantity"]
+            length_agg[chatnames[chatid]] += userdata["length"]
+            quantity[chatid][username] = userdata["quantity"]
+            length[chatid][username] = userdata["length"]
+            len_avg[chatid][username] = (userdata["length"]
+                                         / userdata["quantity"])
+
+    ans["agg"] = {}
+    if not quantity_agg:
+        return ans
+
+    if sum(quantity_agg.values()) > 0:
+        draw_pie(
+            path / f"agg_{feature}_quantity.svg",
+            quantity_agg, 5, pct=False, amounts=True
+        )
+        ans["agg"]["quantity"] = f"agg_{feature}_quantity.svg"
+    else:
+        ans["agg"]["quantity"] = None
+    if sum(length_agg.values()) > 0:
+        draw_pie(
+            path / f"agg_{feature}_length.svg",
+            length_agg, 5, pct=False, amounts=True
+        )
+        ans["agg"]["length"] = f"agg_{feature}_length.svg"
+    else:
+        ans["agg"]["length"] = None
+
+    for chatid in data:
+        ans[chatid] = {}
+        if not quantity[chatid]:
+            continue
+
+        if sum(quantity[chatid].values()) > 0:
+            draw_pie(
+                path / f"{chatid}_{feature}_quantity.svg",
+                quantity[chatid], 5, pct=False, amounts=True
+            )
+            ans[chatid]["quantity"] = f"{chatid}_{feature}_quantity.svg"
+        else:
+            ans[chatid]["quantity"] = None
+        if sum(length[chatid].values()) > 0:
+            draw_pie(
+                path / f"{chatid}_{feature}_length.svg",
+                length[chatid], 5, pct=False, amounts=True
+            )
+            ans[chatid]["length"] = f"{chatid}_{feature}_length.svg"
+        else:
+            ans[chatid]["length"] = None
+        draw_top_bar(path / f"{chatid}_{feature}_lenavg.svg", len_avg[chatid])
+        ans[chatid]["avg"] = f"{chatid}_{feature}_lenavg.svg"
+
+    return ans
+
+
 def html_export(
     path: str,
     metadata: dict,
@@ -272,6 +380,10 @@ def html_export(
         match feat:
             case "symb" | "msg" | "word":
                 features[feat] = draw_symb_msg_word(
+                    files_dir, chatdata[feat], chatnames, feat
+                )
+            case "voice_message" | "video_message":
+                features[feat] = draw_voicemsg_videomsg(
                     files_dir, chatdata[feat], chatnames, feat
                 )
 
