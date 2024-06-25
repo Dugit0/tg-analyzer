@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 # import tganalyzer
 from tganalyzer.core.creator import start_creator
 from tganalyzer.core.analyzer import start_analyses
-from pprint import pprint
+# from pprint import pprint
 
 PATH = str(Path(__file__).resolve().parent / "data.json")
 FEATURES = ["symb", "word", "msg", "voice_message", "video_message",
@@ -38,8 +38,8 @@ class CoreTest(unittest.TestCase):
                                  for date in example_date}
                           for name in self.stats[feature][CHAT_ID]}
 
-        pprint(self.stats[feature][CHAT_ID])
-        pprint(control_values)
+        # pprint(self.stats[feature][CHAT_ID])
+        # pprint(control_values)
         for name in self.stats[feature][CHAT_ID]:
             for date in example_date:
                 self.assertEqual(self.stats[feature][CHAT_ID][name][date],
