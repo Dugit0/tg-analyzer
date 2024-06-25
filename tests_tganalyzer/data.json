@@ -1,0 +1,368 @@
+{
+ "about": "Here is the data you requested. Remember: Telegram is ad free, it doesn't use your data for ad targeting and doesn't sell it to others. Telegram only keeps the information it needs to function as a secure and feature-rich cloud service.\n\nCheck out Settings > Privacy & Security on Telegram's mobile apps for the relevant settings.",
+ "chats": {
+  "about": "This page lists all chats from this export.",
+  "list": [
+   {
+    "name": "Диимааааааа🐳🐳🐳",
+    "type": "personal_chat",
+    "id": 1012308965,
+    "messages": [
+    {
+      "id": 239738,
+      "type": "message",
+      "date": "2024-05-24T06:12:44",
+      "date_unixtime": "1713960764",
+      "from": "Диимааааааа🐳🐳🐳",
+      "from_id": "user1012308965",
+      "via_bot": "@SB_RollBot",
+      "text": [
+       {
+        "type": "italic",
+        "text": "Rolling 1d20"
+       },
+       "...\n{ 18 }: [18]!"
+      ],
+      "text_entities": [
+       {
+        "type": "italic",
+        "text": "Rolling 1d20"
+       },
+       {
+        "type": "plain",
+        "text": "...\n{ 18 }: [18]!"
+       }
+      ]
+     },
+     {
+      "id": 288449,
+      "type": "message",
+      "date": "2024-05-24T13:23:22",
+      "date_unixtime": "1719260602",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "text": "еще у нас нет маскота!",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "еще у нас нет маскота!"
+       }
+      ]
+     },
+     {
+      "id": 288450,
+      "type": "message",
+      "date": "2024-05-24T14:33:58",
+      "date_unixtime": "1719261238",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "text": "Я помню чудное мгновенье:\nПередо мной явилась ты,\nКак мимолетное виденье,\nКак гений чистой красоты.",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "Я помню чудное мгновенье:\nПередо мной явилась ты,\nКак мимолетное виденье,\nКак гений чистой красоты."
+       }
+      ]
+     },
+     {
+      "id": 288451,
+      "type": "message",
+      "date": "2024-05-24T14:34:39",
+      "date_unixtime": "1719261279",
+      "from": "Диимааааааа🐳🐳🐳",
+      "from_id": "user1012308965",
+      "text": "meow",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "meow"
+       }
+      ]
+     },
+     {
+      "id": 288452,
+      "type": "message",
+      "date": "2024-05-24T23:34:52",
+      "date_unixtime": "1719261292",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "photo": "(File not included. Change data exporting settings to download.)",
+      "width": 1107,
+      "height": 1280,
+      "text": "Кенгуру",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "Кенгуру"
+       }
+      ]
+     },
+     {
+      "id": 288453,
+      "type": "message",
+      "date": "2024-05-24T23:34:52",
+      "date_unixtime": "1719261292",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "file": "(File not included. Change data exporting settings to download.)",
+      "thumbnail": "(File not included. Change data exporting settings to download.)",
+      "media_type": "video_file",
+      "mime_type": "video/mp4",
+      "duration_seconds": 1,
+      "width": 448,
+      "height": 368,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288454,
+      "type": "service",
+      "date": "2024-06-24T23:35:34",
+      "date_unixtime": "1719261334",
+      "actor": "Диимааааааа🐳🐳🐳",
+      "actor_id": "user1012308965",
+      "action": "phone_call",
+      "duration_seconds": 27,
+      "discard_reason": "hangup",
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288455,
+      "type": "message",
+      "date": "2024-06-24T23:35:46",
+      "date_unixtime": "1719261346",
+      "edited": "2024-06-24T23:35:55",
+      "edited_unixtime": "1719261355",
+      "from": "Диимааааааа🐳🐳🐳",
+      "from_id": "user1012308965",
+      "file": "(File not included. Change data exporting settings to download.)",
+      "file_name": "sticker.webp",
+      "thumbnail": "(File not included. Change data exporting settings to download.)",
+      "media_type": "sticker",
+      "sticker_emoji": "🎉",
+      "mime_type": "image/webp",
+      "width": 512,
+      "height": 512,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288456,
+      "type": "message",
+      "date": "2024-06-24T23:35:51",
+      "date_unixtime": "1719261351",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "file": "(File not included. Change data exporting settings to download.)",
+      "media_type": "voice_message",
+      "mime_type": "audio/ogg",
+      "duration_seconds": 4,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288457,
+      "type": "message",
+      "date": "2024-06-24T23:36:16",
+      "date_unixtime": "1719261376",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "file": "(File not included. Change data exporting settings to download.)",
+      "thumbnail": "(File not included. Change data exporting settings to download.)",
+      "media_type": "video_message",
+      "mime_type": "video/mp4",
+      "duration_seconds": 6,
+      "width": 384,
+      "height": 384,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288458,
+      "type": "message",
+      "date": "2024-06-24T23:36:36",
+      "date_unixtime": "1719261396",
+      "from": "Диимааааааа🐳🐳🐳",
+      "from_id": "user1012308965",
+      "file": "(File not included. Change data exporting settings to download.)",
+      "thumbnail": "(File not included. Change data exporting settings to download.)",
+      "media_type": "video_message",
+      "mime_type": "video/mp4",
+      "duration_seconds": 43,
+      "width": 384,
+      "height": 384,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288459,
+      "type": "message",
+      "date": "2024-06-24T23:36:40",
+      "date_unixtime": "1719261400",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "reply_to_message_id": 288451,
+      "text": "о да",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "о да"
+       }
+      ]
+     },
+     {
+      "id": 288460,
+      "type": "message",
+      "date": "2024-06-24T23:37:44",
+      "date_unixtime": "1719261464",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "text": "гав мууу беее",
+      "text_entities": [
+       {
+        "type": "plain",
+        "text": "гав мууу беее"
+       }
+      ]
+     },
+     {
+      "id": 288461,
+      "type": "message",
+      "date": "2024-06-24T23:38:07",
+      "date_unixtime": "1719261487",
+      "from": "Артем Горошко",
+      "from_id": "user397405594",
+      "photo": "(File not included. Change data exporting settings to download.)",
+      "width": 1280,
+      "height": 497,
+      "text": "",
+      "text_entities": []
+     },
+     {
+      "id": 288465,
+      "type": "message",
+      "date": "2024-06-24T23:42:55",
+      "date_unixtime": "1719261775",
+      "edited": "2024-06-24T23:43:08",
+      "edited_unixtime": "1719261788",
+      "from": "Диимааааааа🐳🐳🐳",
+      "from_id": "user1012308965",
+      "text": [
+       {
+        "type": "bold",
+        "text": "They sought"
+       },
+       " it with ",
+       {
+        "type": "italic",
+        "text": "thimbles"
+       },
+       ", they ",
+       {
+        "type": "underline",
+        "text": "sought it with care;"
+       },
+       "\n",
+       {
+        "type": "strikethrough",
+        "text": "They pursued it with forks and hope;"
+       },
+       " \n",
+       {
+        "type": "code",
+        "text": "They threatened its life"
+       },
+       " with a railway-share; \nThey charmed ",
+       {
+        "type": "spoiler",
+        "text": "it with smiles and soap."
+       },
+       "\n",
+       {
+        "type": "pre",
+        "text": "love = this\nthis is love\n>>> True",
+        "language": "python"
+       },
+       "\n",
+       {
+        "type": "blockquote",
+        "text": "Ы!",
+        "collapsed": false
+       },
+       ""
+      ],
+      "text_entities": [
+       {
+        "type": "bold",
+        "text": "They sought"
+       },
+       {
+        "type": "plain",
+        "text": " it with "
+       },
+       {
+        "type": "italic",
+        "text": "thimbles"
+       },
+       {
+        "type": "plain",
+        "text": ", they "
+       },
+       {
+        "type": "underline",
+        "text": "sought it with care;"
+       },
+       {
+        "type": "plain",
+        "text": "\n"
+       },
+       {
+        "type": "strikethrough",
+        "text": "They pursued it with forks and hope;"
+       },
+       {
+        "type": "plain",
+        "text": " \n"
+       },
+       {
+        "type": "code",
+        "text": "They threatened its life"
+       },
+       {
+        "type": "plain",
+        "text": " with a railway-share; \nThey charmed "
+       },
+       {
+        "type": "spoiler",
+        "text": "it with smiles and soap."
+       },
+       {
+        "type": "plain",
+        "text": "\n"
+       },
+       {
+        "type": "pre",
+        "text": "love = this\nthis is love\n>>> True",
+        "language": "python"
+       },
+       {
+        "type": "plain",
+        "text": "\n"
+       },
+       {
+        "type": "blockquote",
+        "text": "Ы!",
+        "collapsed": false
+       },
+       {
+        "type": "plain",
+        "text": ""
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
