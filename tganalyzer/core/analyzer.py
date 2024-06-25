@@ -230,7 +230,7 @@ DEPENDENCIES = {
             "class_func": counter_days_nights,
             "return_type": dict,
             "return_func": return_text_info
-        }
+        },
         # day_night structure in final data:
         # "day_night": {
         #   chat.id: {
@@ -239,6 +239,38 @@ DEPENDENCIES = {
         #           "morning": int,
         #           "afternoon": int,
         #           "evening": int
+        #       }
+        #   }
+        # }
+        "phone_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # phone_call structure in final data:
+        # "phone_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
+        #       }
+        #   }
+        # }
+        "group_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # group_call structure in final data:
+        # "group_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
         #       }
         #   }
         # }

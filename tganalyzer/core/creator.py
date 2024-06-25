@@ -175,7 +175,7 @@ class Message():
             if message["action"] == "phone_call":
                 self.duration = message["duration_seconds"] if \
                         "duration_seconds" in message.keys() else 0
-                self.type = "single_call"
+                self.type = "phone_call"
             else:
                 self.duration = message["duration"] if \
                         "duration" in message.keys() else 0
