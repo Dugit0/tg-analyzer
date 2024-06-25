@@ -14,3 +14,6 @@ __pycache__
 # Environments
 env
 venv
+
+# doit Database
+.doit.db*
