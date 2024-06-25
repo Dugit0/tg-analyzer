@@ -14,9 +14,11 @@ __pycache__
 # Environments
 env
 venv
+*.lock
 
-# doit Database
-.doit.db*
+# Testing
+.coverage
 
 # Build files
 build
+.doit.db*
