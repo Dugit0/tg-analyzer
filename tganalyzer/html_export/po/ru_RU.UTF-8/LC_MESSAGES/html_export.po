@@ -1,0 +1,137 @@
+# Russian (Russia) translations for tg-analyzer.
+# This file is distributed under the same license as the tg-analyzer
+# project.
+# Valery Zabrovsky <valthebrewer@yandex.ru>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  0.0.0\n"
+"Report-Msgid-Bugs-To: valthebrewer@yandex.ru\n"
+"POT-Creation-Date: 2024-06-25 10:57+0300\n"
+"PO-Revision-Date: 2024-06-25 10:27+0300\n"
+"Last-Translator: Valery Zabrovsky <valthebrewer@yandex.ru>\n"
+"Language: ru_RU\n"
+"Language-Team: ru_RU <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: __init__.py:27
+msgid "Telegram Stats Analyzer"
+msgstr "Анализатор статистики Telegram"
+
+#: __init__.py:28
+msgid "User"
+msgstr "Пользователь"
+
+#: __init__.py:29
+msgid "Date Range"
+msgstr "Диапазон дат"
+
+#: __init__.py:30
+msgid "Aggregate Stats"
+msgstr "Статистика по всем чатам"
+
+#: __init__.py:31
+msgid "Not available"
+msgstr "Нет информации"
+
+#: __init__.py:32
+msgid "No features selected"
+msgstr "Ничего не выбрано"
+
+#: __init__.py:33
+msgid "Back to top"
+msgstr "Наверх"
+
+#: __init__.py:36
+msgid "Symbols"
+msgstr "Символы"
+
+#: __init__.py:37
+msgid "symbols a day"
+msgstr "символов в день"
+
+#: __init__.py:40
+msgid "Messages"
+msgstr "Сообщения"
+
+#: __init__.py:41
+msgid "messages a day"
+msgstr "сообщений в день"
+
+#: __init__.py:44
+msgid "Words"
+msgstr "Слова"
+
+#: __init__.py:45
+msgid "words a day"
+msgstr "слов в день"
+
+#: __init__.py:48
+msgid "Voice Messages"
+msgstr "Голосовые сообщения"
+
+#: __init__.py:51
+msgid "Video Messages"
+msgstr "Видеосообщения"
+
+#: __init__.py:54
+msgid "Videos"
+msgstr "Видеофайлы"
+
+#: __init__.py:57
+msgid "Photos"
+msgstr "Фотографии"
+
+#: __init__.py:60
+msgid "Time of Day Stats"
+msgstr "Статистика по времени суток"
+
+#: __init__.py:62
+msgid "Night"
+msgstr "Ночь"
+
+#: __init__.py:63
+msgid "Morning"
+msgstr "Утро"
+
+#: __init__.py:64
+msgid "Noon"
+msgstr "День"
+
+#: __init__.py:65
+msgid "Evening"
+msgstr "Вечер"
+
+#: __init__.py:70
+msgid "By chat"
+msgstr "По чатам"
+
+#: __init__.py:71
+msgid "By user"
+msgstr "По пользователям"
+
+#: __init__.py:72
+msgid "By date"
+msgstr "По дате"
+
+#: __init__.py:73
+msgid "Average"
+msgstr "Среднее значение"
+
+#: __init__.py:74
+msgid "By quantity"
+msgstr "По количеству"
+
+#: __init__.py:75
+msgid "By total length"
+msgstr "По общей длительности"
+
+#: __init__.py:77
+msgid "Others"
+msgstr "Другие"
+
