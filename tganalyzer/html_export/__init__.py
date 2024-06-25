@@ -12,57 +12,57 @@ from pathlib import Path
 
 PATH = Path(__file__).resolve().parent
 TEXT = {
-    "title": "Анализатор статистики Telegram",
-    "user": "Пользователь",
-    "daterange": "Диапазон дат",
-    "agg_stat": "Статистика по всем чатам",
-    "na": "Нет информации",
-    "empty_list": "Ничего не выбрано",
-    "to_top": "Наверх",
+    "title": "Telegram Stats Analyzer",
+    "user": "User",
+    "daterange": "Date Range",
+    "agg_stat": "Aggregate Stats",
+    "na": "Not available",
+    "empty_list": "No features selected",
+    "to_top": "Back to top",
     "features": {
         "symb": {
-            "name": "Символы",
-            "units": "символов в день",
+            "name": "Symbols",
+            "units": "symbols a day",
         },
         "msg": {
-            "name": "Сообщения",
-            "units": "сообщений в день",
+            "name": "Messages",
+            "units": "messages a day",
         },
         "word": {
-            "name": "Слова",
-            "units": "слов в день",
+            "name": "Words",
+            "units": "words a day",
         },
         "voice_message": {
-            "name": "Голосовые сообщения",
+            "name": "Voice Messages",
         },
         "video_message": {
-            "name": "Видеосообщения",
+            "name": "Video Messages",
         },
         "video_file": {
-            "name": "Видеофайлы",
+            "name": "Videos",
         },
         "photo": {
-            "name": "Фотографии",
+            "name": "Photos",
         },
         "day_night": {
-            "name": "Статистика по времени суток",
+            "name": "Time of Day Stats",
             "timesofday": {
-                "night": "Ночь",
-                "morning": "Утро",
-                "afternoon": "День",
-                "evening": "Вечер",
+                "night": "Night",
+                "morning": "Morning",
+                "afternoon": "Noon",
+                "evening": "Evening",
             },
         },
     },
     "types": {
-        "chat": "По чатам",
-        "user": "По пользователям",
-        "date": "По дате",
-        "avg": "Среднее значение",
-        "quantity": "По количеству",
-        "length": "По общей длительности",
+        "chat": "By chat",
+        "user": "By user",
+        "date": "By date",
+        "avg": "Average",
+        "quantity": "By quantity",
+        "length": "By total length",
     },
-    "other": "Другие",
+    "other": "Others",
 }
 
 
