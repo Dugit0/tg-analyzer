@@ -77,9 +77,20 @@ def task_html():
         "task_dep": ["i18n"],
     }
 
+def task_test():
+    "run coverage tests"
+    return {
+        "actions": [
+            "python -m coverage run -m unittest tests_tganalyzer/core_test.py",
+            "python -m coverage report -m",
+            "rm .coverage",
+        ],
+        "task_dep": ["i18n"],
+    }
+
 def task_wheel():
     "build a wheel (binary distribution)"
     return {
-        "actions": ["python3 -m build -nw"],
+        "actions": ["python -m build -nw"],
         "task_dep": ["i18n"],
     }
