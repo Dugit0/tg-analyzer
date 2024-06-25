@@ -1,7 +1,9 @@
 """Модуль для сборки наглядного и читаемого HTML-файла."""
 
 import datetime
+import gettext
 import jinja2
+import matplotlib
 import os
 import shutil
 from collections import defaultdict
@@ -10,35 +12,73 @@ from pathlib import Path
 
 
 PATH = Path(__file__).resolve().parent
-TEXT = {
-    "title": "Анализатор статистики Telegram",
-    "user": "Пользователь",
-    "daterange": "Диапазон дат",
-    "agg_stat": "Статистика по всем чатам",
-    "empty_list": "Ничего не выбрано",
-    "to_top": "Наверх",
-    "features": {
-        "symb": {
-            "name": "Символы",
-            "avg_unit": "символов в день",
-        },
-        "msg": {
-            "name": "Сообщения",
-            "avg_unit": "сообщений в день",
-        },
-        "word": {
-            "name": "Слова",
-            "avg_unit": "слов в день",
-        },
-    },
-    "types": {
-        "chat": "По чатам",
-        "user": "По пользователям",
-        "date": "По дате",
-        "avg": "Среднее количество",
-    },
-    "other": "Другие",
+LOCALES = {
+    "en_US.UTF-8": gettext.NullTranslations(),
+    "ru_RU.UTF-8": gettext.translation("html_export", PATH / "po", ["ru"]),
 }
+
+
+def translate_text(lang="en_US.UTF-8"):
+    """Формирование перевода текстовых строк.
+
+    :param lang: языковая строка (напр., "en_US.UTF-8").
+    """
+    return {
+        "title": LOCALES[lang].gettext("Telegram Stats Analyzer"),
+        "user": LOCALES[lang].gettext("User"),
+        "daterange": LOCALES[lang].gettext("Date Range"),
+        "agg_stat": LOCALES[lang].gettext("Aggregate Stats"),
+        "na": LOCALES[lang].gettext("Not available"),
+        "empty_list": LOCALES[lang].gettext("No features selected"),
+        "to_top": LOCALES[lang].gettext("Back to top"),
+        "features": {
+            "symb": {
+                "name": LOCALES[lang].gettext("Symbols"),
+                "units": LOCALES[lang].gettext("symbols a day"),
+            },
+            "msg": {
+                "name": LOCALES[lang].gettext("Messages"),
+                "units": LOCALES[lang].gettext("messages a day"),
+            },
+            "word": {
+                "name": LOCALES[lang].gettext("Words"),
+                "units": LOCALES[lang].gettext("words a day"),
+            },
+            "voice_message": {
+                "name": LOCALES[lang].gettext("Voice Messages"),
+            },
+            "video_message": {
+                "name": LOCALES[lang].gettext("Video Messages"),
+            },
+            "video_file": {
+                "name": LOCALES[lang].gettext("Videos"),
+            },
+            "photo": {
+                "name": LOCALES[lang].gettext("Photos"),
+            },
+            "day_night": {
+                "name": LOCALES[lang].gettext("Time of Day Stats"),
+                "timesofday": {
+                    "night": LOCALES[lang].gettext("Night"),
+                    "morning": LOCALES[lang].gettext("Morning"),
+                    "afternoon": LOCALES[lang].gettext("Noon"),
+                    "evening": LOCALES[lang].gettext("Evening"),
+                },
+            },
+        },
+        "types": {
+            "chat": LOCALES[lang].gettext("By chat"),
+            "user": LOCALES[lang].gettext("By user"),
+            "date": LOCALES[lang].gettext("By date"),
+            "avg": LOCALES[lang].gettext("Average"),
+            "quantity": LOCALES[lang].gettext("By quantity"),
+            "length": LOCALES[lang].gettext("By total length"),
+        },
+        "other": LOCALES[lang].gettext("Others"),
+    }
+
+
+TEXT = translate_text()
 
 
 class daterange:
@@ -106,13 +146,17 @@ def draw_top_bar(path: Path, data: dict, topsize: int = 3):
         x[topsize:], y[topsize:] = [TEXT["other"]], [sum(y[topsize:])]
 
     bar = ax.bar(range(len(x)), y)
-    ax.set_xticks([])
+    ax.set_xticks(
+        range(len(x)), x,
+        rotation=45, ha="right", rotation_mode="anchor"
+    )
     ax.bar_label(bar)
-    ax.bar_label(bar, x, label_type="center", rotation=90)
+    ax.grid(axis="y")
     fig.savefig(path, format="svg", transparent=True, bbox_inches="tight")
     plt.close(fig)
 
 
+# TODO Решить проблему с 10 цветами matplotlib
 def draw_date_plot(path: Path, data: dict[str, dict], label_max: int = 7):
     """Построение графика данных по дате.
 
@@ -143,12 +187,17 @@ def draw_date_plot(path: Path, data: dict[str, dict], label_max: int = 7):
     plt.close(fig)
 
 
-def draw_pie(path: Path, data: dict, pieces: int = 5):
+def draw_pie(
+    path: Path, data: dict, pieces: int = 5,
+    pct: bool = True, amounts: bool = False,
+):
     """Построение отсортированной круговой диаграммы топ-``pieces``.
 
     :param path: путь к конечному файлу.
     :param data: словарь данных.
     :param pieces: количество элементов в топе.
+    :param pct: отображать ли подписи процентов (да/нет).
+    :param amounts: отображать ли подписи процентов (да/нет).
     """
     fig, ax = plt.subplots()
     data_sorted = dict(
@@ -159,7 +208,13 @@ def draw_pie(path: Path, data: dict, pieces: int = 5):
         labels[pieces:] = [TEXT["other"]]
         values[pieces:] = [sum(values[pieces:])]
 
-    wedges, _, _ = ax.pie(values, autopct="%1.1f%%")
+    wedges, *_ = ax.pie(
+        values,
+        labels=(values if amounts else None),
+        autopct=("%1.1f%%" if pct else None),
+        labeldistance=0.875,
+        pctdistance=1.25,
+    )
     ax.legend(
         wedges, labels,
         loc="center left", bbox_to_anchor=(1, 0.5), frameon=False
@@ -211,6 +266,9 @@ def draw_symb_msg_word(
         len_days[chatid] = (date_max - date_min).days + 1
 
     ans["agg"] = {}
+    if not by_chat_agg:
+        return ans
+
     draw_top_bar(path / f"agg_{feature}_chat.svg", by_chat_agg, 10)
     ans["agg"]["chat"] = f"agg_{feature}_chat.svg"
     draw_date_plot(path / f"agg_{feature}_date.svg", by_date_agg, 10)
@@ -218,11 +276,200 @@ def draw_symb_msg_word(
 
     for chatid in data:
         ans[chatid] = {}
-        draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
-        ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
+        if not by_user[chatid]:
+            continue
+
+        if sum(by_user[chatid].values()) > 0:
+            draw_pie(path / f"{chatid}_{feature}_user.svg", by_user[chatid], 5)
+            ans[chatid]["user"] = f"{chatid}_{feature}_user.svg"
+        else:
+            ans[chatid]["user"] = None
         draw_date_plot(path / f"{chatid}_{feature}_date.svg", data[chatid], 10)
         ans[chatid]["date"] = f"{chatid}_{feature}_date.svg"
         ans[chatid]["avg"] = by_chat_agg[chatnames[chatid]] / len_days[chatid]
+
+    return ans
+
+
+# TODO Придумать, как добавить на графики единицы измерения (секунды)
+def draw_voicemsg_videomsg_videos_photos(
+    path: Path,
+    data: dict[int, dict],
+    chatnames: dict[int, str],
+    feature: str,
+):
+    """Отрисовка графиков статистики видео-/голосовых сообщений, видео и фото.
+
+    :param path: путь к папке, в которой сохранить изображения.
+    :param data: сведения о чатах вида:
+        ("photo")
+            {ID чата: {имя пользователя: количество}};
+        (остальные)
+            {ID чата: {имя пользователя: {характеристика: количество}}}.
+    :param chatnames: словарь вида {ID чата: имя чата} (для отрисовки).
+    :param feature: код опции
+        ("voice_message", "video_message", "video_file" или "photo").
+    :return: имена файлов изображений вида:
+        ("voice_message" и "video_message")
+            {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
+            {"agg": {"quantity": имя, "length": имя}};
+        ("video_file" и "photo")
+            {ID чата или "agg": {"quantity": имя}}.
+    """
+    # Возвращаемый словарь имен
+    ans = {}
+    # Вспомогательные словари:
+    # по количеству для всех чатов
+    quantity_agg = defaultdict(int)
+    # по суммарной длительности для всех чатов
+    length_agg = defaultdict(int)
+    # по количеству для каждого чата
+    quantity = defaultdict(dict)
+    # по суммарной длительности для каждого чата
+    length = defaultdict(dict)
+    # по средней длительности для каждого чата
+    len_avg = defaultdict(dict)
+
+    msg_mode = feature.endswith("_message")
+    for chatid, chatdata in data.items():
+        for username, userdata in chatdata.items():
+            if feature == "photo":
+                quantity_agg[chatnames[chatid]] += userdata
+                quantity[chatid][username] = userdata
+            else:
+                quantity_agg[chatnames[chatid]] += userdata["quantity"]
+                quantity[chatid][username] = userdata["quantity"]
+            if msg_mode:
+                length_agg[chatnames[chatid]] += userdata["length"]
+                length[chatid][username] = userdata["length"]
+                len_avg[chatid][username] = (userdata["length"]
+                                            / userdata["quantity"])
+
+    ans["agg"] = {}
+    if not quantity_agg:
+        return ans
+
+    if sum(quantity_agg.values()) > 0:
+        draw_pie(
+            path / f"agg_{feature}_quantity.svg",
+            quantity_agg, 5, pct=False, amounts=True
+        )
+        ans["agg"]["quantity"] = f"agg_{feature}_quantity.svg"
+    else:
+        ans["agg"]["quantity"] = None
+    if msg_mode:
+        if sum(length_agg.values()) > 0:
+            draw_pie(
+                path / f"agg_{feature}_length.svg",
+                length_agg, 5, pct=False, amounts=True
+            )
+            ans["agg"]["length"] = f"agg_{feature}_length.svg"
+        else:
+            ans["agg"]["length"] = None
+
+    for chatid in data:
+        ans[chatid] = {}
+        if not quantity[chatid]:
+            continue
+
+        if sum(quantity[chatid].values()) > 0:
+            draw_pie(
+                path / f"{chatid}_{feature}_quantity.svg",
+                quantity[chatid], 5, pct=False, amounts=True
+            )
+            ans[chatid]["quantity"] = f"{chatid}_{feature}_quantity.svg"
+        else:
+            ans[chatid]["quantity"] = None
+        if msg_mode:
+            if sum(length[chatid].values()) > 0:
+                draw_pie(
+                    path / f"{chatid}_{feature}_length.svg",
+                    length[chatid], 5, pct=False, amounts=True
+                )
+                ans[chatid]["length"] = f"{chatid}_{feature}_length.svg"
+            else:
+                ans[chatid]["length"] = None
+            draw_top_bar(
+                path / f"{chatid}_{feature}_lenavg.svg", len_avg[chatid]
+            )
+            ans[chatid]["avg"] = f"{chatid}_{feature}_lenavg.svg"
+
+    return ans
+
+
+# TODO Упорядочить графики (от ночи к вечеру)
+def draw_timesofday(
+    path: Path,
+    data: dict[int, dict[str, dict[str, int]]],
+):
+    """Отрисовка графиков статистики по времени суток
+
+    :param path: путь к папке, в которой сохранить изображения.
+    :param data: сведения о чатах вида:
+        {ID чата: {имя пользователя: {время суток: количество}}}.
+    :return: имена файлов изображений вида:
+        {ID чата или "agg": имя}}.
+    """
+    # Возвращаемый словарь имен
+    ans = {}
+    # Вспомогательные словари:
+    # по чатам
+    quantity_agg = defaultdict(int)
+    # для каждого чата
+    quantity = defaultdict(lambda: defaultdict(int))
+
+    for chatid, chatdata in data.items():
+        for _, userdata in chatdata.items():
+            for tod, count in userdata.items():
+                quantity_agg[tod] += count
+                quantity[chatid][tod] += count
+
+    ans["agg"] = {}
+    if not quantity_agg:
+        return ans
+
+    quantity_agg = {
+        TEXT["features"]["day_night"]["timesofday"][tod]: value
+        for tod, value in quantity_agg.items()
+    }
+    if sum(quantity_agg.values()) > 0:
+        fig, ax = plt.subplots()
+        ax.pie(
+            quantity_agg.values(), labels=quantity_agg.keys(),
+            autopct="%1.1f%%", counterclock=False, startangle=90
+        )
+        fig.savefig(
+            path / "agg_timesofday.svg",
+            format="svg", transparent=True, bbox_inches="tight"
+        )
+        plt.close(fig)
+        ans["agg"]["quantity"] = "agg_timesofday.svg"
+    else:
+        ans["agg"]["quantity"] = None
+
+    for chatid in data:
+        ans[chatid] = {}
+        if not quantity[chatid]:
+            continue
+
+        quantity[chatid] = {
+            TEXT["features"]["day_night"]["timesofday"][tod]: value
+            for tod, value in quantity[chatid].items()
+        }
+        if sum(quantity[chatid].values()) > 0:
+            fig, ax = plt.subplots()
+            ax.pie(
+                quantity[chatid].values(), labels=quantity[chatid].keys(),
+                autopct="%1.1f%%", counterclock=False, startangle=90
+            )
+            fig.savefig(
+                path / f"{chatid}_timesofday.svg",
+                format="svg", transparent=True, bbox_inches="tight"
+            )
+            plt.close(fig)
+            ans[chatid]["quantity"] = f"{chatid}_timesofday.svg"
+        else:
+            ans[chatid]["quantity"] = None
 
     return ans
 
@@ -231,6 +478,7 @@ def html_export(
     path: str,
     metadata: dict,
     chatdata: dict[str, dict[int, dict]],
+    lang: str = "en_US.UTF-8",
     theme: str = "light"
 ):
     """Создание HTML-файла из данных о пользователе и чатах.
@@ -238,8 +486,15 @@ def html_export(
     :param path: путь к конечному файлу.
     :param theme: название темы.
     :param metadata: данные о пользователе вида {поле: значение}.
+    :param lang: языковая строка (напр., "en_US.UTF-8").
     :param chatdata: данные о чатах вида {опция: данные}.
     """
+    global TEXT
+    # перегенерация строк, если язык не английский
+    if lang != "en_US.UTF-8":
+        TEXT = translate_text(lang)
+    matplotlib.use("svg")   # отключение интерактивного бэкенда
+
     abspath = Path(path).resolve()
     files_dir = abspath.parent / f"{abspath.name.replace('.', '_')}_files"
     os.makedirs(files_dir, exist_ok=True)
@@ -257,6 +512,12 @@ def html_export(
                 features[feat] = draw_symb_msg_word(
                     files_dir, chatdata[feat], chatnames, feat
                 )
+            case "voice_message" | "video_message" | "video_file" | "photo":
+                features[feat] = draw_voicemsg_videomsg_videos_photos(
+                    files_dir, chatdata[feat], chatnames, feat
+                )
+            case "day_night":
+                features[feat] = draw_timesofday(files_dir, chatdata[feat])
 
     chatstat = defaultdict(lambda: defaultdict(str))
     for feat, featdata in features.items():

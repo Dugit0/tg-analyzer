@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(300, 100, 500, 700)
 
         # Variables for application logic
+        self.lang = lang
         self.locale = LOCALES[lang]
         self.data_path = ""
         self.chats = []
@@ -316,6 +317,6 @@ class MainWindow(QMainWindow):
         # TODO Убрать эту конструкцию
         try:
             # TODO path
-            html_export("index.html", metadata, ret_stats)
+            html_export("index.html", metadata, ret_stats, self.lang)
         except Exception as e:
             print(type(e), e)

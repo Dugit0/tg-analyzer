@@ -27,20 +27,22 @@
         <h3 class="featurename">{{ text.features[feat].name|e }}</h3>
             {% for type, res in featdata.items() %}
         <h4 class="typename">{{ text.types[type]|e }}</h4>
-                {% if res is number %}
+                {% if res is none %}
+        <p><em>{{ text.na|e }}</em></p>
+                {% elif res is number %}
         <h1 class="numberoftheday">{{ res|round(3) }}</h1>
-                    {% if type == "avg" %}
-        {{ text.features[feat].avg_unit|e }}
-                    {% endif %}
+        {{ text.features[feat].units|e }}
                 {% else %}
         <img class="plot" src="{{ files_dir }}/{{ res }}">
                 {% endif %}
+            {% else %}
+        <p><em>{{ text.na|e }}</em></p>
             {% endfor %}
         {% endfor %}
         <p class="toplink"><a href="#">{{ text.to_top|e }}</a></p>
     </div>
     {% else %}
-    <p> <em>{{ text.empty_list|e }}</em>
+    <p><em>{{ text.empty_list|e }}</em></p>
     {% endfor %}
 </body>
 </html>
