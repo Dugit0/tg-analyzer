@@ -1,4 +1,6 @@
 from doit.task import clean_targets
+from glob import iglob
+from shutil import rmtree
 
 DOIT_CONFIG = {
     "cleandep": True,
@@ -65,4 +67,13 @@ def task_i18n():
     return {
         "actions": None,
         "task_dep": ["pot", "po", "mo"],
+    }
+
+def task_html():
+    "generate HTML documentation"
+    return {
+        "actions": ["sphinx-build -M html doc/src doc/build"],
+        "file_dep": [*iglob("doc/src/*.rst"), *iglob("tganalyzer/*/*.py")],
+        "clean": [(rmtree, ["doc/build"])],
+        "task_dep": ["i18n"],
     }

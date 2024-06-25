@@ -17,3 +17,6 @@ venv
 
 # doit Database
 .doit.db*
+
+# Build files
+build
