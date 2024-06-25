@@ -1,6 +1,7 @@
 """Модуль для сборки наглядного и читаемого HTML-файла."""
 
 import datetime
+import gettext
 import jinja2
 import matplotlib
 import os
@@ -11,59 +12,73 @@ from pathlib import Path
 
 
 PATH = Path(__file__).resolve().parent
-TEXT = {
-    "title": "Telegram Stats Analyzer",
-    "user": "User",
-    "daterange": "Date Range",
-    "agg_stat": "Aggregate Stats",
-    "na": "Not available",
-    "empty_list": "No features selected",
-    "to_top": "Back to top",
-    "features": {
-        "symb": {
-            "name": "Symbols",
-            "units": "symbols a day",
-        },
-        "msg": {
-            "name": "Messages",
-            "units": "messages a day",
-        },
-        "word": {
-            "name": "Words",
-            "units": "words a day",
-        },
-        "voice_message": {
-            "name": "Voice Messages",
-        },
-        "video_message": {
-            "name": "Video Messages",
-        },
-        "video_file": {
-            "name": "Videos",
-        },
-        "photo": {
-            "name": "Photos",
-        },
-        "day_night": {
-            "name": "Time of Day Stats",
-            "timesofday": {
-                "night": "Night",
-                "morning": "Morning",
-                "afternoon": "Noon",
-                "evening": "Evening",
+LOCALES = {
+    "en_US.UTF-8": gettext.NullTranslations(),
+    "ru_RU.UTF-8": gettext.translation("html_export", PATH / "po", ["ru"]),
+}
+
+
+def translate_text(lang="en_US.UTF-8"):
+    """Формирование перевода текстовых строк.
+
+    :param lang: языковая строка (напр., "en_US.UTF-8").
+    """
+    return {
+        "title": LOCALES[lang].gettext("Telegram Stats Analyzer"),
+        "user": LOCALES[lang].gettext("User"),
+        "daterange": LOCALES[lang].gettext("Date Range"),
+        "agg_stat": LOCALES[lang].gettext("Aggregate Stats"),
+        "na": LOCALES[lang].gettext("Not available"),
+        "empty_list": LOCALES[lang].gettext("No features selected"),
+        "to_top": LOCALES[lang].gettext("Back to top"),
+        "features": {
+            "symb": {
+                "name": LOCALES[lang].gettext("Symbols"),
+                "units": LOCALES[lang].gettext("symbols a day"),
+            },
+            "msg": {
+                "name": LOCALES[lang].gettext("Messages"),
+                "units": LOCALES[lang].gettext("messages a day"),
+            },
+            "word": {
+                "name": LOCALES[lang].gettext("Words"),
+                "units": LOCALES[lang].gettext("words a day"),
+            },
+            "voice_message": {
+                "name": LOCALES[lang].gettext("Voice Messages"),
+            },
+            "video_message": {
+                "name": LOCALES[lang].gettext("Video Messages"),
+            },
+            "video_file": {
+                "name": LOCALES[lang].gettext("Videos"),
+            },
+            "photo": {
+                "name": LOCALES[lang].gettext("Photos"),
+            },
+            "day_night": {
+                "name": LOCALES[lang].gettext("Time of Day Stats"),
+                "timesofday": {
+                    "night": LOCALES[lang].gettext("Night"),
+                    "morning": LOCALES[lang].gettext("Morning"),
+                    "afternoon": LOCALES[lang].gettext("Noon"),
+                    "evening": LOCALES[lang].gettext("Evening"),
+                },
             },
         },
-    },
-    "types": {
-        "chat": "By chat",
-        "user": "By user",
-        "date": "By date",
-        "avg": "Average",
-        "quantity": "By quantity",
-        "length": "By total length",
-    },
-    "other": "Others",
-}
+        "types": {
+            "chat": LOCALES[lang].gettext("By chat"),
+            "user": LOCALES[lang].gettext("By user"),
+            "date": LOCALES[lang].gettext("By date"),
+            "avg": LOCALES[lang].gettext("Average"),
+            "quantity": LOCALES[lang].gettext("By quantity"),
+            "length": LOCALES[lang].gettext("By total length"),
+        },
+        "other": LOCALES[lang].gettext("Others"),
+    }
+
+
+TEXT = translate_text()
 
 
 class daterange:
@@ -463,6 +478,7 @@ def html_export(
     path: str,
     metadata: dict,
     chatdata: dict[str, dict[int, dict]],
+    lang: str = "en_US.UTF-8",
     theme: str = "light"
 ):
     """Создание HTML-файла из данных о пользователе и чатах.
@@ -470,8 +486,13 @@ def html_export(
     :param path: путь к конечному файлу.
     :param theme: название темы.
     :param metadata: данные о пользователе вида {поле: значение}.
+    :param lang: языковая строка (напр., "en_US.UTF-8").
     :param chatdata: данные о чатах вида {опция: данные}.
     """
+    global TEXT
+    # перегенерация строк, если язык не английский
+    if lang != "en_US.UTF-8":
+        TEXT = translate_text(lang)
     matplotlib.use("svg")   # отключение интерактивного бэкенда
 
     abspath = Path(path).resolve()
