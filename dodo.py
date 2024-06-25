@@ -3,7 +3,6 @@ from glob import iglob
 from shutil import rmtree
 
 DOIT_CONFIG = {
-    "cleandep": True,
     "cleanforget": True,
 }
 
@@ -75,5 +74,12 @@ def task_html():
         "actions": ["sphinx-build -M html doc/src doc/build"],
         "file_dep": [*iglob("doc/src/*.rst"), *iglob("tganalyzer/*/*.py")],
         "clean": [(rmtree, ["doc/build"])],
+        "task_dep": ["i18n"],
+    }
+
+def task_wheel():
+    "build a wheel (binary distribution)"
+    return {
+        "actions": ["python3 -m build -nw"],
         "task_dep": ["i18n"],
     }
