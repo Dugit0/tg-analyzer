@@ -1,7 +1,8 @@
 from doit.task import clean_targets
+from glob import iglob
+from shutil import rmtree
 
 DOIT_CONFIG = {
-    "cleandep": True,
     "cleanforget": True,
 }
 
@@ -44,8 +45,9 @@ def task_mo():
     "compile translation files"
     return {
         "actions": [
-            "mkdir -p tganalyzer/{gui,html_export}/po",
+            "mkdir -p tganalyzer/gui/po",
             "pybabel compile -D gui -l ru_RU.UTF-8 -d tganalyzer/gui/po -i tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
+            "mkdir -p tganalyzer/html_export/po",
             "pybabel compile -D html_export -l ru_RU.UTF-8 -d tganalyzer/html_export/po -i tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
         ],
         "file_dep": [
@@ -64,4 +66,20 @@ def task_i18n():
     return {
         "actions": None,
         "task_dep": ["pot", "po", "mo"],
+    }
+
+def task_html():
+    "generate HTML documentation"
+    return {
+        "actions": ["sphinx-build -M html doc/src doc/build"],
+        "file_dep": [*iglob("doc/src/*.rst"), *iglob("tganalyzer/*/*.py")],
+        "clean": [(rmtree, ["doc/build"])],
+        "task_dep": ["i18n"],
+    }
+
+def task_wheel():
+    "build a wheel (binary distribution)"
+    return {
+        "actions": ["python3 -m build -nw"],
+        "task_dep": ["i18n"],
     }

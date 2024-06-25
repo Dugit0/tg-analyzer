@@ -19,5 +19,10 @@ venv
 # Testing
 .coverage
 
+# Build files
+build
+dist
+*.egg-info
+
 # doit Database
 .doit.db*

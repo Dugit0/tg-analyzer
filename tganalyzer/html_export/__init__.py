@@ -197,7 +197,7 @@ def draw_pie(
     :param data: словарь данных.
     :param pieces: количество элементов в топе.
     :param pct: отображать ли подписи процентов (да/нет).
-    :param amounts: отображать ли подписи процентов (да/нет).
+    :param amounts: отображать ли подписи значений (да/нет).
     """
     fig, ax = plt.subplots()
     data_sorted = dict(
@@ -303,18 +303,18 @@ def draw_voicemsg_videomsg_videos_photos(
     :param path: путь к папке, в которой сохранить изображения.
     :param data: сведения о чатах вида:
         ("photo")
-            {ID чата: {имя пользователя: количество}};
+        {ID чата: {имя пользователя: количество}};
         (остальные)
-            {ID чата: {имя пользователя: {характеристика: количество}}}.
+        {ID чата: {имя пользователя: {характеристика: количество}}}.
     :param chatnames: словарь вида {ID чата: имя чата} (для отрисовки).
     :param feature: код опции
         ("voice_message", "video_message", "video_file" или "photo").
     :return: имена файлов изображений вида:
         ("voice_message" и "video_message")
-            {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
-            {"agg": {"quantity": имя, "length": имя}};
+        {ID чата: {"quantity": имя, "length": имя, "avg": имя}} или
+        {"agg": {"quantity": имя, "length": имя}};
         ("video_file" и "photo")
-            {ID чата или "agg": {"quantity": имя}}.
+        {ID чата или "agg": {"quantity": имя}}.
     """
     # Возвращаемый словарь имен
     ans = {}
@@ -484,10 +484,10 @@ def html_export(
     """Создание HTML-файла из данных о пользователе и чатах.
 
     :param path: путь к конечному файлу.
-    :param theme: название темы.
     :param metadata: данные о пользователе вида {поле: значение}.
-    :param lang: языковая строка (напр., "en_US.UTF-8").
     :param chatdata: данные о чатах вида {опция: данные}.
+    :param lang: языковая строка (напр., "en_US.UTF-8").
+    :param theme: название темы.
     """
     global TEXT
     # перегенерация строк, если язык не английский
