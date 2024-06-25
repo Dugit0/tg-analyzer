@@ -98,6 +98,23 @@ def counter_days_nights(
     update[message.author][_time[message.send_time.hour // 6]] += 1
 
 
+def counter_rude_words(
+        update: defaultdict[str, int],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число матерных слов каждого пользователя.
+
+    :param update: структура для подсчета слов.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    _rude_words = []   # может завести отдельный файл со словами
+    words = [word.lower() for word in message.text.split()]
+    update[message.author] += sum(
+        [words.count(word) for word in _rude_words])
+
+
 # Функции подготовки вывода
 
 def return_text_info(
@@ -272,6 +289,19 @@ DEPENDENCIES = {
         #           "quantity": int,
         #           "length": int
         #       }
+        #   }
+        # }
+        "rude_words": {
+            "class_type": defaultdict,
+            "class_ex_type": int,
+            "class_func": counter_rude_words,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # rude_words structure in final data:
+        # "rude_words": {
+        #   chat.id: {
+        #       "username": int
         #   }
         # }
     }
