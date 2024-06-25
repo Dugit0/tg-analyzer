@@ -343,7 +343,7 @@ def draw_voicemsg_videomsg_videos_photos(
                 length_agg[chatnames[chatid]] += userdata["length"]
                 length[chatid][username] = userdata["length"]
                 len_avg[chatid][username] = (userdata["length"]
-                                            / userdata["quantity"])
+                                             / userdata["quantity"])
 
     ans["agg"] = {}
     if not quantity_agg:
@@ -402,7 +402,7 @@ def draw_timesofday(
     path: Path,
     data: dict[int, dict[str, dict[str, int]]],
 ):
-    """Отрисовка графиков статистики по времени суток
+    """Отрисовка графиков статистики по времени суток.
 
     :param path: путь к папке, в которой сохранить изображения.
     :param data: сведения о чатах вида:

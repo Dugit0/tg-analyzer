@@ -9,7 +9,6 @@ import datetime
 import gettext
 import pytz
 
-import tganalyzer
 from tganalyzer.core.creator import start_creator
 from tganalyzer.core.analyzer import start_analyses
 from tganalyzer.html_export import html_export
@@ -222,8 +221,8 @@ class MainWindow(QMainWindow):
             print(*[(chat.name, chat.type) for chat in all_chats], sep='\n')
             self.chats = [chat for chat in all_chats
                           if (chat.type in {"personal_chat",
-                                           "private_group",
-                                           "private_supergroup"}
+                                            "private_group",
+                                            "private_supergroup"}
                               and chat.name is not None)]
             for chat in self.chats:
                 checkbox = QCheckBox(chat.name, self)
