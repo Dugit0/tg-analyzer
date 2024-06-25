@@ -44,8 +44,9 @@ def task_mo():
     "compile translation files"
     return {
         "actions": [
-            "mkdir -p tganalyzer/{gui,html_export}/po",
+            "mkdir -p tganalyzer/gui/po",
             "pybabel compile -D gui -l ru_RU.UTF-8 -d tganalyzer/gui/po -i tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
+            "mkdir -p tganalyzer/html_export/po",
             "pybabel compile -D html_export -l ru_RU.UTF-8 -d tganalyzer/html_export/po -i tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
         ],
         "file_dep": [
