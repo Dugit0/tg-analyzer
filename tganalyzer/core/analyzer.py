@@ -1,7 +1,8 @@
 """Создает статистику по сообщениям."""
 import bisect
-from . import creator
 import datetime
+import re
+from . import creator
 from collections import defaultdict
 
 
@@ -96,6 +97,23 @@ def counter_days_nights(
     """
     _time = ["night", "morning", "afternoon", "evening"]
     update[message.author][_time[message.send_time.hour // 6]] += 1
+
+
+def counter_rude_words(
+        update: defaultdict[str, int],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число матерных слов каждого пользователя.
+
+    :param update: структура для подсчета слов.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    _rude_words = []   # может завести отдельный файл со словами
+    update[message.author] += sum(
+        [len(re.findall(pattern, message.text, re.IGNORECASE))
+         for pattern in _rude_words])
 
 
 # Функции подготовки вывода
@@ -230,7 +248,7 @@ DEPENDENCIES = {
             "class_func": counter_days_nights,
             "return_type": dict,
             "return_func": return_text_info
-        }
+        },
         # day_night structure in final data:
         # "day_night": {
         #   chat.id: {
@@ -240,6 +258,51 @@ DEPENDENCIES = {
         #           "afternoon": int,
         #           "evening": int
         #       }
+        #   }
+        # }
+        "phone_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # phone_call structure in final data:
+        # "phone_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
+        #       }
+        #   }
+        # }
+        "group_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # group_call structure in final data:
+        # "group_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
+        #       }
+        #   }
+        # }
+        "rude_words": {
+            "class_type": defaultdict,
+            "class_ex_type": int,
+            "class_func": counter_rude_words,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # rude_words structure in final data:
+        # "rude_words": {
+        #   chat.id: {
+        #       "username": int
         #   }
         # }
     }
