@@ -1,7 +1,8 @@
 """Создает статистику по сообщениям."""
 import bisect
-from . import creator
 import datetime
+import re
+from . import creator
 from collections import defaultdict
 
 
@@ -110,9 +111,9 @@ def counter_rude_words(
     :param feature: название цели анализа.
     """
     _rude_words = []   # может завести отдельный файл со словами
-    words = [word.lower() for word in message.text.split()]
     update[message.author] += sum(
-        [words.count(word) for word in _rude_words])
+        [len(re.findall(pattern, message.text, re.IGNORECASE))
+         for pattern in _rude_words])
 
 
 # Функции подготовки вывода
