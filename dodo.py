@@ -78,8 +78,18 @@ def task_html():
         "task_dep": ["i18n"],
     }
 
+
 def task_test():
-    "run coverage tests"
+    "Run tests."
+    return {
+        "actions": [
+            "python -m unittest tests_tganalyzer/core_test.py",
+        ],
+        "task_dep": ["i18n"],
+    }
+
+def task_coverage():
+    "Show test coverage."
     return {
         "actions": [
             "python -m coverage run -m unittest tests_tganalyzer/core_test.py",
