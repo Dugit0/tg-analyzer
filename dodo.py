@@ -7,12 +7,15 @@ DOIT_CONFIG = {
         "cleanforget": True,
 }
 
+
 def task_pot():
-    "extract text for translation"
+    """Extract text for translation and recreate .pot file."""
     return {
         "actions": [
-            "pybabel extract -o tganalyzer/gui/gui.pot tganalyzer/gui/__init__.py",
-            "pybabel extract -o tganalyzer/html_export/html_export.pot tganalyzer/html_export/__init__.py",
+            "pybabel extract -o "
+            "tganalyzer/gui/gui.pot tganalyzer/gui/__init__.py",
+            "pybabel extract -o tganalyzer/html_export/html_export.pot "
+            "tganalyzer/html_export/__init__.py",
         ],
         "file_dep": [
             "tganalyzer/gui/__init__.py",
@@ -25,12 +28,16 @@ def task_pot():
         "clean": [clean_targets],
     }
 
+
 def task_po():
-    "update translation files"
+    """Update translation files."""
     return {
         "actions": [
-            "pybabel update --previous -D gui -d tganalyzer/gui/po -i tganalyzer/gui/gui.pot",
-            "pybabel update --previous -D html_export -d tganalyzer/html_export/po -i tganalyzer/html_export/html_export.pot"
+            "pybabel update --previous -D gui -d tganalyzer/gui/po "
+            "-i tganalyzer/gui/gui.pot",
+            "pybabel update --previous -D html_export "
+            "-d tganalyzer/html_export/po "
+            "-i tganalyzer/html_export/html_export.pot"
         ],
         "file_dep": [
             "tganalyzer/gui/gui.pot",
@@ -42,14 +49,18 @@ def task_po():
         ],
     }
 
+
 def task_mo():
-    "compile translation files"
+    """Compile translation files."""
     return {
         "actions": [
             "mkdir -p tganalyzer/gui/po",
-            "pybabel compile -D gui -l ru_RU.UTF-8 -d tganalyzer/gui/po -i tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
+            "pybabel compile -D gui -l ru_RU.UTF-8 -d tganalyzer/gui/po "
+            "-i tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
             "mkdir -p tganalyzer/html_export/po",
-            "pybabel compile -D html_export -l ru_RU.UTF-8 -d tganalyzer/html_export/po -i tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
+            "pybabel compile -D html_export -l ru_RU.UTF-8 "
+            "-d tganalyzer/html_export/po "
+            "-i tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
         ],
         "file_dep": [
             "tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
@@ -62,15 +73,17 @@ def task_mo():
         "clean": [clean_targets],
     }
 
+
 def task_i18n():
-    "do full translation cycle"
+    """Do full translation cycle."""
     return {
         "actions": None,
         "task_dep": ["pot", "po", "mo"],
     }
 
+
 def task_html():
-    "generate HTML documentation"
+    """Generate HTML documentation."""
     return {
         "actions": ["sphinx-build -M html doc/src doc/build"],
         "file_dep": [*iglob("doc/src/*.rst"), *iglob("tganalyzer/*/*.py")],
@@ -80,7 +93,7 @@ def task_html():
 
 
 def task_test():
-    "Run tests."
+    """Run tests."""
     return {
         "actions": [
             "python -m unittest tests_tganalyzer/core_test.py",
@@ -88,8 +101,9 @@ def task_test():
         "task_dep": ["i18n"],
     }
 
+
 def task_coverage():
-    "Show test coverage."
+    """Show test coverage."""
     return {
         "actions": [
             "python -m coverage run -m unittest tests_tganalyzer/core_test.py",
@@ -100,8 +114,9 @@ def task_coverage():
         "task_dep": ["i18n"],
     }
 
+
 def task_wheel():
-    "build a wheel (binary distribution)"
+    """Build a wheel (binary distribution)."""
     return {
         "actions": ["python -m build -nw"],
         "task_dep": ["i18n"],
