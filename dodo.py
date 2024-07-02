@@ -1,6 +1,6 @@
 from doit.task import clean_targets
 from glob import iglob
-from shutil import rmtree
+import shutil
 
 DOIT_CONFIG = {
         "default_tasks": ["wheel"],
@@ -87,7 +87,7 @@ def task_html():
     return {
         "actions": ["sphinx-build -M html doc/src doc/build"],
         "file_dep": [*iglob("doc/src/*.rst"), *iglob("tganalyzer/*/*.py")],
-        "clean": [(rmtree, ["doc/build"])],
+        "clean": [(shutil.rmtree, ["doc/build"])],
         "task_dep": ["i18n"],
     }
 
@@ -120,4 +120,9 @@ def task_wheel():
     return {
         "actions": ["python -m build -nw"],
         "task_dep": ["i18n"],
+        "clean": [
+            (shutil.rmtree, ['dist']),
+            (shutil.rmtree, ['tganalyzer.egg-info']),
+            (shutil.rmtree, ['build']),
+            ]
     }
