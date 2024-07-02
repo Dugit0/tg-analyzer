@@ -2,7 +2,7 @@
 import argparse
 import sys
 from PyQt5.QtWidgets import QApplication
-from . import MainWindow
+from tganalyzer.gui import MainWindow
 
 
 LANGUAGES = {'en': 'en_US.UTF-8',
