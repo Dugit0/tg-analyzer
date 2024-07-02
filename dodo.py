@@ -86,6 +86,7 @@ def task_test():
             "python -m coverage report -m",
             "rm .coverage",
         ],
+        'verbosity': 2,
         "task_dep": ["i18n"],
     }
 
