@@ -3,7 +3,8 @@ from glob import iglob
 from shutil import rmtree
 
 DOIT_CONFIG = {
-    "cleanforget": True,
+        "default_tasks": ["wheel"],
+        "cleanforget": True,
 }
 
 def task_pot():
