@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  0.0.0\n"
 "Report-Msgid-Bugs-To: valthebrewer@yandex.ru\n"
-"POT-Creation-Date: 2024-06-25 10:57+0300\n"
+"POT-Creation-Date: 2024-07-03 14:54+0300\n"
 "PO-Revision-Date: 2024-06-25 10:27+0300\n"
 "Last-Translator: Valery Zabrovsky <valthebrewer@yandex.ru>\n"
 "Language: ru_RU\n"
@@ -17,121 +17,121 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.15.0\n"
 
-#: __init__.py:27
+#: tganalyzer/html_export/__init__.py:29
 msgid "Telegram Stats Analyzer"
 msgstr "Анализатор статистики Telegram"
 
-#: __init__.py:28
+#: tganalyzer/html_export/__init__.py:30
 msgid "User"
 msgstr "Пользователь"
 
-#: __init__.py:29
+#: tganalyzer/html_export/__init__.py:31
 msgid "Date Range"
 msgstr "Диапазон дат"
 
-#: __init__.py:30
+#: tganalyzer/html_export/__init__.py:32
 msgid "Aggregate Stats"
 msgstr "Статистика по всем чатам"
 
-#: __init__.py:31
+#: tganalyzer/html_export/__init__.py:33
 msgid "Not available"
 msgstr "Нет информации"
 
-#: __init__.py:32
+#: tganalyzer/html_export/__init__.py:34
 msgid "No features selected"
 msgstr "Ничего не выбрано"
 
-#: __init__.py:33
+#: tganalyzer/html_export/__init__.py:35
 msgid "Back to top"
 msgstr "Наверх"
 
-#: __init__.py:36
+#: tganalyzer/html_export/__init__.py:38
 msgid "Symbols"
 msgstr "Символы"
 
-#: __init__.py:37
+#: tganalyzer/html_export/__init__.py:39
 msgid "symbols a day"
 msgstr "символов в день"
 
-#: __init__.py:40
+#: tganalyzer/html_export/__init__.py:42
 msgid "Messages"
 msgstr "Сообщения"
 
-#: __init__.py:41
+#: tganalyzer/html_export/__init__.py:43
 msgid "messages a day"
 msgstr "сообщений в день"
 
-#: __init__.py:44
+#: tganalyzer/html_export/__init__.py:46
 msgid "Words"
 msgstr "Слова"
 
-#: __init__.py:45
+#: tganalyzer/html_export/__init__.py:47
 msgid "words a day"
 msgstr "слов в день"
 
-#: __init__.py:48
+#: tganalyzer/html_export/__init__.py:50
 msgid "Voice Messages"
 msgstr "Голосовые сообщения"
 
-#: __init__.py:51
+#: tganalyzer/html_export/__init__.py:53
 msgid "Video Messages"
 msgstr "Видеосообщения"
 
-#: __init__.py:54
+#: tganalyzer/html_export/__init__.py:56
 msgid "Videos"
 msgstr "Видеофайлы"
 
-#: __init__.py:57
+#: tganalyzer/html_export/__init__.py:59
 msgid "Photos"
 msgstr "Фотографии"
 
-#: __init__.py:60
+#: tganalyzer/html_export/__init__.py:62
 msgid "Time of Day Stats"
 msgstr "Статистика по времени суток"
 
-#: __init__.py:62
+#: tganalyzer/html_export/__init__.py:64
 msgid "Night"
 msgstr "Ночь"
 
-#: __init__.py:63
+#: tganalyzer/html_export/__init__.py:65
 msgid "Morning"
 msgstr "Утро"
 
-#: __init__.py:64
+#: tganalyzer/html_export/__init__.py:66
 msgid "Noon"
 msgstr "День"
 
-#: __init__.py:65
+#: tganalyzer/html_export/__init__.py:67
 msgid "Evening"
 msgstr "Вечер"
 
-#: __init__.py:70
+#: tganalyzer/html_export/__init__.py:72
 msgid "By chat"
 msgstr "По чатам"
 
-#: __init__.py:71
+#: tganalyzer/html_export/__init__.py:73
 msgid "By user"
 msgstr "По пользователям"
 
-#: __init__.py:72
+#: tganalyzer/html_export/__init__.py:74
 msgid "By date"
 msgstr "По дате"
 
-#: __init__.py:73
+#: tganalyzer/html_export/__init__.py:75
 msgid "Average"
 msgstr "Среднее значение"
 
-#: __init__.py:74
+#: tganalyzer/html_export/__init__.py:76
 msgid "By quantity"
 msgstr "По количеству"
 
-#: __init__.py:75
+#: tganalyzer/html_export/__init__.py:77
 msgid "By total length"
 msgstr "По общей длительности"
 
-#: __init__.py:77
+#: tganalyzer/html_export/__init__.py:79
 msgid "Others"
 msgstr "Другие"
 

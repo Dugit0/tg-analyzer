@@ -14,7 +14,9 @@ from pathlib import Path
 PATH = Path(__file__).resolve().parent
 LOCALES = {
     "en_US.UTF-8": gettext.NullTranslations(),
-    "ru_RU.UTF-8": gettext.translation("html_export", PATH / "po", ["ru"]),
+    "ru_RU.UTF-8": gettext.translation("html_export",
+                                       PATH.parent / "po",
+                                       ["ru"]),
 }
 
 

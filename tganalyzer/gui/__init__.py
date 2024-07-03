@@ -14,7 +14,7 @@ from tganalyzer.core.analyzer import start_analyses
 from tganalyzer.html_export import html_export
 
 
-PO_PATH = Path(__file__).resolve().parent / 'po'
+PO_PATH = Path(__file__).resolve().parent.parent / 'po'
 LOCALES = {
     "ru_RU.UTF-8": gettext.translation("gui", PO_PATH, ["ru"]),
     "en_US.UTF-8": gettext.NullTranslations(),

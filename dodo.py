@@ -12,16 +12,18 @@ DOIT_CONFIG = {
 def task_pot():
     """Extract text for translation and recreate .pot file."""
     file_dep = [
-            str(Path('tganalyzer') / 'gui' / '__init__.py'),
-            str(Path('tganalyzer') / 'html_export' / '__init__.py'),
+            Path('tganalyzer') / 'gui' / '__init__.py',
+            Path('tganalyzer') / 'html_export' / '__init__.py',
             ]
     targets = [
             'gui.pot',
             'html_export.pot',
             ]
     return {
-            "actions": [f"pybabel extract -o {i[0]} {i[1]}"
-                        for i in zip(targets, file_dep)],
+            "actions": [
+                f"pybabel extract -o {i[0]} {i[1]}"
+                for i in zip(targets, file_dep)
+                ],
             "file_dep": file_dep,
             "targets": targets,
             "clean": [clean_targets],
@@ -30,47 +32,47 @@ def task_pot():
 
 def task_po():
     """Update translation files."""
+    domains = [
+            'gui',
+            'html_export',
+            ]
+    po_path = Path('tganalyzer') / 'po'
     return {
-        "actions": [
-            "pybabel update --previous -D gui -d tganalyzer/gui/po "
-            "-i gui.pot",
-            "pybabel update --previous -D html_export "
-            "-d tganalyzer/html_export/po "
-            "-i html_export.pot"
-        ],
-        "file_dep": [
-            "gui.pot",
-            "html_export.pot",
-        ],
-        "targets": [
-            "tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
-            "tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
-        ],
-    }
+            "actions": [
+                f"pybabel update --previous -D {domain} -d {po_path} "
+                f"-i {domain + '.pot'}" for domain in domains
+                ],
+            "file_dep": [f"{domain}.pot" for domain in domains],
+            "targets": [
+                po_path / 'ru_RU.UTF-8' / 'LC_MESSAGES' / f"{domain}.pot"
+                for domain in domains
+                ],
+            }
 
 
 def task_mo():
     """Compile translation files."""
+    domains = [
+            'gui',
+            'html_export',
+            ]
+    po_path = Path('tganalyzer') / 'po'
     return {
-        "actions": [
-            "mkdir -p tganalyzer/gui/po",
-            "pybabel compile -D gui -l ru_RU.UTF-8 -d tganalyzer/gui/po "
-            "-i tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
-            "mkdir -p tganalyzer/html_export/po",
-            "pybabel compile -D html_export -l ru_RU.UTF-8 "
-            "-d tganalyzer/html_export/po "
-            "-i tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
-        ],
-        "file_dep": [
-            "tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
-            "tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.po",
-        ],
-        "targets": [
-            "tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.mo",
-            "tganalyzer/html_export/po/ru_RU.UTF-8/LC_MESSAGES/html_export.mo",
-        ],
-        "clean": [clean_targets],
-    }
+            "actions": [
+                f"pybabel compile -D {domain} -l ru_RU.UTF-8 -d {po_path} -i "
+                f"{po_path / 'ru_RU.UTF-8' / 'LC_MESSAGES' / (domain + '.po')}"
+                for domain in domains
+                ],
+            "file_dep": [
+                po_path / 'ru_RU.UTF-8' / 'LC_MESSAGES' / (domain + '.po')
+                for domain in domains
+                ],
+            "targets": [
+                po_path / 'ru_RU.UTF-8' / 'LC_MESSAGES' / (domain + '.mo')
+                for domain in domains
+                ],
+            "clean": [clean_targets],
+            }
 
 
 def task_i18n():
