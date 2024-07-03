@@ -1,6 +1,7 @@
 from doit.task import clean_targets
 from glob import iglob
 import shutil
+from pathlib import Path
 
 DOIT_CONFIG = {
         "default_tasks": ["wheel"],
@@ -10,23 +11,21 @@ DOIT_CONFIG = {
 
 def task_pot():
     """Extract text for translation and recreate .pot file."""
+    file_dep = [
+            str(Path('tganalyzer') / 'gui' / '__init__.py'),
+            str(Path('tganalyzer') / 'html_export' / '__init__.py'),
+            ]
+    targets = [
+            'gui.pot',
+            'html_export.pot',
+            ]
     return {
-        "actions": [
-            "pybabel extract -o "
-            "tganalyzer/gui/gui.pot tganalyzer/gui/__init__.py",
-            "pybabel extract -o tganalyzer/html_export/html_export.pot "
-            "tganalyzer/html_export/__init__.py",
-        ],
-        "file_dep": [
-            "tganalyzer/gui/__init__.py",
-            "tganalyzer/html_export/__init__.py",
-        ],
-        "targets": [
-            "tganalyzer/gui/gui.pot",
-            "tganalyzer/html_export/html_export.pot",
-        ],
-        "clean": [clean_targets],
-    }
+            "actions": [f"pybabel extract -o {i[0]} {i[1]}"
+                        for i in zip(targets, file_dep)],
+            "file_dep": file_dep,
+            "targets": targets,
+            "clean": [clean_targets],
+            }
 
 
 def task_po():
@@ -34,14 +33,14 @@ def task_po():
     return {
         "actions": [
             "pybabel update --previous -D gui -d tganalyzer/gui/po "
-            "-i tganalyzer/gui/gui.pot",
+            "-i gui.pot",
             "pybabel update --previous -D html_export "
             "-d tganalyzer/html_export/po "
-            "-i tganalyzer/html_export/html_export.pot"
+            "-i html_export.pot"
         ],
         "file_dep": [
-            "tganalyzer/gui/gui.pot",
-            "tganalyzer/html_export/html_export.pot",
+            "gui.pot",
+            "html_export.pot",
         ],
         "targets": [
             "tganalyzer/gui/po/ru_RU.UTF-8/LC_MESSAGES/gui.po",
