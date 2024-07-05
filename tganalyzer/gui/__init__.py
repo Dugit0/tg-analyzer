@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         # Variables for application logic
         self.lang = lang
         self.locale = LOCALES[lang]
-        self.data_path = ""
+        self.data_path = None
         self.chats = []
         self.features = {
                 "symb": self.locale.gettext("Symbol counting"),
@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
             if self.chats:
                 for i in range(len(self.chats) - 1, -1, -1):
                     del self.chats[i]
-            self.data_path = path
+            self.data_path = Path(path)
             self.data_path_label.setText(path)
             all_chats = start_creator(path)
             print(*[(chat.name, chat.type) for chat in all_chats], sep='\n')
@@ -299,6 +299,9 @@ class MainWindow(QMainWindow):
 
     def create_report(self):
         """Создает отчет."""
+        if self.data_path is None:
+            return
+        path = str(self.data_path.parent / 'index.html')
         chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
                     if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
@@ -326,8 +329,7 @@ class MainWindow(QMainWindow):
                 }
         # TODO Убрать эту конструкцию
         try:
-            # TODO path
-            html_export("index.html", metadata, ret_stats, 
+            html_export(path, metadata, ret_stats, 
                         lang=self.lang,
                         theme=self.theme_combobox.currentText())
         except Exception as e:
