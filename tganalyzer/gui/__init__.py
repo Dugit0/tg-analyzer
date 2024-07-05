@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
-from PyQt5.QtWidgets import QScrollArea, QSpinBox
+from PyQt5.QtWidgets import QScrollArea, QSpinBox, QComboBox
 from PyQt5.QtCore import Qt, QDate
 from pathlib import Path
 import datetime
@@ -19,6 +19,8 @@ LOCALES = {
     "ru_RU.UTF-8": gettext.translation("gui", PO_PATH, ["ru"]),
     "en_US.UTF-8": gettext.NullTranslations(),
 }
+THEMES_PATH = Path(__file__).resolve().parent.parent / 'html_export' / 'themes'
+THEMES = [theme.name.partition('.')[0] for theme in THEMES_PATH.iterdir()]
 
 
 class MainWindow(QMainWindow):
@@ -164,6 +166,14 @@ class MainWindow(QMainWindow):
         features_area.setWidgetResizable(True)
         features_area.setWidget(features_wiget)
 
+        theme_label = QLabel()
+        theme_label.setText(self.locale.gettext("Choose a report color theme"))
+        self.theme_combobox = QComboBox(self)
+        self.theme_combobox.addItems(THEMES)
+        theme_layout = QHBoxLayout()
+        theme_layout.addWidget(theme_label)
+        theme_layout.addWidget(self.theme_combobox)
+
         # Button that create a report
         create_report_button = QPushButton(
                 self.locale.gettext("Create report"), self)
@@ -178,6 +188,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(date_range_layout)
         layout.addWidget(features_area, 1)
         # layout.addStretch(1)
+        layout.addLayout(theme_layout)
         layout.addWidget(create_report_button)
 
         # Create central wiget
@@ -316,6 +327,8 @@ class MainWindow(QMainWindow):
         # TODO Убрать эту конструкцию
         try:
             # TODO path
-            html_export("index.html", metadata, ret_stats, self.lang)
+            html_export("index.html", metadata, ret_stats, 
+                        lang=self.lang,
+                        theme=self.theme_combobox.currentText())
         except Exception as e:
             print(type(e), e)

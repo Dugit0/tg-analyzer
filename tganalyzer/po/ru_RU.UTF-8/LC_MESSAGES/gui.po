@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  0.0.0\n"
 "Report-Msgid-Bugs-To: dmitry.astrakhantsev@gmail.com\n"
-"POT-Creation-Date: 2024-07-03 14:54+0300\n"
+"POT-Creation-Date: 2024-07-05 19:33+0300\n"
 "PO-Revision-Date: 2024-06-21 02:14+0300\n"
 "Last-Translator: Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>\n"
 "Language: ru_RU\n"
@@ -19,75 +19,79 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.15.0\n"
 
-#: tganalyzer/gui/__init__.py:42
+#: tganalyzer/gui/__init__.py:44
 msgid "Symbol counting"
 msgstr "Подсчет символов"
 
-#: tganalyzer/gui/__init__.py:43
+#: tganalyzer/gui/__init__.py:45
 msgid "Word counting"
 msgstr "Подсчет слов"
 
-#: tganalyzer/gui/__init__.py:44
+#: tganalyzer/gui/__init__.py:46
 msgid "Message counting"
 msgstr "Подсчет сообщений"
 
-#: tganalyzer/gui/__init__.py:45
+#: tganalyzer/gui/__init__.py:47
 msgid "Voice message analysis"
 msgstr "Подсчет голосовых сообщений"
 
-#: tganalyzer/gui/__init__.py:46
+#: tganalyzer/gui/__init__.py:48
 msgid "Circle analysis"
 msgstr "Анализ кружков"
 
-#: tganalyzer/gui/__init__.py:47
+#: tganalyzer/gui/__init__.py:49
 msgid "Video file analysis"
 msgstr "Анализ видео"
 
-#: tganalyzer/gui/__init__.py:48
+#: tganalyzer/gui/__init__.py:50
 msgid "Photo counting"
 msgstr "Подсчет фотографий"
 
-#: tganalyzer/gui/__init__.py:49
+#: tganalyzer/gui/__init__.py:51
 msgid "Activity at different timesof the day"
 msgstr "Активность в разные периоды дня"
 
-#: tganalyzer/gui/__init__.py:61
+#: tganalyzer/gui/__init__.py:63
 msgid "Select file"
 msgstr "Выберите файл"
 
-#: tganalyzer/gui/__init__.py:82
+#: tganalyzer/gui/__init__.py:84
 msgid "Show all chats"
 msgstr "Показать все чаты"
 
-#: tganalyzer/gui/__init__.py:84
+#: tganalyzer/gui/__init__.py:86
 msgid "Show only private chats"
 msgstr "Показать только личные чаты"
 
-#: tganalyzer/gui/__init__.py:86
+#: tganalyzer/gui/__init__.py:88
 msgid "Show only public chats"
 msgstr "Показать только беседы"
 
-#: tganalyzer/gui/__init__.py:97
+#: tganalyzer/gui/__init__.py:99
 msgid "Select all chats"
 msgstr "Выбрать все чаты"
 
-#: tganalyzer/gui/__init__.py:99
+#: tganalyzer/gui/__init__.py:101
 msgid "Remove selection"
 msgstr "Убрать выделение"
 
-#: tganalyzer/gui/__init__.py:108
+#: tganalyzer/gui/__init__.py:110
 msgid "Select chats with more than X messages"
 msgstr "Выбрать чаты, в которых больше чем X сообщений"
 
-#: tganalyzer/gui/__init__.py:128
+#: tganalyzer/gui/__init__.py:130
 msgid "Analyze the time period from"
 msgstr "Анализировать временной промежуток от"
 
-#: tganalyzer/gui/__init__.py:137
+#: tganalyzer/gui/__init__.py:139
 msgid "to"
 msgstr "до"
 
-#: tganalyzer/gui/__init__.py:169
+#: tganalyzer/gui/__init__.py:170
+msgid "Choose a report color theme"
+msgstr "Выберите цветовую тему отчета"
+
+#: tganalyzer/gui/__init__.py:179
 msgid "Create report"
 msgstr "Создать отчет"
 
