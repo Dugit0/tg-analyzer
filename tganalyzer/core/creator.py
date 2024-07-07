@@ -1,8 +1,6 @@
 """Специальный модуль для создания массива чатов."""
 import json
 from datetime import datetime
-from collections import defaultdict
-from urllib.parse import urlparse
 
 
 # Константы и массивы
@@ -147,13 +145,12 @@ class Message():
     Еще есть некоторые поля, такие как тип, игровое место и тп.
     """
 
-    author = None   # кто отправил сообщение
-    send_time = None   # время отпарвки сообщения
-    type = None   # тип сообщения
-    text = ""   # текст сообщения
-    edited = None   # редактировалось ли сообщение
-    forwarded = None   # пересылалось ли сообщение
-    has_links = None   # содержит ли сообщение ссылки
+    author = None
+    send_time = None
+    type = None
+    text = ""
+    edited = None
+    forwarded = None
 
     def __init__(self, message: dict, chat: dict):
         """Берет сообщение и создает объект.
@@ -170,17 +167,6 @@ class Message():
                     self.text += " " + i
                 else:
                     self.text += " " + i["text"]
-                    if i["type"] == "link" or \
-                            i["type"] == "text_link":   # ссылка
-                        if self.has_links:
-                            syte = urlparse(i["text" if i["type"] == "link"
-                                              else "href"]).netloc
-                            self.links[syte] += 1
-                        else:
-                            self.has_links = True
-                            syte = urlparse(i["text" if i["type"] == "link"
-                                              else "href"]).netloc
-                            self.links = defaultdict(int, {syte: 1})
             self.text = self.text.strip()
         else:
             self.text = message["text"].strip()
