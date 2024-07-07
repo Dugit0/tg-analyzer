@@ -8,6 +8,7 @@ from pathlib import Path
 import datetime
 import gettext
 import pytz
+import webbrowser
 
 from tganalyzer.core.creator import start_creator
 from tganalyzer.core.analyzer import start_analyses
@@ -334,3 +335,4 @@ class MainWindow(QMainWindow):
                         theme=self.theme_combobox.currentText())
         except Exception as e:
             print(type(e), e)
+        webbrowser.open(path)
