@@ -165,7 +165,7 @@ def return_text_info(
         update: dict[int, defaultdict],
         chat_data: defaultdict,
         id: int,
-        feture_meaning: int,
+        feture_meaning: int
         ):
     """Собирает текстовую информацию в одном месте (символы, слова и тп).
 
@@ -181,7 +181,7 @@ def return_strikes_info(
         update: dict[int, defaultdict],
         chat_data: list,
         id: int,
-        window_size: int,
+        window_size: int = 0
         ):
     """Собирает информацию о стриках в одном месте.
 

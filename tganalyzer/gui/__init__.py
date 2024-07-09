@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
                 "group_call": self.locale.gettext("Group calls counting"),
                 "links": self.locale.gettext("Links counting"),
                 "rude_words": self.locale.gettext("Rude words counting"),
+                "strikes": self.locale.gettext("Strikes counting"),
                 }
         self.chat_checkboxes = []
         self.feature_checkboxes = []

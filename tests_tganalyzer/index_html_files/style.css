@@ -1,0 +1,72 @@
+body {
+    background-color: #262626;
+    color: white;
+}
+
+a {
+    color: #2aabee;
+}
+
+a:visited {
+    color: #8d78e3;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+h1.header {
+    background: linear-gradient(#2aabee, #229ed9);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+}
+
+div.chatblock {
+    width: 90vw;
+    border: 2px dotted #2aabee;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h2.chatname {
+    color: #229ed9;
+}
+
+hr.featsep {
+    border: 1px dashed #229ed9;
+    margin-top: 20px;
+}
+
+h3.featurename {
+    color: #229ed9;
+    font-style: italic;
+}
+
+h4.typename {
+    color: #229ed9;
+    font-style: italic;
+}
+
+h1.numberoftheday {
+    margin: 0px;
+    padding: 0px;
+    font-size: 300%;
+}
+
+img.plot {
+    max-width: 80%;
+    filter: invert(100%);
+}
+
+p.toplink {
+    text-align: right;
+    padding-top: 0px;
+    padding-right: 20px;
+}
