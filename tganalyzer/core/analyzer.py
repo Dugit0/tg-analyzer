@@ -1,7 +1,8 @@
 """Создает статистику по сообщениям."""
 import bisect
-from . import creator
+import re
 import datetime
+from . import creator
 from collections import defaultdict
 
 
@@ -98,20 +99,115 @@ def counter_days_nights(
     update[message.author][_time[message.send_time.hour // 6]] += 1
 
 
+def counter_links(
+        update: defaultdict[str, defaultdict[str, int]],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число ссылок каждого пользователя в сообщениях.
+    :param update: структура для подсчета ссылок.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    if message.has_links:
+        for syte in message.links.keys():
+            update[message.author][syte] += message.links[syte]
+
+
+def counter_rude_words(
+        update: defaultdict[str, int],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число матерных слов каждого пользователя.
+    :param update: структура для подсчета слов.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    _rude_words = []   # может завести отдельный файл со словами
+    update[message.author] += sum(
+        [len(re.findall(pattern, message.text, re.IGNORECASE))
+         for pattern in _rude_words])
+
+
+def counter_strikes(
+        update: list,
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число матерных слов каждого пользователя.
+    :param update: структура для подсчета слов.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    if len(update) == 0:
+        update.append({"first_date": message.send_time.date(),
+                       "last_date": message.send_time.date(),
+                       "strike": 1})
+    elif (x := (message.send_time.date() - update[-1]["last_date"]).days) > 1:
+        start_date = update[-1]["last_date"]
+        for i in range(x):
+            update.append({"first_date": start_date +
+                           datetime.timedelta(i + 1),
+                           "last_date": start_date +
+                           datetime.timedelta(i + 1),
+                           "strike": 0})
+        update[-1]["strike"] += 1
+    elif (message.send_time.date() - update[-1]["last_date"]).days == 1:
+        update[-1]["last_date"] = message.send_time.date()
+        update[-1]["strike"] += 1
+
+
+
 # Функции подготовки вывода
 
 def return_text_info(
         update: dict[int, defaultdict],
         chat_data: defaultdict,
-        id: int
+        id: int,
+        feture_meaning: int
         ):
     """Собирает текстовую информацию в одном месте (символы, слова и тп).
 
     :param update: общая дополняемая структура.
     :param chat_data: информация о символах ,словах и тп об одном чате.
     :param id: id чата.
+    :param feature_maning: переданное значение для опции.
     """
     update[id] = chat_data
+
+
+def return_strikes_info(
+        update: dict[int, defaultdict],
+        chat_data: list,
+        id: int,
+        window_size: int = 0
+        ):
+    """Собирает информацию о стриках в одном месте.
+
+    :param update: общая дополняемая структура.
+    :param chat_data: информация о стриках об одном чате.
+    :param id: id чата.
+    :param window_size: количество дней, разрешенных пропускать в стрике.
+    """
+    top_strike = {"first_date": None,
+                  "last_date": None,
+                  "strike": 0}
+    for left_point in range(len(chat_data) - window_size):
+        right_point = min(left_point + window_size + 2, len(chat_data))
+        tmp_strike = sum([item["strike"]
+                          for item in chat_data[left_point:right_point]])
+        if top_strike["strike"] <= tmp_strike:
+            i = 0   # избавляемся от пустых границ
+            while chat_data[left_point + i]["strike"] == 0:
+                i += 1
+            top_strike["first_date"] = chat_data[left_point + i]["first_date"]
+            i = 1   # избавляемся от пустых границ
+            while chat_data[right_point - i]["strike"] == 0:
+                i += 1
+            top_strike["last_date"] = chat_data[right_point - i]["last_date"]
+            top_strike["strike"] = tmp_strike
+    update[id] = top_strike
 
 
 # Константы
@@ -230,7 +326,7 @@ DEPENDENCIES = {
             "class_func": counter_days_nights,
             "return_type": dict,
             "return_func": return_text_info
-        }
+        },
         # day_night structure in final data:
         # "day_night": {
         #   chat.id: {
@@ -241,6 +337,80 @@ DEPENDENCIES = {
         #           "evening": int
         #       }
         #   }
+        # }
+        "phone_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # phone_call structure in final data:
+        # "phone_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
+        #       }
+        #   }
+        # }
+        "group_call": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_files,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # group_call structure in final data:
+        # "group_call": {
+        #   chat.id: {
+        #       "username": {
+        #           "quantity": int,
+        #           "length": int
+        #       }
+        #   }
+        # }
+        "links": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_links,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # links structure in final data:
+        # "links": {
+        #   chat.id: {
+        #       "username": {
+        #           "syte": int
+        #       }
+        #   }
+        # }
+        "rude_words": {
+            "class_type": defaultdict,
+            "class_ex_type": int,
+            "class_func": counter_rude_words,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # rude_words structure in final data:
+        # "rude_words": {
+        #   chat.id: {
+        #       "username": int
+        #   }
+        # }
+        "strikes": {
+            "class_type": list,
+            "class_ex_type": dict(),
+            "class_func": counter_strikes,
+            "return_type": dict,
+            "return_func": return_strikes_info
+        },
+        # strikes structure in final data:
+        # "strikes": {
+        #   chat.id: {
+        #       "first_date": datetime.date,
+        #       "last_date": datetime.date,
+        #       "strike": int
         # }
     }
 
@@ -264,7 +434,10 @@ class Chat_stat():
         Начальная дата и конечная, aware.
         """
         for feature in DEPENDENCIES.keys():
-            if features[feature]:
+            if (isinstance(features[feature], bool) and \
+                    features[feature]) or \
+                    not isinstance(features[feature], bool):
+                    # так сложно так как isinstance(boolean, int) = True
                 setattr(self,
                         feature,
                         DEPENDENCIES[feature]["class_type"](
@@ -277,7 +450,9 @@ class Chat_stat():
         for i in range(start_mes, end_mes):
             msg = chat.messages[i]
             for feature in features.keys():
-                if features[feature]:
+                if (isinstance(features[feature], bool) and \
+                        features[feature]) or \
+                        not isinstance(features[feature], bool):
                     DEPENDENCIES[feature]["class_func"](
                             getattr(self, feature), msg, feature)
 
@@ -301,20 +476,30 @@ def start_analyses(
     """
     # Словарь, хранящий заведенные структуры для опций.
     features_type = {feature: DEPENDENCIES[feature]["return_type"]()
-                     for feature in features.keys() if features[feature]}
+                     for feature in features.keys()
+                     if (isinstance(features[feature], bool) and 
+                         features[feature]) or 
+                         not isinstance(features[feature], bool)}
 
     ret_parsed_chats = {}
     for chat in parsed_chats:
         ret_parsed_chats[chat.id] = chat   # упорядочивание для удобства html
         analysed_chat = Chat_stat(features, chat, time_gap)
         for feature in features.keys():
-            if features[feature]:
+            if (isinstance(features[feature], bool) and \
+                    features[feature]) or \
+                    not isinstance(features[feature], bool):
+                    # так сложно так как isinstance(boolean, int) = True
                 DEPENDENCIES[feature]["return_func"](
                         features_type[feature],
                         getattr(analysed_chat, feature),
-                        chat.id)
+                        chat.id,
+                        features[feature])
 
     ret_stats = {feature: features_type[feature]
-                 for feature in features.keys() if features[feature]}
+                 for feature in features.keys()
+                 if (isinstance(features[feature], bool) and 
+                     features[feature]) or 
+                     not isinstance(features[feature], bool)}
 
     return ret_stats, ret_parsed_chats
