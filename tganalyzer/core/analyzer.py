@@ -98,6 +98,21 @@ def counter_days_nights(
     update[message.author][_time[message.send_time.hour // 6]] += 1
 
 
+def counter_links(
+        update: defaultdict[str, defaultdict[str, int]],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число ссылок каждого пользователя в сообщениях.
+    :param update: структура для подсчета ссылок.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    if message.has_links:
+        for syte in message.links.keys():
+            update[message.author][syte] += message.links[syte]
+
+
 # Функции подготовки вывода
 
 def return_text_info(
@@ -271,6 +286,21 @@ DEPENDENCIES = {
         #       "username": {
         #           "quantity": int,
         #           "length": int
+        #       }
+        #   }
+        # }
+        "links": {
+            "class_type": defaultdict,
+            "class_ex_type": lambda: defaultdict(int),
+            "class_func": counter_links,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # links structure in final data:
+        # "links": {
+        #   chat.id: {
+        #       "username": {
+        #           "syte": int
         #       }
         #   }
         # }
