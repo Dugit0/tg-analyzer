@@ -51,6 +51,8 @@ class MainWindow(QMainWindow):
                 "photo": self.locale.gettext("Photo counting"),
                 "day_night": self.locale.gettext("Activity at different times"
                                                  "of the day"),
+                "phone_call": self.locale.gettext("Phone calls counting"),
+                "group_call": self.locale.gettext("Group calls counting"),
                 }
         self.chat_checkboxes = []
         self.feature_checkboxes = []

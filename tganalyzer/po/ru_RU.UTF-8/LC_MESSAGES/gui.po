@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  0.0.0\n"
 "Report-Msgid-Bugs-To: dmitry.astrakhantsev@gmail.com\n"
-"POT-Creation-Date: 2024-07-09 17:17+0300\n"
+"POT-Creation-Date: 2024-07-09 17:47+0300\n"
 "PO-Revision-Date: 2024-06-21 02:14+0300\n"
 "Last-Translator: Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>\n"
 "Language: ru_RU\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.14.0\n"
 
 #: tganalyzer/gui/__init__.py:45
 msgid "Symbol counting"
@@ -51,47 +51,55 @@ msgstr "Подсчет фотографий"
 msgid "Activity at different timesof the day"
 msgstr "Активность в разные периоды дня"
 
-#: tganalyzer/gui/__init__.py:64
+#: tganalyzer/gui/__init__.py:54
+msgid "Phone calls counting"
+msgstr "Подсчет личных звонков"
+
+#: tganalyzer/gui/__init__.py:55
+msgid "Group calls counting"
+msgstr "Подсчет групповых звонков"
+
+#: tganalyzer/gui/__init__.py:66
 msgid "Select file"
 msgstr "Выберите файл"
 
-#: tganalyzer/gui/__init__.py:85
+#: tganalyzer/gui/__init__.py:87
 msgid "Show all chats"
 msgstr "Показать все чаты"
 
-#: tganalyzer/gui/__init__.py:87
+#: tganalyzer/gui/__init__.py:89
 msgid "Show only private chats"
 msgstr "Показать только личные чаты"
 
-#: tganalyzer/gui/__init__.py:89
+#: tganalyzer/gui/__init__.py:91
 msgid "Show only public chats"
 msgstr "Показать только беседы"
 
-#: tganalyzer/gui/__init__.py:100
+#: tganalyzer/gui/__init__.py:102
 msgid "Select all chats"
 msgstr "Выбрать все чаты"
 
-#: tganalyzer/gui/__init__.py:102
+#: tganalyzer/gui/__init__.py:104
 msgid "Remove selection"
 msgstr "Убрать выделение"
 
-#: tganalyzer/gui/__init__.py:111
+#: tganalyzer/gui/__init__.py:113
 msgid "Select chats with more than X messages"
 msgstr "Выбрать чаты, в которых больше чем X сообщений"
 
-#: tganalyzer/gui/__init__.py:131
+#: tganalyzer/gui/__init__.py:133
 msgid "Analyze the time period from"
 msgstr "Анализировать временной промежуток от"
 
-#: tganalyzer/gui/__init__.py:140
+#: tganalyzer/gui/__init__.py:142
 msgid "to"
 msgstr "до"
 
-#: tganalyzer/gui/__init__.py:171
+#: tganalyzer/gui/__init__.py:173
 msgid "Choose a report color theme"
 msgstr "Выберите цветовую тему отчета"
 
-#: tganalyzer/gui/__init__.py:180
+#: tganalyzer/gui/__init__.py:182
 msgid "Create report"
 msgstr "Создать отчет"
 
