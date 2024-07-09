@@ -13,7 +13,7 @@ from tganalyzer.core.analyzer import start_analyses
 PATH = str(Path(__file__).resolve().parent / "data.json")
 FEATURES = ["symb", "word", "msg", "voice_message", "video_message",
             "video_file", "photo", "day_night", "phone_call", "group_call",
-            "links", "rude_words"]
+            "links", "rude_words", "strikes"]
 CHAT_ID = 1012308965
 
 class CoreTest(unittest.TestCase):
