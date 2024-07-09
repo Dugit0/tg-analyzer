@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  0.0.0\n"
 "Report-Msgid-Bugs-To: dmitry.astrakhantsev@gmail.com\n"
-"POT-Creation-Date: 2024-07-09 17:47+0300\n"
+"POT-Creation-Date: 2024-07-09 18:00+0300\n"
 "PO-Revision-Date: 2024-06-21 02:14+0300\n"
 "Last-Translator: Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>\n"
 "Language: ru_RU\n"
@@ -59,47 +59,51 @@ msgstr "Подсчет личных звонков"
 msgid "Group calls counting"
 msgstr "Подсчет групповых звонков"
 
-#: tganalyzer/gui/__init__.py:66
+#: tganalyzer/gui/__init__.py:56
+msgid "Links counting"
+msgstr "Подсчет ссылок"
+
+#: tganalyzer/gui/__init__.py:67
 msgid "Select file"
 msgstr "Выберите файл"
 
-#: tganalyzer/gui/__init__.py:87
+#: tganalyzer/gui/__init__.py:88
 msgid "Show all chats"
 msgstr "Показать все чаты"
 
-#: tganalyzer/gui/__init__.py:89
+#: tganalyzer/gui/__init__.py:90
 msgid "Show only private chats"
 msgstr "Показать только личные чаты"
 
-#: tganalyzer/gui/__init__.py:91
+#: tganalyzer/gui/__init__.py:92
 msgid "Show only public chats"
 msgstr "Показать только беседы"
 
-#: tganalyzer/gui/__init__.py:102
+#: tganalyzer/gui/__init__.py:103
 msgid "Select all chats"
 msgstr "Выбрать все чаты"
 
-#: tganalyzer/gui/__init__.py:104
+#: tganalyzer/gui/__init__.py:105
 msgid "Remove selection"
 msgstr "Убрать выделение"
 
-#: tganalyzer/gui/__init__.py:113
+#: tganalyzer/gui/__init__.py:114
 msgid "Select chats with more than X messages"
 msgstr "Выбрать чаты, в которых больше чем X сообщений"
 
-#: tganalyzer/gui/__init__.py:133
+#: tganalyzer/gui/__init__.py:134
 msgid "Analyze the time period from"
 msgstr "Анализировать временной промежуток от"
 
-#: tganalyzer/gui/__init__.py:142
+#: tganalyzer/gui/__init__.py:143
 msgid "to"
 msgstr "до"
 
-#: tganalyzer/gui/__init__.py:173
+#: tganalyzer/gui/__init__.py:174
 msgid "Choose a report color theme"
 msgstr "Выберите цветовую тему отчета"
 
-#: tganalyzer/gui/__init__.py:182
+#: tganalyzer/gui/__init__.py:183
 msgid "Create report"
 msgstr "Создать отчет"
 
