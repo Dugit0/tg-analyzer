@@ -1,7 +1,8 @@
 """Создает статистику по сообщениям."""
 import bisect
-from . import creator
+import re
 import datetime
+from . import creator
 from collections import defaultdict
 
 
@@ -111,6 +112,22 @@ def counter_links(
     if message.has_links:
         for syte in message.links.keys():
             update[message.author][syte] += message.links[syte]
+
+
+def counter_rude_words(
+        update: defaultdict[str, int],
+        message: creator.Message,
+        feature: str
+        ):
+    """Подсчитывает число матерных слов каждого пользователя.
+    :param update: структура для подсчета слов.
+    :param message: анализируемое сообщение.
+    :param feature: название цели анализа.
+    """
+    _rude_words = []   # может завести отдельный файл со словами
+    update[message.author] += sum(
+        [len(re.findall(pattern, message.text, re.IGNORECASE))
+         for pattern in _rude_words])
 
 
 # Функции подготовки вывода
@@ -302,6 +319,19 @@ DEPENDENCIES = {
         #       "username": {
         #           "syte": int
         #       }
+        #   }
+        # }
+        "rude_words": {
+            "class_type": defaultdict,
+            "class_ex_type": int,
+            "class_func": counter_rude_words,
+            "return_type": dict,
+            "return_func": return_text_info
+        },
+        # rude_words structure in final data:
+        # "rude_words": {
+        #   chat.id: {
+        #       "username": int
         #   }
         # }
     }
