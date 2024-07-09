@@ -1,9 +1,9 @@
 """Графический интерфейс tg-analyzer."""
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QWidget
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
-from PyQt5.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
-from PyQt5.QtWidgets import QScrollArea, QSpinBox, QComboBox
-from PyQt5.QtCore import Qt, QDate
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
+from PySide6.QtWidgets import QLabel, QPushButton, QDateEdit, QCheckBox
+from PySide6.QtWidgets import QScrollArea, QSpinBox, QComboBox
+from PySide6.QtCore import Qt, QDate
 from pathlib import Path
 import datetime
 import gettext
@@ -307,11 +307,11 @@ class MainWindow(QMainWindow):
                     if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
         from_datetime = datetime.datetime.combine(
-                self.from_date.date().toPyDate(),
+                self.from_date.date().toPython(),
                 datetime.datetime.min.time()
                 )
         to_datetime = datetime.datetime.combine(
-                self.to_date.date().toPyDate(),
+                self.to_date.date().toPython(),
                 datetime.datetime.max.time()
                 )
         from_datetime = from_datetime.replace(tzinfo=pytz.utc)
@@ -330,7 +330,7 @@ class MainWindow(QMainWindow):
                 }
         # TODO Убрать эту конструкцию
         try:
-            html_export(path, metadata, ret_stats, 
+            html_export(path, metadata, ret_stats,
                         lang=self.lang,
                         theme=self.theme_combobox.currentText())
         except Exception as e:

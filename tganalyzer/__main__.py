@@ -1,7 +1,7 @@
 """CLI для запуска GUI. Для более подробной информации см. `--help`."""
 import argparse
 import sys
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 from tganalyzer.gui import MainWindow
 
 
