@@ -1,20 +1,30 @@
-[project]
+[tool.poetry]
 name = "tganalyzer"
-description = "Telegram Stats Analyzer"
-version = "0.0.0"
-requires-python = ">=3.10"
-dependencies = ["pyqt5", "jinja2", "matplotlib", "pytz"]
+version = "0.0.1"
+description = "Statistics analyzer for Telegram"
+authors = [
+    "Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>",
+    "Artem Goroshko <nikto8748@gmail.com>",
+    "Valery Zabrovsky <valthebrewer@yandex.ru>",
+]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+PySide6 = "^6.7.2"
+Jinja2 = "^3.1.4"
+matplotlib = "^3.9.1"
+pytz = "^2024.1"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.1.0"
+pydocstyle = "^6.3.0"
+sphinx = "^7.3.7"
+babel = "^2.15.0"
+doit = "^0.36.0"
+coverage = "^7.5.4"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.package-dir]
-tganalyzer = "tganalyzer"
-
-[tool.setuptools.package-data]
-tganalyzer = [
-    "*/po/*/*/*.mo",
-    "html_export/templates/*",
-    "html_export/themes/*",
-]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
