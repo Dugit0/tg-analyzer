@@ -21,7 +21,7 @@ if args.language in LANGUAGES:
     app = QApplication(sys.argv)
     app.setApplicationName("tg-analyzer")
     window = MainWindow(lang=LANGUAGES[args.language])
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 else:
     print(f"Unexpected language: {args.language}", file=sys.stderr)
     print(f"One of these languages was expected: {', '.join(LANGUAGES)}",
