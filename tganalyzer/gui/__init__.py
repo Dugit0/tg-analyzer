@@ -197,7 +197,7 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
         self.setWindowTitle("tg-analyzer")
-        self.show()
+        # self.show()
 
     def clear_chat_area(self):
         """Очищает область чатов.
