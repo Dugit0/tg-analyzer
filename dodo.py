@@ -39,8 +39,9 @@ def task_po():
     po_path = Path('tganalyzer') / 'po'
     return {
             "actions": [
-                f"pybabel update --previous -D {domain} -d {po_path} "
-                f"-i {domain + '.pot'}" for domain in domains
+                f"pybabel update --ignore-pot-creation-date --previous "
+                f"-D {domain} -d {po_path} -i {domain + '.pot'}"
+                for domain in domains
                 ],
             "file_dep": [f"{domain}.pot" for domain in domains],
             "targets": [
