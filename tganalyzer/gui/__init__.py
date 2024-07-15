@@ -9,7 +9,8 @@ import datetime
 import gettext
 import pytz
 import webbrowser
-import traceback, sys
+import traceback
+import sys
 
 from tganalyzer.core.creator import start_creator
 from tganalyzer.core.analyzer import start_analyses
@@ -26,10 +27,10 @@ THEMES = [theme.name.partition('.')[0] for theme in THEMES_PATH.iterdir()]
 
 
 class WorkerSignals(QObject):
-    '''
-    Defines the signals available from a running worker thread.
+    """
+    Определяет сигналы доступные в выполняющемся треде класса Worker.
 
-    Supported signals are:
+    Поддерживаемые сигналы:
 
     finished
         No data
@@ -38,25 +39,25 @@ class WorkerSignals(QObject):
         tuple (exctype, value, traceback.format_exc() )
 
     result
-        object data returned from processing, anything
-    '''
+        object результат выполнения функции треда
+    """
+
     finished = Signal()  # QtCore.Signal
     error = Signal(tuple)
     result = Signal(object)
 
 
 class Worker(QRunnable):
-    '''
-    Worker thread
+    """
+    Обертка над тредом.
 
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+    Унаследован от QRunnable. Создает и присоединяет сигналы к треду.
 
-    :param callback: The function callback to run on this worker thread. Supplied args and
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-    '''
+    :param func: Функция запускающаяся в треде.
+    :type func: function
+    :param args: ``args`` передающиеся в ``func``
+    :param kwargs: ``kwargs`` передающиеся в ``func``
+    """
 
     def __init__(self, func, *args, **kwargs):
         super(Worker, self).__init__()
@@ -68,12 +69,10 @@ class Worker(QRunnable):
 
     @Slot()  # QtCore.Slot
     def run(self):
-        '''
-        Initialise the runner function with passed args, kwargs.
-        '''
+        """Запускает функцию с параметрами ``args`` и ``kwargs``."""
         try:
             result = self.func(*self.args, **self.kwargs)
-        except:
+        except Exception:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
@@ -275,24 +274,11 @@ class MainWindow(QMainWindow):
                 self.chat_checkboxes[i].deleteLater()
                 del self.chat_checkboxes[i]
 
-    def create_and_show_chats(self, all_chats):
-        self.chats = [chat for chat in all_chats
-                      if (chat.type in {"personal_chat",
-                                        "private_group",
-                                        "private_supergroup"}
-                          and chat.name is not None)]
-        # print(*[(chat.name, chat.type) for chat in self.chats], sep='\n')
-        for chat in self.chats:
-            checkbox = QCheckBox(chat.name, self)
-            checkbox.chat_id = chat.id
-            self.chat_checkboxes.append(checkbox)
-            self.chats_layout.addWidget(checkbox)
-
     def select_data_file(self):
         """Выбирает файл экспорта.
 
         Удаляет чаты и их чекбоксы, если они были, открывает окно выбора файла
-        и создает новые чекбоксы на основе полученного .json-файла.
+        и запускает тред (QRunnable) для обработки выбранного .json-файла.
         """
         # TODO localisation?
         path, _ = QFileDialog.getOpenFileName(self, "Select data", "",
@@ -307,6 +293,20 @@ class MainWindow(QMainWindow):
             worker = Worker(start_creator, path)
             worker.signals.result.connect(self.create_and_show_chats)
             self.threadpool.start(worker)
+
+    def create_and_show_chats(self, all_chats):
+        """Фильтрует полученный список чатов и создает новые чекбоксы."""
+        self.chats = [chat for chat in all_chats
+                      if (chat.type in {"personal_chat",
+                                        "private_group",
+                                        "private_supergroup"}
+                          and chat.name is not None)]
+        # print(*[(chat.name, chat.type) for chat in self.chats], sep='\n')
+        for chat in self.chats:
+            checkbox = QCheckBox(chat.name, self)
+            checkbox.chat_id = chat.id
+            self.chat_checkboxes.append(checkbox)
+            self.chats_layout.addWidget(checkbox)
 
     def show_chat_with_filter(self, key):
         """Отфильтровывает чаты для отображения.
