@@ -368,7 +368,8 @@ class MainWindow(QMainWindow):
         """Создает отчет."""
         if self.data_path is None:
             return
-        path = str(self.data_path.parent / 'index.html')
+        self.report_info = {}
+        self.report_info["path"] = str(self.data_path.parent / 'index.html')
         chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
                     if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
@@ -382,23 +383,29 @@ class MainWindow(QMainWindow):
                 )
         from_datetime = from_datetime.replace(tzinfo=pytz.utc)
         to_datetime = to_datetime.replace(tzinfo=pytz.utc)
-        time_gap = [from_datetime, to_datetime]
+        self.report_info["time_gap"] = [from_datetime, to_datetime]
         features = {checkbox.feature_name:
                     checkbox.isChecked()
                     for checkbox in self.feature_checkboxes}
-        ret_stats, ret_parsed_chats = start_analyses(parsed_chats,
-                                                     time_gap,
-                                                     features)
+        worker = Worker(start_analyses,
+                        parsed_chats,
+                        self.report_info["time_gap"],
+                        features)
+        worker.signals.result.connect(self.create_html)
+        self.threadpool.start(worker)
+
+    def create_html(self, res):
+        ret_stats, ret_parsed_chats = res[0], res[1]
         metadata = {
                 "login": "TODO LOGIN",
                 "chats": ret_parsed_chats,
-                "time_gap": time_gap,
+                "time_gap": self.report_info["time_gap"],
                 }
         # TODO Убрать эту конструкцию
         try:
-            html_export(path, metadata, ret_stats,
+            html_export(self.report_info["path"], metadata, ret_stats,
                         lang=self.lang,
                         theme=self.theme_combobox.currentText())
         except Exception as e:
             print(type(e), e)
-        webbrowser.open(path)
+        webbrowser.open(self.report_info["path"])
