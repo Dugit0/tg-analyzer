@@ -1,0 +1,13 @@
+#: tganalyzer/gui/__init__.py:303
+msgid "Loading"
+msgstr "Загрузка"
+
+#: tganalyzer/gui/__init__.py:304
+msgid ""
+"The import file is being processed. Please wait, this may take up to "
+"several minutes. This window will automatically close when processing is "
+"complete."
+msgstr ""
+"Идет обработка файла импорта. Пожалуйста подождите, это может занять до "
+"нескольких минут. Это окно будет автоматически закрыто после завершения "
+"обработки."
