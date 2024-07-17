@@ -481,7 +481,8 @@ def html_export(
     metadata: dict,
     chatdata: dict[str, dict[int, dict]],
     lang: str = "en_US.UTF-8",
-    theme: str = "light"
+    theme: str = "light",
+    progress=None
 ):
     """Создание HTML-файла из данных о пользователе и чатах.
 
@@ -490,6 +491,9 @@ def html_export(
     :param chatdata: данные о чатах вида {опция: данные}.
     :param lang: языковая строка (напр., "en_US.UTF-8").
     :param theme: название темы.
+    :param progress: сигнал для GUI, который отображает прогресс выполнения
+    задачи в процентах.
+    :type progress: PySide6.QtCore.Signal(int)
     """
     global TEXT
     # перегенерация строк, если язык не английский
@@ -506,7 +510,8 @@ def html_export(
         chatid: chat.name for chatid, chat in metadata["chats"].items()
     }
     features = defaultdict(lambda: defaultdict(str))
-    for feat in TEXT["features"]:
+    features_num = len(TEXT["features"])
+    for i, feat in enumerate(TEXT["features"]):
         if feat not in chatdata:
             continue
         match feat:
@@ -520,6 +525,8 @@ def html_export(
                 )
             case "day_night":
                 features[feat] = draw_timesofday(files_dir, chatdata[feat])
+        if progress is not None:
+            progress.emit((i + 1) * 100 // features_num)
 
     chatstat = defaultdict(lambda: defaultdict(str))
     for feat, featdata in features.items():

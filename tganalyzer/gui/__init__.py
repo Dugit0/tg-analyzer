@@ -399,13 +399,16 @@ class MainWindow(QMainWindow):
             return
         self.report_info = {}
         self.report_info["path"] = str(self.data_path.parent / 'index.html')
-        worker = Worker(self.create_html_report)
+        dialog = CustomDialog(self)
+        worker = Worker(self.create_html_report, progress_flag=True)
+        worker.signals.progress.connect(dialog.update_wigets)
         worker.signals.finished.connect(
                 lambda : webbrowser.open(self.report_info["path"])
                 )
         self.threadpool.start(worker)
+        dialog.exec()
 
-    def create_html_report(self):
+    def create_html_report(self, progress=None):
         chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
                     if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]
@@ -435,6 +438,7 @@ class MainWindow(QMainWindow):
         try:
             html_export(self.report_info["path"], metadata, ret_stats,
                         lang=self.lang,
-                        theme=self.theme_combobox.currentText())
+                        theme=self.theme_combobox.currentText(),
+                        progress=progress)
         except Exception as e:
             print(type(e), e)
