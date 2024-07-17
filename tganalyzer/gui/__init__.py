@@ -58,10 +58,13 @@ class Worker(QRunnable):
     :param func: Функция запускающаяся в треде.
     :type func: function
     :param args: ``args`` передающиеся в ``func``
-    :param kwargs: ``kwargs`` передающиеся в ``func``
+    :param progress_flag: следует выставить True, если у функции есть
+    возможность посылать сигнал progress для обновления информации в GUI.
+    По умолчанию False.
     """
 
     def __init__(self, func, *args, progress_flag=False):
+        """Обертка над тредом."""
         super(Worker, self).__init__()
         # Store constructor arguments (re-used for processing)
         self.func = func
@@ -91,7 +94,17 @@ class Worker(QRunnable):
 
 
 class ProgressBarDialog(QDialog):
+    """
+    Диалог, отображающий сообщение и индикатор выполнения в процентах.
+
+    При достижении 100% диалог закрывается.
+
+    :param message: Отображаемое сообщение.
+    :param parent: Родительское окно.
+    """
+
     def __init__(self, message, parent):
+        """Диалог, отображающий сообщение и процентный индикатор выполнения."""
         super().__init__(parent)
         self.setWindowTitle("tg-analyzer")
         self.layout = QVBoxLayout()
@@ -101,21 +114,27 @@ class ProgressBarDialog(QDialog):
         self.layout.addWidget(self.progress_bar)
         self.setLayout(self.layout)
 
-    def update_wigets(self, percent):
+    def update_progressbar(self, percent):
+        """
+        Обновляет индикатор прогресса.
+
+        :param percent: Процент, который будет установлен на индикаторе.
+        """
         self.progress_bar.setValue(percent)
         if percent == 100:
             self.close()
 
 
 class MainWindow(QMainWindow):
-    """Основное окно приложения."""
+    """
+    Основное окно приложения.
+
+    :param lang: название языка, для которого поддерживается перевод.
+    :type lang: str
+    """
 
     def __init__(self, *args, lang='en_US.UTF-8', **kwargs):
-        """Основное окно приложения.
-
-        :param lang: название языка, для которого поддерживается перевод.
-        :type lang: str
-        """
+        """Основное окно приложения."""
         super(MainWindow, self).__init__()
         self.setGeometry(300, 100, 500, 700)
         self.threadpool = QThreadPool()
@@ -319,7 +338,7 @@ class MainWindow(QMainWindow):
                     self
                     )
             worker = Worker(start_creator, path, progress_flag=True)
-            worker.signals.progress.connect(dialog.update_wigets)
+            worker.signals.progress.connect(dialog.update_progressbar)
             worker.signals.result.connect(self.create_and_show_chats)
             self.threadpool.start(worker)
             dialog.exec()
@@ -406,14 +425,21 @@ class MainWindow(QMainWindow):
                 self
                 )
         worker = Worker(self.create_html_report, progress_flag=True)
-        worker.signals.progress.connect(dialog.update_wigets)
+        worker.signals.progress.connect(dialog.update_progressbar)
         worker.signals.finished.connect(
-                lambda : webbrowser.open(self.report_info["path"])
+                lambda: webbrowser.open(self.report_info["path"])
                 )
         self.threadpool.start(worker)
         dialog.exec()
 
     def create_html_report(self, progress=None):
+        """
+        Подготавливает информацию и создает HTML-файл отчета.
+
+        :param progress: сигнал для GUI, который отображает прогресс выполнения
+        задачи в процентах.
+        :type progress: PySide6.QtCore.Signal(int)
+        """
         chat_ids = {checkbox.chat_id for checkbox in self.chat_checkboxes
                     if checkbox.isChecked()}
         parsed_chats = [chat for chat in self.chats if chat.id in chat_ids]

@@ -21,7 +21,7 @@ def start_cmd():
         print(args.language)
         app = QApplication(sys.argv)
         app.setApplicationName("tg-analyzer")
-        window = MainWindow(lang=LANGUAGES[args.language])
+        window = MainWindow(lang=LANGUAGES[args.language])  # noqa: F841
         sys.exit(app.exec())
     else:
         print(f"Unexpected language: {args.language}", file=sys.stderr)
