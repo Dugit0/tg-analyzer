@@ -3,7 +3,8 @@ from PySide6.QtCore import (Qt, Signal, Slot, QObject, QDate, QRunnable,
                             QThreadPool)
 from PySide6.QtWidgets import (QMainWindow, QFileDialog, QWidget, QVBoxLayout,
                                QHBoxLayout, QLabel, QPushButton, QDateEdit,
-                               QCheckBox, QScrollArea, QSpinBox, QComboBox)
+                               QCheckBox, QScrollArea, QSpinBox, QComboBox,
+                               QDialog, QProgressBar)
 from pathlib import Path
 import datetime
 import gettext
@@ -45,6 +46,7 @@ class WorkerSignals(QObject):
     finished = Signal()  # QtCore.Signal
     error = Signal(tuple)
     result = Signal(object)
+    progress = Signal(int)
 
 
 class Worker(QRunnable):
@@ -59,19 +61,23 @@ class Worker(QRunnable):
     :param kwargs: ``kwargs`` передающиеся в ``func``
     """
 
-    def __init__(self, func, *args, **kwargs):
+    def __init__(self, func, *args, progress_flag=False):
         super(Worker, self).__init__()
         # Store constructor arguments (re-used for processing)
         self.func = func
         self.args = args
-        self.kwargs = kwargs
+        self.progress_flag = progress_flag
         self.signals = WorkerSignals()
 
     @Slot()  # QtCore.Slot
     def run(self):
         """Запускает функцию с параметрами ``args`` и ``kwargs``."""
         try:
-            result = self.func(*self.args, **self.kwargs)
+            if self.progress_flag:
+                result = self.func(*self.args,
+                                   progress=self.signals.progress)
+            else:
+                result = self.func(*self.args)
         except Exception:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
@@ -82,6 +88,26 @@ class Worker(QRunnable):
         finally:
             # Done
             self.signals.finished.emit()
+
+
+class CustomDialog(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle("tg-analyzer")
+        self.layout = QVBoxLayout()
+        message = QLabel(
+                parent.locale.gettext("Loading... Opening and processing the "
+                                      "export file.")
+                )
+        self.progress_bar = QProgressBar(self)
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.progress_bar)
+        self.setLayout(self.layout)
+
+    def update_wigets(self, percent):
+        self.progress_bar.setValue(percent)
+        if percent == 100:
+            self.close()
 
 
 class MainWindow(QMainWindow):
@@ -258,7 +284,7 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
         self.setWindowTitle("tg-analyzer")
-        # self.show()
+        self.show()
 
     def clear_chat_area(self):
         """Очищает область чатов.
@@ -290,9 +316,12 @@ class MainWindow(QMainWindow):
                     del self.chats[i]
             self.data_path = Path(path)
             self.data_path_label.setText(path)
-            worker = Worker(start_creator, path)
+            dialog = CustomDialog(self)
+            worker = Worker(start_creator, path, progress_flag=True)
+            worker.signals.progress.connect(dialog.update_wigets)
             worker.signals.result.connect(self.create_and_show_chats)
             self.threadpool.start(worker)
+            dialog.exec()
 
     def create_and_show_chats(self, all_chats):
         """Фильтрует полученный список чатов и создает новые чекбоксы."""
@@ -372,7 +401,8 @@ class MainWindow(QMainWindow):
         self.report_info["path"] = str(self.data_path.parent / 'index.html')
         worker = Worker(self.create_html_report)
         worker.signals.finished.connect(
-                lambda : webbrowser.open(self.report_info["path"]))
+                lambda : webbrowser.open(self.report_info["path"])
+                )
         self.threadpool.start(worker)
 
     def create_html_report(self):

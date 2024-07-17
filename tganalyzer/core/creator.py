@@ -241,15 +241,22 @@ class Message():
                 self.type = "unknown"
 
 
-def start_creator(path: str) -> list[Chat]:
+def start_creator(path: str, progress=None) -> list[Chat]:
     """Анализирует файл json и возвращает массив с объектами класса Chat.
 
     :param path: путь к анализируемому файлу json.
+    :param progress: сигнал для GUI, который отображает прогресс выполнения
+    задачи в процентах.
+    :type progress: PySide6.QtCore.Signal(int)
     :return: массив объектов класса Chat.
     """
     extractor = Extraction(path)
     old_chats = extractor.chats_ex()
     ret_chats = []
-    for chat in old_chats:
+    old_chats_num = len(old_chats)
+    for i, chat in enumerate(old_chats):
         ret_chats.append(Chat(chat))
+        if progress is not None:
+            progress.emit((i + 1) * 100 // old_chats_num)
+
     return ret_chats
