@@ -90,17 +90,14 @@ class Worker(QRunnable):
             self.signals.finished.emit()
 
 
-class CustomDialog(QDialog):
-    def __init__(self, parent):
+class ProgressBarDialog(QDialog):
+    def __init__(self, message, parent):
         super().__init__(parent)
         self.setWindowTitle("tg-analyzer")
         self.layout = QVBoxLayout()
-        message = QLabel(
-                parent.locale.gettext("Loading... Opening and processing the "
-                                      "export file.")
-                )
+        message_label = QLabel(message)
         self.progress_bar = QProgressBar(self)
-        self.layout.addWidget(message)
+        self.layout.addWidget(message_label)
         self.layout.addWidget(self.progress_bar)
         self.setLayout(self.layout)
 
@@ -316,7 +313,11 @@ class MainWindow(QMainWindow):
                     del self.chats[i]
             self.data_path = Path(path)
             self.data_path_label.setText(path)
-            dialog = CustomDialog(self)
+            dialog = ProgressBarDialog(
+                    self.locale.gettext("Loading... Opening and processing "
+                                        "the export file."),
+                    self
+                    )
             worker = Worker(start_creator, path, progress_flag=True)
             worker.signals.progress.connect(dialog.update_wigets)
             worker.signals.result.connect(self.create_and_show_chats)
@@ -399,7 +400,11 @@ class MainWindow(QMainWindow):
             return
         self.report_info = {}
         self.report_info["path"] = str(self.data_path.parent / 'index.html')
-        dialog = CustomDialog(self)
+        dialog = ProgressBarDialog(
+                self.locale.gettext("Loading... Processing data and creating "
+                                    "a report file."),
+                self
+                )
         worker = Worker(self.create_html_report, progress_flag=True)
         worker.signals.progress.connect(dialog.update_wigets)
         worker.signals.finished.connect(

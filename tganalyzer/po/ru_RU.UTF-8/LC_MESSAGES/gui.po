@@ -19,83 +19,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.15.0\n"
 
-#: tganalyzer/gui/__init__.py:99
-msgid "Loading... Opening and processing the export file."
-msgstr "Загрузка... Открытие и обработка файла экспорта."
-
-#: tganalyzer/gui/__init__.py:131
+#: tganalyzer/gui/__init__.py:129
 msgid "Symbol counting"
 msgstr "Подсчет символов"
 
-#: tganalyzer/gui/__init__.py:132
+#: tganalyzer/gui/__init__.py:130
 msgid "Word counting"
 msgstr "Подсчет слов"
 
-#: tganalyzer/gui/__init__.py:133
+#: tganalyzer/gui/__init__.py:131
 msgid "Message counting"
 msgstr "Подсчет сообщений"
 
-#: tganalyzer/gui/__init__.py:134
+#: tganalyzer/gui/__init__.py:132
 msgid "Voice message analysis"
 msgstr "Подсчет голосовых сообщений"
 
-#: tganalyzer/gui/__init__.py:135
+#: tganalyzer/gui/__init__.py:133
 msgid "Circle analysis"
 msgstr "Анализ кружков"
 
-#: tganalyzer/gui/__init__.py:136
+#: tganalyzer/gui/__init__.py:134
 msgid "Video file analysis"
 msgstr "Анализ видео"
 
-#: tganalyzer/gui/__init__.py:137
+#: tganalyzer/gui/__init__.py:135
 msgid "Photo counting"
 msgstr "Подсчет фотографий"
 
-#: tganalyzer/gui/__init__.py:138
+#: tganalyzer/gui/__init__.py:136
 msgid "Activity at different timesof the day"
 msgstr "Активность в разные периоды дня"
 
-#: tganalyzer/gui/__init__.py:150
+#: tganalyzer/gui/__init__.py:148
 msgid "Select file"
 msgstr "Выберите файл"
 
-#: tganalyzer/gui/__init__.py:171
+#: tganalyzer/gui/__init__.py:169
 msgid "Show all chats"
 msgstr "Показать все чаты"
 
-#: tganalyzer/gui/__init__.py:173
+#: tganalyzer/gui/__init__.py:171
 msgid "Show only private chats"
 msgstr "Показать только личные чаты"
 
-#: tganalyzer/gui/__init__.py:175
+#: tganalyzer/gui/__init__.py:173
 msgid "Show only public chats"
 msgstr "Показать только беседы"
 
-#: tganalyzer/gui/__init__.py:186
+#: tganalyzer/gui/__init__.py:184
 msgid "Select all chats"
 msgstr "Выбрать все чаты"
 
-#: tganalyzer/gui/__init__.py:188
+#: tganalyzer/gui/__init__.py:186
 msgid "Remove selection"
 msgstr "Убрать выделение"
 
-#: tganalyzer/gui/__init__.py:197
+#: tganalyzer/gui/__init__.py:195
 msgid "Select chats with more than X messages"
 msgstr "Выбрать чаты, в которых больше чем X сообщений"
 
-#: tganalyzer/gui/__init__.py:217
+#: tganalyzer/gui/__init__.py:215
 msgid "Analyze the time period from"
 msgstr "Анализировать временной промежуток от"
 
-#: tganalyzer/gui/__init__.py:226
+#: tganalyzer/gui/__init__.py:224
 msgid "to"
 msgstr "до"
 
-#: tganalyzer/gui/__init__.py:257
+#: tganalyzer/gui/__init__.py:255
 msgid "Choose a report color theme"
 msgstr "Выберите цветовую тему отчета"
 
-#: tganalyzer/gui/__init__.py:266
+#: tganalyzer/gui/__init__.py:264
 msgid "Create report"
 msgstr "Создать отчет"
+
+#: tganalyzer/gui/__init__.py:317
+msgid "Loading... Opening and processing the export file."
+msgstr "Загрузка... Открытие и обработка файла экспорта."
+
+#: tganalyzer/gui/__init__.py:404
+msgid "Loading... Processing data and creating a report file."
+msgstr "Загрузка... Обработка данных и создание файла отчета."
 
