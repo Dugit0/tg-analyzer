@@ -38,13 +38,13 @@ def translate_text(lang="en_US.UTF-8"):
                 "name": LOCALES[lang].gettext("Symbols"),
                 "units": LOCALES[lang].gettext("symbols a day"),
             },
-            "msg": {
-                "name": LOCALES[lang].gettext("Messages"),
-                "units": LOCALES[lang].gettext("messages a day"),
-            },
             "word": {
                 "name": LOCALES[lang].gettext("Words"),
                 "units": LOCALES[lang].gettext("words a day"),
+            },
+            "msg": {
+                "name": LOCALES[lang].gettext("Messages"),
+                "units": LOCALES[lang].gettext("messages a day"),
             },
             "voice_message": {
                 "name": LOCALES[lang].gettext("Voice Messages"),
