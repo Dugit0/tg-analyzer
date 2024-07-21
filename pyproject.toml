@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tganalyzer"
-version = "0.0.1"
+version = "1.0.0"
 description = "Statistics analyzer for Telegram"
 authors = [
     "Dmitry Astrakhantsev <dmitry.astrakhantsev@gmail.com>",
@@ -9,6 +9,14 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/Dugit0/tg-analyzer"
+# include = [
+#     {path = "tganalyzer/po/**/*.mo", format = "wheel"},
+#     {path = "tganalyzer/po/**/*.po", format = "sdist"},
+# ]
+exclude = [
+    {path = "tganalyzer/po/**/*.po", format="wheel"}
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
