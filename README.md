@@ -18,9 +18,32 @@
 ## Установка и запуск
 
 ### Запуск из исходников
+Рекомендуемый способ:
 ```
 pipenv shell
 pipenv update
+python -m tganalyzer
+```
+
+Альтернативный способ:
+1. Создать и активировать venv
+
+Windows:
+```
+python -m venv venv
+.\venv\Scripts\activate
+```
+Linux:
+```
+python -m venv venv
+source venv/bin/activate
+```
+
+2. Установить требуемые пакеты и запустить приложение
+```
+pip install -r requirements.txt
+pip install -r dev-requirements.txt
+doit mo
 python -m tganalyzer
 ```
 
@@ -65,7 +88,7 @@ python -m tganalyzer -l ru
 Рекомендуется выставить следующие настройки экспорта:
 - Информация об аккаунте
 - Список контактов
-- В "Настройки эеспорта"
+- В "Настройки экспорта"
     - Личные чаты
     - Чаты с ботами
     - Частные группы (НЕ ставить "Только мои сообщения")
